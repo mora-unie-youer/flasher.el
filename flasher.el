@@ -43,6 +43,12 @@ Used to calculate next interval, depending on review result.")
   "Base coefficient used in delta calculation.
 Used to adjust difficulty calculation for your needs.")
 
+(defvar flasher-max-interval-count 512
+  "Maximum intervals count algorithm can return.
+This is used to avoid huge numbers in interval time, so card can be met again
+even after perfectly remembering it. Can be set to 0, if you want to not limit
+maximum interval.")
+
 (defun flasher-algo (card-stats result)
   "Determine the next iteration of CARD-STATS based on RESULT.
 CARD-STATS is (DIFFICULTY . INTERVAL), the result has the
@@ -66,8 +72,10 @@ RESULT - the quality of the answer:
         (cons (min 1 (+ difficulty delta)) 1)
       (progn
         (setq difficulty (* difficulty (+ 1 delta)))
-        (cons difficulty (cond ((null interval) 1)
-                               (t (round (/ interval difficulty)))))))))
+        (setq interval (cond ((null interval) 1)
+                             (t (round (/ interval difficulty)))))
+        (cons difficulty (cond ((= flasher-max-interval-count 0) interval)
+                               (t (min interval flasher-max-interval-count))))))))
 
 (provide 'flasher)
 
