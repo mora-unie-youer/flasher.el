@@ -39,6 +39,10 @@
   "Duration (in seconds) of one interval to repeat card.
 Used to calculate next interval, depending on review result.")
 
+(defvar flasher-base-delta 0.0288
+  "Base coefficient used in delta calculation.
+Used to adjust difficulty calculation for your needs.")
+
 (defun flasher-algo (card-stats result)
   "Determine the next iteration of CARD-STATS based on RESULT.
 CARD-STATS is (DIFFICULTY . INTERVAL), the result has the
@@ -57,7 +61,7 @@ RESULT - the quality of the answer:
   (let ((difficulty (car card-stats))
         (interval   (cdr card-stats))
         delta)
-    (setq delta (* 0.0588 (- 5 (* 1.8 result))))
+    (setq delta (* flasher-base-delta (- 5 (* 1.8 result))))
     (if (< result 3)
         (cons (min 1 (+ difficulty delta)) 1)
       (progn
