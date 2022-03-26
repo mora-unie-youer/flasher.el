@@ -35,54 +35,6 @@
 
 ;;; Code:
 
-(defvar flasher-base-interval 21600
-  "Duration (in seconds) of one interval to repeat card.
-Used to calculate next interval, depending on review result.")
-
-(defvar flasher-base-delta 0.0288
-  "Base coefficient used in delta calculation.
-Used to adjust difficulty calculation for your needs.")
-
-(defvar flasher-max-interval-count 512
-  "Maximum intervals count algorithm can return.
-This is used to avoid huge numbers in interval time, so card can be met again
-even after perfectly remembering it. Can be set to 0, if you want to not limit
-maximum interval.")
-
-(defvar flasher-min-difficulty 0
-  "Minimum difficulty card can have.
-Can be used to limit increment of interval duration in long term. I don't think
-that it can be useful for users because there's max interval count, which acts
-much better for this purpose.")
-
-(defun flasher-algo (card-stats result)
-  "Determine the next iteration of CARD-STATS based on RESULT.
-CARD-STATS is (DIFFICULTY . INTERVAL), the result has the
-same shape, with updated values. DIFFICULTY - the previous ease factor of the
-card. All cards are initialized with DIFFICULTY of 1. It will decrease for easy
-cards, but not below 0 (will slowdown as it approaches zero), and will increase
-for difficult cards, but not above 1.
-INTERVAL - previous interval between repetitions.
-RESULT - the quality of the answer:
-  5 - perfect answer
-  4 - correct answer took a while
-  3 - correct answer recalled with serious difficulty
-  2 - incorrect answer; where the correct one seemed easy to recall
-  1 - incorrect answer; remembered the correct one
-  0 - complete blackout"
-  (let ((difficulty (car card-stats))
-        (interval   (cdr card-stats))
-        delta)
-    (setq delta (* flasher-base-delta (- 5 (* 1.8 result))))
-    (if (< result 3)
-        (cons (min 1 (+ difficulty delta)) 1)
-      (progn
-        (setq difficulty (max flasher-min-difficulty (* difficulty (+ 1 delta))))
-        (setq interval (cond ((null interval) 1)
-                             (t (round (/ interval difficulty)))))
-        (cons difficulty (cond ((= flasher-max-interval-count 0) interval)
-                               (t (min interval flasher-max-interval-count))))))))
-
 (provide 'flasher)
 
 ;;; flasher.el ends here
