@@ -2,6 +2,8 @@
 ;;
 ;; Filename: flasher.el
 ;; Description: Simple and extensible flashcard system
+;; Version: 0.1.0
+;; Package-Requires: ((emacs "26.1") (org "9.4"))
 ;; Author: Mora Unie Youer <mora_unie_youer@riseup.net>
 ;; Maintainer: Mora Unie Youer <mora_unie_youer@riseup.net>
 ;; Copyright (c) 2022 Mora Unie Youer
