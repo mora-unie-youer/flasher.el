@@ -114,6 +114,15 @@ Initializes and stores database and connection."
                      :values $v1]
                     (vector id 1.0 0)))
 
+(defun flasher-db-update-card (card)
+  "Update CARD entry in Flasher database."
+  (apply #'flasher-db-query
+         [:update cards :set
+          [(= difficulty $s2)
+           (= interval $s3)]
+          :where (= id $s1)]
+         card))
+
 (provide 'flasher-db)
 
 ;;; flasher-db.el ends here
