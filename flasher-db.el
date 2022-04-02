@@ -98,6 +98,16 @@ Initializes and stores database and connection."
   "Execute SQL query on Flasher database with ARGS."
   (apply #'emacsql (flasher-db) sql args))
 
+(defun flasher-db-get-all-cards ()
+  "Fetch all card entries from Flasher database."
+  (flasher-db-query [:select * :from cards]))
+
+(defun flasher-db-get-card (id)
+  "Fetch card entry with ID from Flasher database."
+  (flasher-db-query [:select * :from cards
+                     :where (= id $s1)]
+                    id))
+
 (provide 'flasher-db)
 
 ;;; flasher-db.el ends here
