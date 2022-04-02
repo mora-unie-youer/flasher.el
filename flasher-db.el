@@ -42,6 +42,58 @@
   "Flasher database API."
   :group 'flasher)
 
+(defcustom flasher-db-location (locate-user-emacs-file "flasher.db")
+  "The path to file where Flasher database is stored."
+  :group 'flasher-db
+  :type 'file)
+
+(defconst flasher-db--schemata
+  '((cards [(id         :primary-key)
+            (difficulty :not-null)
+            (interval   :not-null)])
+    (results ([card-id
+               (result         :not-null)
+               (old-difficulty :not-null)
+               (new-difficulty :not-null)
+               (old-interval   :not-null)
+               (new-interval   :not-null)
+               date]
+              (:primary-key [card-id date])
+              (:foreign-key [card-id] :references cards [id] :on-delete :cascade))))
+  "Flasher database structure.")
+
+(defvar flasher-db--connection nil
+  "Database connection to Flasher database.")
+
+(defun flasher-db ()
+  "Entrypoint to the Flasher database.
+Initializes and stores database and connection."
+  (unless (and flasher-db--connection
+               (emacsql-live-p flasher-db--connection))
+    (let ((init-db (not (file-exists-p flasher-db-location))))
+      (make-directory (file-name-directory flasher-db-location) t)
+      (let ((conn (emacsql-sqlite flasher-db-location)))
+        (emacsql conn [:pragma (= foreign_keys ON)])
+        (when-let ((process (emacsql-process conn)))
+          (set-process-query-on-exit-flag process nil))
+        (setq flasher-db--connection conn)
+        (when init-db
+          (flasher-db--init)))))
+  flasher-db--connection)
+
+(defun flasher-db--init ()
+  "Initialize Flasher database."
+  (emacsql-with-transaction flasher-db--connection
+    (pcase-dolist (`(,table ,schema) flasher-db--schemata)
+      (emacsql flasher-db--connection [:create-table $i1 $S2] table schema))))
+
+(defun flasher-db--close ()
+  "Close Flasher database connection."
+  (when (and flasher-db--connection
+             (emacsql-live-p flasher-db--connection))
+    (emacsql-close flasher-db--connection)
+    (setq flasher-db--connection nil)))
+
 (provide 'flasher-db)
 
 ;;; flasher-db.el ends here
