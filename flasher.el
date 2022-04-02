@@ -78,6 +78,30 @@ NIL = unlimited."
   "If non-nil, it is an `flasher-session' object which is the last session.
 This can be used to resume the last session.")
 
+(defgroup flasher-dashboard nil
+  "Flasher dashboard mode."
+  :group 'flasher)
+
+(define-derived-mode flasher-dashboard-mode special-mode "Flasher Dashboard"
+  "This mode is used to display Flasher dashboard."
+  :group 'flasher-dashboard)
+
+(defgroup flasher-learn nil
+  "Flasher learning mode."
+  :group 'flasher)
+
+(define-derived-mode flasher-learn-mode special-mode "Flasher Learn"
+  "This mode is used to learn new flashcards."
+  :group 'flasher-learn)
+
+(defgroup flasher-review nil
+  "Flasher reviewing mode."
+  :group 'flasher)
+
+(define-derived-mode flasher-review-mode special-mode "Flasher Review"
+  "This mode is used to review learned flashcards."
+  :group 'flasher-review)
+
 (provide 'flasher)
 
 ;;; flasher.el ends here
