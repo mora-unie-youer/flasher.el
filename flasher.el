@@ -3,7 +3,7 @@
 ;; Filename: flasher.el
 ;; Description: Simple and extensible flashcard system
 ;; Version: 0.1.0
-;; Package-Requires: ((emacs "26.1") (org "9.4"))
+;; Package-Requires: ((emacs "26.1") (org "9.4") (emacsql "3.0.0") (emacsql-sqlite "1.0.0"))
 ;; Author: Mora Unie Youer <mora_unie_youer@riseup.net>
 ;; Maintainer: Mora Unie Youer <mora_unie_youer@riseup.net>
 ;; Copyright (c) 2022 Mora Unie Youer
@@ -98,6 +98,7 @@ This will return NIL if the point is inside a subheading of a card."
 (provide 'flasher)
 
 (cl-eval-when (load eval)
+  (require 'flasher-db)
   (require 'flasher-session)
   (require 'flasher-dashboard)
   (require 'flasher-learn)
