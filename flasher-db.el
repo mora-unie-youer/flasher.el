@@ -108,6 +108,12 @@ Initializes and stores database and connection."
                      :where (= id $s1)]
                     id))
 
+(defun flasher-db-create-card (id)
+  "Insert card entry with ID in Flasher database."
+  (flasher-db-query [:insert-into cards
+                     :values $v1]
+                    (vector id 1.0 0)))
+
 (provide 'flasher-db)
 
 ;;; flasher-db.el ends here
