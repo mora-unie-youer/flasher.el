@@ -123,6 +123,20 @@ Initializes and stores database and connection."
           :where (= id $s1)]
          card))
 
+(defun flasher-db-get-card-results (id)
+  "Fetch all results of card with ID from Flasher database."
+  (flasher-db-query [:select * :from results
+                     :where (= card-id $s1)]
+                    id))
+
+(defun flasher-db-get-last-card-result (id)
+  "Fetch last result of card with ID from Flasher database."
+  (flasher-db-query [:select * :from results
+                     :where (= card-id $s1)
+                     :order-by (desc date)
+                     :limit 1]
+                    id))
+
 (provide 'flasher-db)
 
 ;;; flasher-db.el ends here
