@@ -7,7 +7,7 @@
 ;; Author: Mora Unie Youer <mora_unie_youer@riseup.net>
 ;; Maintainer: Mora Unie Youer <mora_unie_youer@riseup.net>
 ;; Copyright (c) 2022 Mora Unie Youer
-;; Created: Mar 24 2022
+;; Created: March 24 2022
 ;; URL: https://github.com/mora-unie-youer/flasher
 ;;      https://gitlab.com/mora-unie-youer/flasher
 ;;      https://notabug.org/mora-unie-youer/flasher
@@ -39,6 +39,11 @@
 
 (require 'eieio)
 
+(require 'emacsql)
+(require 'emacsql-sqlite)
+
+(require 'org)
+
 (defgroup flasher nil
   "Manage, learn and review flashcards in Emacs."
   :group 'external)
@@ -65,43 +70,37 @@ NIL = unlimited."
   :group 'flasher
   :type '(choice integer (const nil)))
 
-(defclass flasher-session ()
-  ((results :initform nil
-            :documentation "Stores all results during session."))
-  "Object used for Flasher session."
-  :group 'flasher)
+(defun flasher-scope ()
+  "Generate scope suitable for `org-map-entries'.
+As we have `flasher-directories', we just need to list all files in that
+directories."
+  (let (files)
+    (dolist (directory flasher-directories)
+      (setq files (append files
+                          (directory-files-recursively directory ".org$"))))
+    files))
 
-(defvar flasher-current-session nil
-  "If non-nil, it is an `flasher-session' object which is the current session.")
+(defun flasher-map-entries (func)
+  "Call FUNC at each entry marked with Flasher card tag."
+  (org-map-entries func
+                   (concat "+" flasher-card-tag)
+                   (flasher-scope)))
 
-(defvar flasher-last-session nil
-  "If non-nil, it is an `flasher-session' object which is the last session.
-This can be used to resume the last session.")
-
-(defgroup flasher-dashboard nil
-  "Flasher dashboard mode."
-  :group 'flasher)
-
-(define-derived-mode flasher-dashboard-mode special-mode "Flasher Dashboard"
-  "This mode is used to display Flasher dashboard."
-  :group 'flasher-dashboard)
-
-(defgroup flasher-learn nil
-  "Flasher learning mode."
-  :group 'flasher)
-
-(define-derived-mode flasher-learn-mode special-mode "Flasher Learn"
-  "This mode is used to learn new flashcards."
-  :group 'flasher-learn)
-
-(defgroup flasher-review nil
-  "Flasher reviewing mode."
-  :group 'flasher)
-
-(define-derived-mode flasher-review-mode special-mode "Flasher Review"
-  "This mode is used to review learned flashcards."
-  :group 'flasher-review)
+(defun flasher-entry-p (&optional marker)
+  "Is MARKER, or the point, in a 'flasher card'?
+This will return NIL if the point is inside a subheading of a card."
+  (save-excursion
+    (when marker
+      (switch-to-buffer (marker-buffer marker))
+      (goto-char marker))
+    (member flasher-card-tag (org-get-tags nil t))))
 
 (provide 'flasher)
+
+(cl-eval-when (load eval)
+  (require 'flasher-session)
+  (require 'flasher-dashboard)
+  (require 'flasher-learn)
+  (require 'flasher-review))
 
 ;;; flasher.el ends here
