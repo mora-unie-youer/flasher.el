@@ -37,6 +37,47 @@
 
 ;;; Code:
 
+(require 'eieio)
+
+(defgroup flasher nil
+  "Manage, learn and review flashcards in Emacs."
+  :group 'external)
+
+(defcustom flasher-directories '("~/.flasher")
+  "Directories to search for flashcards."
+  :group 'flasher
+  :type 'string)
+
+(defcustom flasher-card-tag "card"
+  "Tag for marking headlines as flashcards."
+  :group 'flasher
+  :type 'string)
+
+(defcustom flasher-maximum-new-cards-per-session 30
+  "Each Flasher session will have at most this many new cards to learn.
+NIL = unlimited."
+  :group 'flasher
+  :type '(choice integer (const nil)))
+
+(defcustom flasher-maximum-session-duration 30
+  "Maximum duration of Flasher session in minutes.
+NIL = unlimited."
+  :group 'flasher
+  :type '(choice integer (const nil)))
+
+(defclass flasher-session ()
+  ((results :initform nil
+            :documentation "Stores all results during session."))
+  "Object used for Flasher session."
+  :group 'flasher)
+
+(defvar flasher-current-session nil
+  "If non-nil, it is an `flasher-session' object which is the current session.")
+
+(defvar flasher-last-session nil
+  "If non-nil, it is an `flasher-session' object which is the last session.
+This can be used to resume the last session.")
+
 (provide 'flasher)
 
 ;;; flasher.el ends here
