@@ -137,6 +137,17 @@ Initializes and stores database and connection."
                      :limit 1]
                     id))
 
+(defun flasher-db-create-result (result old-card new-card time)
+  "Create new RESULT entry saving diff between OLD-CARD and NEW-CARD at TIME."
+  (pcase-let ((`(,id ,old-difficulty ,old-interval) old-card)
+              (`(,_  ,new-difficulty ,new-interval) new-card))
+    (flasher-db-query [:insert-into results
+                       :values $v1]
+                      (vector id result
+                              old-difficulty new-difficulty
+                              old-interval new-interval
+                              time))))
+
 (provide 'flasher-db)
 
 ;;; flasher-db.el ends here
