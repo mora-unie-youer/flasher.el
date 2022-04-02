@@ -46,7 +46,7 @@
 (defcustom flasher-directories '("~/.flasher")
   "Directories to search for flashcards."
   :group 'flasher
-  :type 'string)
+  :type 'directory)
 
 (defcustom flasher-card-tag "card"
   "Tag for marking headlines as flashcards."
