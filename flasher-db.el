@@ -94,6 +94,10 @@ Initializes and stores database and connection."
     (emacsql-close flasher-db--connection)
     (setq flasher-db--connection nil)))
 
+(defun flasher-db-query (sql &rest args)
+  "Execute SQL query on Flasher database with ARGS."
+  (apply #'emacsql (flasher-db) sql args))
+
 (provide 'flasher-db)
 
 ;;; flasher-db.el ends here
