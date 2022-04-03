@@ -48,6 +48,16 @@
   "Manage, learn and review flashcards in Emacs."
   :group 'external)
 
+(define-widget 'flasher-difficulty 'lazy
+  "Difficulty factor in Flasher card entries."
+  :group 'flasher
+  :type 'float)
+
+(define-widget 'flasher-interval 'lazy
+  "Interval count in Flasher card entries."
+  :group 'flasher
+  :type 'integer)
+
 (defcustom flasher-directories '("~/.flasher")
   "Directories to search for flashcards."
   :group 'flasher
@@ -73,12 +83,13 @@ NIL = unlimited."
 (defcustom flasher-card-initial-difficulty 1.0
   "Initial difficulty that will be set to card."
   :group 'flasher
-  :type 'float)
+  :type 'flasher-difficulty)
 
 (defcustom flasher-card-initial-interval 0
-  "Initial interval count until card review."
+  "Initial interval count until card review.
+You shouldn't change this as it can lead to some bugs, I guess."
   :group 'flasher
-  :type 'integer)
+  :type 'flasher-interval)
 
 (defun flasher-entry-p (&optional marker)
   "Is MARKER, or the point, in a 'flasher card'?
