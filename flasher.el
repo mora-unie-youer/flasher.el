@@ -70,21 +70,15 @@ NIL = unlimited."
   :group 'flasher
   :type '(choice integer (const nil)))
 
-(defun flasher-scope ()
-  "Generate scope suitable for `org-map-entries'.
-As we have `flasher-directories', we just need to list all files in that
-directories."
-  (let (files)
-    (dolist (directory flasher-directories)
-      (setq files (append files
-                          (directory-files-recursively directory ".org$"))))
-    files))
+(defcustom flasher-card-initial-difficulty 1.0
+  "Initial difficulty that will be set to card."
+  :group 'flasher
+  :type 'float)
 
-(defun flasher-map-entries (func)
-  "Call FUNC at each entry marked with Flasher card tag."
-  (org-map-entries func
-                   (concat "+" flasher-card-tag)
-                   (flasher-scope)))
+(defcustom flasher-card-initial-interval 0
+  "Initial interval count until card review."
+  :group 'flasher
+  :type 'integer)
 
 (defun flasher-entry-p (&optional marker)
   "Is MARKER, or the point, in a 'flasher card'?

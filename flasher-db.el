@@ -112,7 +112,8 @@ Initializes and stores database and connection."
   "Insert card entry with ID in Flasher database."
   (flasher-db-query [:insert-into cards
                      :values $v1]
-                    (vector id 1.0 0)))
+                    (vector id flasher-card-initial-difficulty
+                            flasher-card-initial-interval)))
 
 (defun flasher-db-update-card (card)
   "Update CARD entry in Flasher database."
