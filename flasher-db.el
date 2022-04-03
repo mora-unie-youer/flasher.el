@@ -104,9 +104,9 @@ Initializes and stores database and connection."
 
 (defun flasher-db-get-card (id)
   "Fetch card entry with ID from Flasher database."
-  (flasher-db-query [:select * :from cards
-                     :where (= id $s1)]
-                    id))
+  (car (flasher-db-query [:select * :from cards
+                          :where (= id $s1)]
+                         id)))
 
 (defun flasher-db-create-card (id)
   "Insert card entry with ID in Flasher database."
@@ -123,21 +123,41 @@ Initializes and stores database and connection."
           :where (= id $s1)]
          card))
 
-(defun flasher-db-get-card-results (id)
+(defun flasher-db-get-card-results-by-id (id)
   "Fetch all results of card with ID from Flasher database."
   (flasher-db-query [:select * :from results
                      :where (= card-id $s1)]
                     id))
 
-(defun flasher-db-get-last-card-result (id)
-  "Fetch last result of card with ID from Flasher database."
-  (flasher-db-query [:select * :from results
-                     :where (= card-id $s1)
-                     :order-by (desc date)
-                     :limit 1]
-                    id))
+(defun flasher-db-get-card-results (card)
+  "Fetch all results of CARD from Flasher database."
+  (flasher-db-get-card-results-by-id (nth 0 card)))
 
-(defun flasher-db-create-result (result old-card new-card time)
+(defun flasher-db-get-first-card-result-by-id (id)
+  "Fetch first result of card with ID from Flasher database."
+  (car (flasher-db-query [:select * :from results
+                          :where (= card-id $s1)
+                          :order-by (asc date)
+                          :limit 1]
+                         id)))
+
+(defun flasher-db-get-first-card-result (card)
+  "Fetch all results of CARD from Flasher database."
+  (flasher-db-get-first-card-result-by-id (nth 0 card)))
+
+(defun flasher-db-get-last-card-result-by-id (id)
+  "Fetch last result of card with ID from Flasher database."
+  (car (flasher-db-query [:select * :from results
+                          :where (= card-id $s1)
+                          :order-by (desc date)
+                          :limit 1]
+                         id)))
+
+(defun flasher-db-get-last-card-result (card)
+  "Fetch all results of CARD from Flasher database."
+  (flasher-db-get-last-card-result-by-id (nth 0 card)))
+
+(defun flasher-db-create-card-result (result old-card new-card time)
   "Create new RESULT entry saving diff between OLD-CARD and NEW-CARD at TIME."
   (pcase-let ((`(,id ,old-difficulty ,old-interval) old-card)
               (`(,_  ,new-difficulty ,new-interval) new-card))
