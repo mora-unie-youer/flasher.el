@@ -88,6 +88,14 @@ extracted from the CARD."
     (and (> days-overdue 0)
          (> (/ days-overdue interval) flasher-card-interval-overdue-factor))))
 
+(defun flasher-core-card-age (card)
+  "Return number of days elapsed since CARD was first reviewed."
+  (let ((first-result (flasher-db-get-first-card-result card))
+        (time (current-time)))
+    (if (not first-result)
+        0
+      (- (time-to-days time) (time-to-days (nth 6 first-result))))))
+
 (provide 'flasher-core)
 
 ;;; flasher-core.el ends here
