@@ -45,18 +45,18 @@
       (setq files (append files (directory-files-recursively dir ".org$"))))
     files))
 
-(defun flasher-core-map-entries (func)
+(defun flasher-core-map-cards (func)
   "Call FUNC at each entry marked with Flasher card tag."
   (let ((org-tags-exclude-from-inheritance (list flasher-card-tag)))
     (org-map-entries func (concat "+" flasher-card-tag) (flasher-core-scope))))
 
 (defun flasher-core-get-card-id ()
-  "Function that can be mapped in `flasher-core-map-entries' to get card IDs."
+  "Function that can be mapped in `flasher-core-map-entries' to get card ID."
   (org-id-get-create))
 
 (defun flasher-core-sync-cards ()
   "Add all new cards to Flasher database."
-  (dolist (id (flasher-core-map-entries #'flasher-core-get-card-id))
+  (dolist (id (flasher-core-map-cards #'flasher-core-get-card-id))
     (let ((card (flasher-db-get-card id)))
       (unless card (flasher-db-create-card id)))))
 
