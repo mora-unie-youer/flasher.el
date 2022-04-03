@@ -57,7 +57,12 @@
         (inhibit-read-only t))
     (with-current-buffer buf
       (erase-buffer)
-      (insert "Flasher dashboard :P\n"))))
+      (insert "Flasher dashboard :P\n")
+      (insert "Cards:\n")
+      (dolist (card (flasher-db-get-all-cards))
+        (insert (apply #'format " - %s - %f - %d -> Results:\n" card))
+        (dolist (result (flasher-db-get-card-results (car card)))
+          (insert (apply #'format "   - %s - %d - %f - %f - %d - %d - %s\n" result)))))))
 
 ;;;###autoload
 (defun flasher-dashboard ()
