@@ -60,6 +60,34 @@
     (let ((card (flasher-db-get-card id)))
       (unless card (flasher-db-create-card id)))))
 
+(defun flasher-core-card-due (card)
+  "Return TIME, CARD is scheduled to."
+  (let ((last-result (flasher-db-get-last-card-result card)))
+    (if (not last-result)
+        (current-time)
+      (let ((interval-time (days-to-time (nth 5 last-result)))
+            (result-date (nth 6 last-result)))
+        (time-add result-date interval-time)))))
+
+(defun flasher-core-card-overdue (card)
+  "Return:
+- 0 if CARD is new, or if it scheduled for review today.
+- A negative integer - CARD is scheduled that many days in the future.
+- A positive integer - CARD is scheduled that many days in the past."
+  (let ((due (flasher-core-card-due card))
+        (time (current-time)))
+    (- (time-to-days time) (time-to-days due))))
+
+(defun flasher-core-card-overdue-p (card &optional days-overdue)
+  "Return non-nil if CARD should be considered 'overdue'.
+CARD is scheduled DAYS-OVERDUE days in the past. If argument is not given it is
+extracted from the CARD."
+  (unless days-overdue
+    (setq days-overdue (flasher-core-card-overdue card)))
+  (let ((interval (nth 2 card)))
+    (and (> days-overdue 0)
+         (> (/ days-overdue interval) flasher-card-interval-overdue-factor))))
+
 (provide 'flasher-core)
 
 ;;; flasher-core.el ends here
