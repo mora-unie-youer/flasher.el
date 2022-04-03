@@ -93,6 +93,7 @@ This will return NIL if the point is inside a subheading of a card."
 
 (cl-eval-when (load eval)
   (require 'flasher-db)
+  (require 'flasher-core)
   (require 'flasher-session)
   (require 'flasher-dashboard)
   (require 'flasher-learn)
