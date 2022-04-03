@@ -91,6 +91,18 @@ You shouldn't change this as it can lead to some bugs, I guess."
   :group 'flasher
   :type 'flasher-interval)
 
+(defcustom flasher-card-intervals-before-old 10
+  "When item's interval is above this value, it's no longer considered 'young'."
+  :group 'flasher
+  :type 'flasher-interval)
+
+(defcustom flasher-card-interval-overdue-factor 0.2
+  "Multiply factor to check if item is overdue.
+Item is considered overdue, when its scheduled review date is more than
+FLASHER-CARD-INTERVAL-OVERDUE-FACTOR * LAST-INTERVAL days in the past."
+  :group 'flasher
+  :type 'float)
+
 (defun flasher-entry-p (&optional marker)
   "Is MARKER, or the point, in a 'flasher card'?
 This will return NIL if the point is inside a subheading of a card."
