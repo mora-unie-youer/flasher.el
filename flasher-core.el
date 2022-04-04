@@ -96,8 +96,8 @@ extracted from the CARD."
         0
       (- (time-to-days time) (time-to-days (nth 6 first-result))))))
 
-(defun flasher-core-card-status (id)
-  "Return a list (STATUS DUE AGE) of card with ID.
+(defun flasher-core-card-status (card)
+  "Return a list (STATUS DUE AGE) of CARD.
 DUE is the number of days overdue, zero being due today, -1 being scheduled
 1 day in the future.
 AGE is the number of days elapsed since the item was learned for the first time.
@@ -107,10 +107,9 @@ STATUS is one of the following values:
 - :overdue
 - :young
 - :old"
-  (let* ((card (flasher-db-get-card id))
-         (interval (nth 2 card))
-         (due (flasher-core-card-overdue card))
-         (age (flasher-core-card-age card)))
+  (let ((interval (nth 2 card))
+        (due (flasher-core-card-overdue card))
+        (age (flasher-core-card-age card)))
     (list (cond
            ((= age 0) :new)
            ((= interval 0) :failed)
@@ -118,6 +117,11 @@ STATUS is one of the following values:
            ((<= interval flasher-card-intervals-before-old) :young)
            (t :old))
           due age)))
+
+(defun flasher-core-card-status-by-id (id)
+  "Return a list (STATUS DUE AGE) of card with ID.
+Look at function `flasher-core-card-status'"
+  (flasher-core-card-status (flasher-db-get-card id)))
 
 (provide 'flasher-core)
 
