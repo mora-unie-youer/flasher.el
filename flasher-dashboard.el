@@ -57,12 +57,23 @@
         (inhibit-read-only t))
     (with-current-buffer buf
       (erase-buffer)
-      (insert "Flasher dashboard :P\n")
-      (insert "Cards:\n")
-      (dolist (card (flasher-db-get-all-cards))
-        (insert (apply #'format " - %s - %f - %d -> Results:\n" card))
-        (dolist (result (flasher-db-get-card-results (car card)))
-          (insert (apply #'format "   - %s - %d - %f - %f - %d - %d - %s\n" result)))))))
+      (insert "Flasher dashboard\n\n")
+      (let ((total 0) (new 0) (failed 0) (overdue 0) (young 0) (old 0))
+        (insert "Cards:\n")
+        (dolist (card (flasher-db-get-all-cards))
+          (cl-incf total)
+          (let* ((card-status (flasher-core-card-status card))
+                 (status (nth 0 card-status)))
+            (cl-case status
+              (:new     (cl-incf new))
+              (:failed  (cl-incf failed))
+              (:overdue (cl-incf overdue))
+              (:young   (cl-incf young))
+              (:old     (cl-incf old)))
+            (insert (apply #'format "\tCard %s (%s %d %d)\n"
+                           (nth 0 card) card-status))))
+        (insert (format "Statistics: %d total, %d new, %d failed, %d overdue, %d young and %d old cards\n"
+                        total new failed overdue young old))))))
 
 ;;;###autoload
 (defun flasher-dashboard ()
