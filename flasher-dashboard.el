@@ -57,7 +57,7 @@
         (inhibit-read-only t))
     (with-current-buffer buf
       (erase-buffer)
-      (insert "Flasher dashboard\n\n")
+      (insert (propertize "Flasher Dashboard\n\n" 'face 'org-level-1))
       (let ((total 0) (new 0) (failed 0) (overdue 0) (young 0) (old 0))
         (insert "Cards:\n")
         (dolist (card (flasher-db-get-all-cards))
