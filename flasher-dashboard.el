@@ -61,7 +61,7 @@
       (insert "Cards:\n")
       (dolist (card (flasher-db-query [:select * :from cards]))
         (insert (format "\tCard -> %s %s\n"
-                        card (flasher-card-status (car card))))))))
+                        card (flasher-card--status (car card))))))))
 
 ;;;###autoload
 (defun flasher-dashboard ()

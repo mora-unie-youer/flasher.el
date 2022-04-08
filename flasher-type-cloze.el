@@ -47,7 +47,7 @@
   (interactive)
   (flasher-card-init "cloze"))
 
-(defun flasher-type-cloze-var-init (&optional id)
+(defun flasher-type-cloze-variant-init (&optional id)
   "Initialize 'cloze card variants for card with ID."
   id)
 
@@ -62,7 +62,7 @@
 
 (flasher-card-register-type
  'cloze
- 'flasher-type-cloze-var-init
+ 'flasher-type-cloze-variant-init
  'flasher-type-cloze-setup
  'flasher-type-cloze-flip
  'flasher-type-cloze-update)
