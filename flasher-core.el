@@ -45,6 +45,11 @@
       (setq files (append files (directory-files-recursively dir "\\.org$"))))
     files))
 
+(defun flasher-core--map-cards (func)
+  "Call FUNC at each entry marked with Flasher card tag."
+  (let ((org-tags-exclude-from-inheritance (list flasher-card-tag)))
+    (org-map-entries func (concat "+" flasher-card-tag) (flasher-core--scope))))
+
 (defun flasher-core--add-tag (tag)
   "Add TAG to the heading at point."
   (org-set-tags

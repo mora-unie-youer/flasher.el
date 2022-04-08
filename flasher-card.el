@@ -133,10 +133,30 @@ UPDATE-FN is function to update a card when it's contents have changed."
     (org-back-to-heading)
     (org-set-property flasher-card-type-property type)
     (flasher-core--add-tag flasher-card-tag)
-    (let ((id (org-id-get-create)))
-      (flasher-db-query [:insert-into cards
-                         :values $v1]
-                        (vector id type flasher-card-initial-difficulty 0)))))
+    (org-id-get-create)
+    (flasher-card-update)))
+
+(defun flasher-card-update ()
+  "Update card in Flasher."
+  (let* ((id (org-id-get))
+         (type (org-entry-get (point) flasher-card-type-property))
+         (card (car (flasher-db-query [:select * :from cards :where (= id $s1)] id))))
+    (cond
+     ((null id) (error "%s:%d: No card ID" buffer-file-name (line-number-at-pos)))
+     ((null type) (error "%s:%d: No card type" buffer-file-name (line-number-at-pos)))
+     ((null card) (flasher-db-query [:insert-into cards :values $v1]
+                                    (vector id type flasher-card-initial-difficulty 0)))
+     ((not (string= type (cl-second card)))
+      (flasher-db-query [:update cards
+                         :set [(= type $s2) (= difficulty $s3) (= interval $s4)]
+                         :where (= id $s1)]
+                        id type flasher-card-initial-difficulty 0)
+      (flasher-db-query [:delete-from results :where (= card-id $s1)] id)))))
+
+(defun flasher-card-sync ()
+  "Add all new cards to Flasher."
+  (interactive)
+  (flasher-core--map-cards #'flasher-card-update))
 
 (provide 'flasher-card)
 
