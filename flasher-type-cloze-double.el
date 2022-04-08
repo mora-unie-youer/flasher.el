@@ -48,7 +48,8 @@
   (flasher-card-init "cloze-double"))
 
 (defun flasher-type-cloze-double-var-init (&optional id)
-  "Initialize 'cloze-double card variants for card with ID.")
+  "Initialize 'cloze-double card variants for card with ID."
+  id)
 
 (defun flasher-type-cloze-double-setup ()
   "Prepare a 'cloze-double card for review.")
