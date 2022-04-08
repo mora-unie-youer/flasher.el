@@ -70,8 +70,7 @@
               (:overdue (cl-incf overdue))
               (:young   (cl-incf young))
               (:old     (cl-incf old)))
-            (insert (apply #'format "\tCard %s (%s %d %d)\n"
-                           (nth 0 card) card-status))))
+            (insert (format "\tCard %s %s\n" card card-status))))
         (insert (format "Statistics: %d total, %d new, %d failed, %d overdue, %d young and %d old cards\n"
                         total new failed overdue young old))))))
 
