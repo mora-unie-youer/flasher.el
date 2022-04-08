@@ -53,6 +53,7 @@
             (difficulty :not-null)
             (interval   :not-null)])
     (results ([card-id
+               (field          :not-null)
                (result         :not-null)
                (old-difficulty :not-null)
                (new-difficulty :not-null)
