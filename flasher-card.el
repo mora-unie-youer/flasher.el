@@ -154,6 +154,18 @@ UPDATE-FN is function to update a card when it's contents have changed."
   (interactive)
   (flasher-core--map-cards #'flasher-card-update))
 
+(defun flasher-card-first-result (&optional id)
+  "Return first result of card at point or with ID."
+  (unless id (setq id (org-id-get)))
+  (car (flasher-db-query [:select * :from results :where (= card-id $s1)
+                          :order-by (asc date) :limit 1] id)))
+
+(defun flasher-card-last-result (&optional id)
+  "Return last result of card at point or with ID."
+  (unless id (setq id (org-id-get)))
+  (car (flasher-db-query [:select * :from results :where (= card-id $s1)
+                          :order-by (desc date) :limit 1] id)))
+
 (provide 'flasher-card)
 
 ;;; flasher-card.el ends here
