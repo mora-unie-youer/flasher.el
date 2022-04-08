@@ -1,6 +1,6 @@
 ;;; flasher-session.el --- Flasher session API -*- lexical-binding: t; -*-
 ;;
-;; Filename: flasher-core.el
+;; Filename: flasher-session.el
 ;; Description: Flasher session API
 ;; Version: 0.1.0
 ;; Package-Requires: ((emacs "26.1") (org "9.4") (emacsql "3.0.0") (emacsql-sqlite "1.0.0"))
