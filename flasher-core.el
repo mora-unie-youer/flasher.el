@@ -38,90 +38,24 @@
 ;;; Code:
 (require 'flasher)
 
-(defun flasher-core-scope ()
+(defun flasher-core--scope ()
   "Convert `flasher-directories' to scope suitable for `org-map-entries'."
   (let (files)
     (dolist (dir flasher-directories)
       (setq files (append files (directory-files-recursively dir "\\.org$"))))
     files))
 
-(defun flasher-core-map-cards (func)
-  "Call FUNC at each entry marked with Flasher card tag."
-  (let ((org-tags-exclude-from-inheritance (list flasher-card-tag)))
-    (org-map-entries func (concat "+" flasher-card-tag) (flasher-core-scope))))
+(defun flasher-core--add-tag (tag)
+  "Add TAG to the heading at point."
+  (org-set-tags
+   (cl-remove-duplicates
+    (cons tag (org-get-tags nil 'local))
+    :test #'string=)))
 
-(defun flasher-core-get-card-id ()
-  "Function that can be mapped in `flasher-core-map-entries' to get card ID."
-  (org-id-get-create))
-
-(defun flasher-core-sync-cards ()
-  "Add all new cards to Flasher database."
-  (dolist (id (flasher-core-map-cards #'flasher-core-get-card-id))
-    (let ((card (flasher-db-get-card id)))
-      (unless card (flasher-db-create-card id)))))
-
-(defun flasher-core-card-due (card)
-  "Return TIME, CARD is scheduled to."
-  (let ((last-result (flasher-db-get-last-card-result card)))
-    (if (not last-result)
-        (current-time)
-      (let ((interval-time (days-to-time (nth 5 last-result)))
-            (result-date (nth 6 last-result)))
-        (time-add result-date interval-time)))))
-
-(defun flasher-core-card-overdue (card)
-  "Return:
-- 0 if CARD is new, or if it scheduled for review today.
-- A negative integer - CARD is scheduled that many days in the future.
-- A positive integer - CARD is scheduled that many days in the past."
-  (let ((due (flasher-core-card-due card))
-        (time (current-time)))
-    (- (time-to-days time) (time-to-days due))))
-
-(defun flasher-core-card-overdue-p (card &optional days-overdue)
-  "Return non-nil if CARD should be considered 'overdue'.
-CARD is scheduled DAYS-OVERDUE days in the past. If argument is not given it is
-extracted from the CARD."
-  (unless days-overdue
-    (setq days-overdue (flasher-core-card-overdue card)))
-  (let ((interval (nth 2 card)))
-    (and (> days-overdue 0)
-         (> (/ days-overdue interval) flasher-card-interval-overdue-factor))))
-
-(defun flasher-core-card-age (card)
-  "Return number of days elapsed since CARD was first reviewed."
-  (let ((first-result (flasher-db-get-first-card-result card))
-        (time (current-time)))
-    (if (not first-result)
-        0
-      (- (time-to-days time) (time-to-days (nth 6 first-result))))))
-
-(defun flasher-core-card-status (card)
-  "Return a list (STATUS DUE AGE) of CARD.
-DUE is the number of days overdue, zero being due today, -1 being scheduled
-1 day in the future.
-AGE is the number of days elapsed since the item was learned for the first time.
-STATUS is one of the following values:
-- :new
-- :failed
-- :overdue
-- :young
-- :old"
-  (let ((interval (nth 2 card))
-        (due (flasher-core-card-overdue card))
-        (age (flasher-core-card-age card)))
-    (list (cond
-           ((= age 0) :new)
-           ((= interval 0) :failed)
-           ((flasher-core-card-overdue-p card due) :overdue)
-           ((<= interval flasher-card-intervals-before-old) :young)
-           (t :old))
-          due age)))
-
-(defun flasher-core-card-status-by-id (id)
-  "Return a list (STATUS DUE AGE) of card with ID.
-Look at function `flasher-core-card-status'"
-  (flasher-core-card-status (flasher-db-get-card id)))
+(defun flasher-core--remove-tag (tag)
+  "Add TAG to the heading at point."
+  (org-set-tags
+   (remove tag (org-get-tags nil 'local))))
 
 (provide 'flasher-core)
 

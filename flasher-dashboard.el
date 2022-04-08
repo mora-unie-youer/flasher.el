@@ -58,21 +58,9 @@
     (with-current-buffer buf
       (erase-buffer)
       (insert (propertize "Flasher Dashboard\n\n" 'face 'org-level-1))
-      (let ((total 0) (new 0) (failed 0) (overdue 0) (young 0) (old 0))
-        (insert "Cards:\n")
-        (dolist (card (flasher-db-get-all-cards))
-          (cl-incf total)
-          (let* ((card-status (flasher-core-card-status card))
-                 (status (nth 0 card-status)))
-            (cl-case status
-              (:new     (cl-incf new))
-              (:failed  (cl-incf failed))
-              (:overdue (cl-incf overdue))
-              (:young   (cl-incf young))
-              (:old     (cl-incf old)))
-            (insert (format "\tCard %s %s\n" card card-status))))
-        (insert (format "Statistics: %d total, %d new, %d failed, %d overdue, %d young and %d old cards\n"
-                        total new failed overdue young old))))))
+      (insert "Cards:\n")
+      (dolist (card (flasher-db-get-all-cards))
+        (insert (format "\tCard -> %s\n" card))))))
 
 ;;;###autoload
 (defun flasher-dashboard ()
