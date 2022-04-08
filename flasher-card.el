@@ -88,6 +88,46 @@ This will return NIL if the point is inside a subheading of a card."
       (goto-char marker))
     (member flasher-card-tag (org-get-tags nil t))))
 
+(defvar flasher-card-types '()
+  "Alist for registering card types.
+Entries should be lists (name setup-fn flip-fn update-fn).
+Use `flasher-card-register-type' for adding card types.")
+
+(defcustom flasher-card-type-property "CARD_TYPE"
+  "Property used to store card type."
+  :group 'flasher-card
+  :type 'string)
+
+(defun flasher-card-type (type)
+  "Return card TYPE. If TYPE doesn't exist, printing error."
+  (if-let ((card-type (alist-get type flasher-card-types nil nil #'string=)))
+      card-type
+    (error "Card type '%s' doesn't exist" type)))
+
+(defun flasher-card-type-p (type)
+  "Return non-nil if TYPE exists."
+  (not (null (flasher-card-type type))))
+
+(defun flasher-card--type-setup-fn (type)
+  "Get the setup function for a card of TYPE."
+  (cl-first (flasher-card-type type)))
+
+(defun flasher-card--type-flip-fn (type)
+  "Get the flip function for a card of TYPE."
+  (cl-second (flasher-card-type type)))
+
+(defun flasher-card--type-update-fn (type)
+  "Get the update function for a card of TYPE."
+  (cl-third (flasher-card-type type)))
+
+(defun flasher-card-register-type (name setup-fn flip-fn update-fn)
+  "Register a new card type.
+NAME is name of the new type.
+SETUP-FN is function for initializing a new card of this type.
+FLIP-FN is function for flipping a card during review.
+UPDATE-FN is function to update a card when it's contents have changed."
+  (push (list name setup-fn flip-fn update-fn) flasher-card-types))
+
 (provide 'flasher-card)
 
 ;;; flasher-card.el ends here
