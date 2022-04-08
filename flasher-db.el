@@ -48,17 +48,13 @@
   :type 'file)
 
 (defconst flasher-db--schemata
-  '((cards [(id         :primary-key)
-            (type       :not-null)
-            (difficulty :not-null)
-            (interval   :not-null)])
+  '((cards [(id   :primary-key)
+            (type :not-null)])
     (results ([card-id
-               (field          :not-null)
-               (result         :not-null)
-               (old-difficulty :not-null)
-               (new-difficulty :not-null)
-               (old-interval   :not-null)
-               (new-interval   :not-null)
+               (field      :not-null)
+               (result     :not-null)
+               (difficulty :not-null)
+               (interval   :not-null)
                date]
               (:primary-key [card-id date])
               (:foreign-key [card-id] :references cards [id] :on-delete :cascade))))

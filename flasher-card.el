@@ -144,13 +144,9 @@ UPDATE-FN is function to update a card when it's contents have changed."
     (cond
      ((null id) (error "%s:%d: No card ID" buffer-file-name (line-number-at-pos)))
      ((null type) (error "%s:%d: No card type" buffer-file-name (line-number-at-pos)))
-     ((null card) (flasher-db-query [:insert-into cards :values $v1]
-                                    (vector id type flasher-card-initial-difficulty 0)))
+     ((null card) (flasher-db-query [:insert-into cards :values $v1] (vector id type)))
      ((not (string= type (cl-second card)))
-      (flasher-db-query [:update cards
-                         :set [(= type $s2) (= difficulty $s3) (= interval $s4)]
-                         :where (= id $s1)]
-                        id type flasher-card-initial-difficulty 0)
+      (flasher-db-query [:update cards :set [(= type $s2)] :where (= id $s1)] id type)
       (flasher-db-query [:delete-from results :where (= card-id $s1)] id)))))
 
 (defun flasher-card-sync ()
