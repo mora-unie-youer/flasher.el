@@ -60,7 +60,8 @@
       (insert (propertize "Flasher Dashboard\n\n" 'face 'org-level-1))
       (insert "Cards:\n")
       (dolist (card (flasher-db-query [:select * :from cards]))
-        (insert (format "\tCard -> %s\n" card))))))
+        (insert (format "\tCard -> %s %s\n"
+                        card (flasher-card-status (car card))))))))
 
 ;;;###autoload
 (defun flasher-dashboard ()
