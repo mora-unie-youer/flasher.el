@@ -58,7 +58,7 @@
   :type 'integer)
 
 (defcustom flasher-card-initial-interval 1
-  "Initial interval count for :new card."
+  "Initial interval count for learned card."
   :group 'flasher-card
   :type 'flasher-card-interval)
 
@@ -132,7 +132,11 @@ UPDATE-FN is function to update a card when it's contents have changed."
   (when (flasher-card-type-p type)
     (org-back-to-heading)
     (org-set-property flasher-card-type-property type)
-    (org-id-get-create)))
+    (flasher-core--add-tag flasher-card-tag)
+    (let ((id (org-id-get-create)))
+      (flasher-db-query [:insert-into cards
+                         :values $v1]
+                        (vector id type flasher-card-initial-difficulty 0)))))
 
 (provide 'flasher-card)
 
