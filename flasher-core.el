@@ -42,7 +42,7 @@
   "Convert `flasher-directories' to scope suitable for `org-map-entries'."
   (let (files)
     (dolist (dir flasher-directories)
-      (setq files (append files (directory-files-recursively dir ".org$"))))
+      (setq files (append files (directory-files-recursively dir "\\.org$"))))
     files))
 
 (defun flasher-core-map-cards (func)
