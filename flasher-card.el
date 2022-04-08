@@ -166,6 +166,14 @@ UPDATE-FN is function to update a card when it's contents have changed."
   (car (flasher-db-query [:select * :from results :where (= card-id $s1)
                           :order-by (desc date) :limit 1] id)))
 
+(defun flasher-card-age (&optional id first-result)
+  "Return number of days elapsed since card at point or with ID was first reviewed.
+FIRST-RESULT can be specified to reduce number of database calls."
+  (unless id (setq id (org-id-get)))
+  (unless first-result (setq first-result (flasher-card-first-result id)))
+  (cond ((null first-result) 0)
+        (t (- (time-to-days (current-time)) (time-to-days (cl-sixth first-result))))))
+
 (provide 'flasher-card)
 
 ;;; flasher-card.el ends here
