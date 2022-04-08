@@ -61,6 +61,7 @@
                (interval   :not-null)
                (date       :not-null)]
               (:primary-key [card variant date])
+              (:foreign-key [card] :references card [id] :on-delete :cascade)
               (:foreign-key [variant] :references variants [id] :on-delete :cascade))))
   "Flasher database structure.")
 
