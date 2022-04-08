@@ -44,7 +44,8 @@
 
 (defun flasher-type-cloze-init ()
   "Initialize 'cloze card."
-  (interactive))
+  (interactive)
+  (flasher-card-init "cloze"))
 
 (defun flasher-type-cloze-setup ()
   "Prepare a 'cloze card for review.")

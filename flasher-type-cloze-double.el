@@ -44,7 +44,8 @@
 
 (defun flasher-type-cloze-double-init ()
   "Initialize 'cloze-double card."
-  (interactive))
+  (interactive)
+  (flasher-card-init "cloze-double"))
 
 (defun flasher-type-cloze-double-setup ()
   "Prepare a 'cloze-double card for review.")

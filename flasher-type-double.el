@@ -44,7 +44,8 @@
 
 (defun flasher-type-double-init ()
   "Initialize 'double card."
-  (interactive))
+  (interactive)
+  (flasher-card-init "double"))
 
 (defun flasher-type-double-setup ()
   "Prepare a 'double card for review.")

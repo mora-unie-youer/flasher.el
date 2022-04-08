@@ -1,7 +1,7 @@
-;;; flasher-type-typed.el --- Flasher 'typed card -*- lexical-binding: t; -*-
+;;; flasher-type-typed-double.el --- Flasher 'typed-double card -*- lexical-binding: t; -*-
 ;;
-;; Filename: flasher-type-typed.el
-;; Description: Flasher 'typed card
+;; Filename: flasher-type-typed-double.el
+;; Description: Flasher 'typed-double card
 ;; Version: 0.1.0
 ;; Package-Requires: ((emacs "26.1") (org "9.4") (emacsql "3.0.0") (emacsql-sqlite "1.0.0"))
 ;; Author: Mora Unie Youer <mora_unie_youer@riseup.net>
@@ -15,7 +15,7 @@
 
 ;;; Commentary:
 ;;
-;; Flasher 'typed card
+;; Flasher 'typed-double card
 
 ;; Permission is hereby granted, free of charge, to any person obtaining a copy
 ;; of this software and associated documentation files (the "Software"), to deal
@@ -38,30 +38,30 @@
 ;;; Code:
 (require 'flasher)
 
-(defgroup flasher-type-typed nil
-  "Flasher 'typed card."
+(defgroup flasher-type-typed-double nil
+  "Flasher 'typed-double card."
   :group 'flasher)
 
-(defun flasher-type-typed-init ()
-  "Initialize 'typed card."
+(defun flasher-type-typed-double-init ()
+  "Initialize 'typed-double card."
   (interactive)
-  (flasher-card-init "typed"))
+  (flasher-card-init "typed-double"))
 
-(defun flasher-type-typed-setup ()
-  "Prepare a 'typed card for review.")
+(defun flasher-type-typed-double-setup ()
+  "Prepare a 'typed-double card for review.")
 
-(defun flasher-type-typed-flip ()
-  "Flip 'typed card.")
+(defun flasher-type-typed-double-flip ()
+  "Flip 'typed-double card.")
 
-(defun flasher-type-typed-update ()
-  "Update review data for 'typed card.")
+(defun flasher-type-typed-double-update ()
+  "Update review data for 'typed-double card.")
 
 (flasher-card-register-type
- 'typed
- 'flasher-type-typed-setup
- 'flasher-type-typed-flip
- 'flasher-type-typed-update)
+ 'typed-double
+ 'flasher-type-typed-double-setup
+ 'flasher-type-typed-double-flip
+ 'flasher-type-typed-double-update)
 
-(provide 'flasher-type-typed)
+(provide 'flasher-type-typed-double)
 
-;;; flasher-type-typed.el ends here
+;;; flasher-type-typed-double.el ends here

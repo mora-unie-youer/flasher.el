@@ -44,7 +44,8 @@
 
 (defun flasher-type-normal-init ()
   "Initialize 'normal card."
-  (interactive))
+  (interactive)
+  (flasher-card-init "normal"))
 
 (defun flasher-type-normal-setup ()
   "Prepare a 'normal card for review.")
