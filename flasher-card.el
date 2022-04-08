@@ -79,14 +79,6 @@ FLASHER-CARD-INTERVAL-OVERDUE-FACTOR * LAST-INTERVAL days in the past."
   :group 'flasher-card
   :type 'float)
 
-(defun flasher-card-p (&optional marker)
-  "Is MARKER, or the point, in a 'flasher card'?
-This will return NIL if the point is inside a subheading of a card."
-  (save-excursion
-    (when marker
-      (switch-to-buffer (marker-buffer marker))
-      (goto-char marker))
-    (member flasher-card-tag (org-get-tags nil t))))
 
 (defvar flasher-card-types '()
   "Alist for registering card types.
@@ -127,6 +119,20 @@ SETUP-FN is function for initializing a new card of this type.
 FLIP-FN is function for flipping a card during review.
 UPDATE-FN is function to update a card when it's contents have changed."
   (push (list name setup-fn flip-fn update-fn) flasher-card-types))
+
+
+(defun flasher-card-p ()
+  "Check if current heading is a card."
+  (member flasher-card-tag (org-get-tags nil 'local)))
+
+(defun flasher-card-init (type)
+  "Initialize the card with TYPE."
+  (if (flasher-card-p)
+      (error "Heading is already a card"))
+  (when (flasher-card-type-p type)
+    (org-back-to-heading)
+    (org-set-property flasher-card-type-property type)
+    (org-id-get-create)))
 
 (provide 'flasher-card)
 
