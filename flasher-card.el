@@ -174,6 +174,35 @@ FIRST-RESULT can be specified to reduce number of database calls."
   (cond ((null first-result) 0)
         (t (- (time-to-days (current-time)) (time-to-days (cl-sixth first-result))))))
 
+(defun flasher-card-due (&optional id last-result)
+  "Return TIME, card at point or with ID is scheduled to.
+LAST-RESULT can be specified to reduce number of database calls."
+  (unless id (setq id (org-id-get)))
+  (unless last-result (setq last-result (flasher-card-last-result id)))
+  (cond ((null last-result) (current-time))
+        (t (time-add (cl-sixth last-result) (cl-fifth last-result)))))
+
+(defun flasher-card-overdue (&optional id last-result)
+  "Return for CARD at point or with ID:
+- 0 if CARD is new, or if it scheduled for review today.
+- A negative integer - CARD is scheduled that many days in the future.
+- A positive integer - CARD is scheduled that many days in the past.
+LAST-RESULT can be specified to reduce number of database calls."
+  (unless last-result (setq last-result (flasher-card-last-result id)))
+  (- (time-to-days (current-time)) (time-to-days (flasher-card-due id last-result))))
+
+(defun flasher-card-overdue-p (&optional id days-overdue last-result)
+  "Return non-nil if CARD at point or with ID should be considered 'overdue'.
+CARD is scheduled DAYS-OVERDUE days in the past. If argument is not given it is
+extracted from the CARD.
+LAST-RESULT can be specified to reduce number of database calls."
+  (unless id (setq id (org-id-get)))
+  (unless last-result (setq last-result (flasher-card-last-result id)))
+  (unless days-overdue (setq days-overdue (flasher-card-overdue id last-result)))
+  (let ((interval (cl-fifth last-result)))
+    (and (> days-overdue 0)
+         (> (/ days-overdue interval) flasher-card-interval-overdue-factor))))
+
 (provide 'flasher-card)
 
 ;;; flasher-card.el ends here
