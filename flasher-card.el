@@ -203,8 +203,8 @@ LAST-RESULT can be specified to reduce number of database calls."
     (and (> days-overdue 0)
          (> (/ days-overdue interval) flasher-card-interval-overdue-factor))))
 
-(defun flasher-card-status (&optional id)
-"Fetch status list (STATUS DUE AGE) of card at point or with ID.
+(defun flasher-card-status (&optional id first-result last-result)
+  "Fetch status list (STATUS DUE AGE) of card at point or with ID.
 DUE is the number of days overdue, zero being due today, -1 being scheduled
 1 day in the future.
 AGE is the number of days elapsed since the item was learned for the first time.
@@ -213,19 +213,20 @@ STATUS is one of the following values:
 - :failed
 - :overdue
 - :young
-- :old"
-(unless id (setq id (org-id-get)))
-(let* ((first-result (flasher-card-first-result id))
-       (last-result (flasher-card-last-result id))
-       (interval (if last-result (cl-fifth last-result) 0))
-       (age (flasher-card-age id first-result))
-       (due (flasher-card-overdue id last-result)))
-  (list (cond ((= age 0) :new)
-              ((= interval 0) :failed)
-              ((flasher-card-overdue-p id due last-result) :overdue)
-              ((<= interval flasher-card-intervals-before-old) :young)
-              (t :old))
-        due age)))
+- :old
+FIRST-RESULT, LAST-RESULT can be specified to reduce number of database calls."
+  (unless id (setq id (org-id-get)))
+  (unless first-result (setq first-result (flasher-card-first-result id)))
+  (unless last-result (setq first-result (flasher-card-last-result id)))
+  (let ((interval (if last-result (cl-fifth last-result) 0))
+        (age (flasher-card-age id first-result))
+        (due (flasher-card-overdue id last-result)))
+    (list (cond ((= age 0) :new)
+                ((= interval 0) :failed)
+                ((flasher-card-overdue-p id due last-result) :overdue)
+                ((<= interval flasher-card-intervals-before-old) :young)
+                (t :old))
+          due age)))
 
 (provide 'flasher-card)
 
