@@ -68,18 +68,6 @@
   :group 'flasher
   :type 'string)
 
-(defcustom flasher-maximum-new-cards-per-session 30
-  "Each Flasher session will have at most this many new cards to learn.
-NIL = unlimited."
-  :group 'flasher
-  :type '(choice integer (const nil)))
-
-(defcustom flasher-maximum-session-duration 30
-  "Maximum duration of Flasher session in minutes.
-NIL = unlimited."
-  :group 'flasher
-  :type '(choice integer (const nil)))
-
 (defcustom flasher-card-initial-difficulty 1.0
   "Initial difficulty that will be set to card."
   :group 'flasher

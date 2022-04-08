@@ -42,6 +42,18 @@
   "Flasher session API."
   :group 'flasher)
 
+(defcustom flasher-session-maximum-new-cards-count 30
+  "Each non-custom Flasher session will have at most this many cards to learn.
+NIL = unlimited."
+  :group 'flasher-session
+  :type '(choice integer (const nil)))
+
+(defcustom flasher-session-maximum-review-cards-count 100
+  "Each non-custom Flasher session will have at most this many cards to review.
+NIL = unlimited."
+  :group 'flasher-session
+  :type '(choice integer (const nil)))
+
 (defclass flasher-session ()
   ()
   "Object used for Flasher session."
