@@ -50,14 +50,18 @@
 (defconst flasher-db--schemata
   '((cards [(id   :primary-key)
             (type :not-null)])
-    (results ([card-id
-               (field      :not-null)
+    (variants ([(card :not-null)
+                (name :not-null)]
+               (:primary-key [card name])
+               (:foreign-key [card] :references cards [id] :on-delete :cascade)))
+    (results ([(card       :not-null)
+               (variant    :not-null)
                (result     :not-null)
                (difficulty :not-null)
                (interval   :not-null)
-               date]
-              (:primary-key [card-id date])
-              (:foreign-key [card-id] :references cards [id] :on-delete :cascade))))
+               (date       :not-null)]
+              (:primary-key [card variant date])
+              (:foreign-key [variant] :references variants [id] :on-delete :cascade))))
   "Flasher database structure.")
 
 (defvar flasher-db--connection nil

@@ -82,7 +82,7 @@ FLASHER-CARD-INTERVAL-OVERDUE-FACTOR * LAST-INTERVAL days in the past."
 
 (defvar flasher-card-types '()
   "Alist for registering card types.
-Entries should be lists (name setup-fn flip-fn update-fn).
+Entries should be lists (name var-init-fn setup-fn flip-fn update-fn).
 Use `flasher-card-register-type' for adding card types.")
 
 (defcustom flasher-card-type-property "CARD_TYPE"
@@ -100,25 +100,30 @@ Use `flasher-card-register-type' for adding card types.")
   "Return non-nil if TYPE exists."
   (not (null (flasher-card-type type))))
 
+(defun flasher-card--type-var-init-fn (type)
+  "Get the variants init function for a card of TYPE."
+  (cl-first (flasher-card-type type)))
+
 (defun flasher-card--type-setup-fn (type)
   "Get the setup function for a card of TYPE."
-  (cl-first (flasher-card-type type)))
+  (cl-second (flasher-card-type type)))
 
 (defun flasher-card--type-flip-fn (type)
   "Get the flip function for a card of TYPE."
-  (cl-second (flasher-card-type type)))
+  (cl-third (flasher-card-type type)))
 
 (defun flasher-card--type-update-fn (type)
   "Get the update function for a card of TYPE."
-  (cl-third (flasher-card-type type)))
+  (cl-fourth (flasher-card-type type)))
 
-(defun flasher-card-register-type (name setup-fn flip-fn update-fn)
+(defun flasher-card-register-type (name var-init-fn setup-fn flip-fn update-fn)
   "Register a new card type.
 NAME is name of the new type.
+VAR-INIT-FN is function for initializing card variants.
 SETUP-FN is function for initializing a new card of this type.
 FLIP-FN is function for flipping a card during review.
 UPDATE-FN is function to update a card when it's contents have changed."
-  (push (list name setup-fn flip-fn update-fn) flasher-card-types))
+  (push (list name var-init-fn setup-fn flip-fn update-fn) flasher-card-types))
 
 
 (defun flasher-card-p ()
@@ -134,9 +139,9 @@ UPDATE-FN is function to update a card when it's contents have changed."
     (org-set-property flasher-card-type-property type)
     (flasher-core--add-tag flasher-card-tag)
     (org-id-get-create)
-    (flasher-card-update)))
+    (flasher-card--update)))
 
-(defun flasher-card-update ()
+(defun flasher-card--update ()
   "Update card in Flasher."
   (let* ((id (org-id-get))
          (type (org-entry-get (point) flasher-card-type-property))
@@ -147,20 +152,27 @@ UPDATE-FN is function to update a card when it's contents have changed."
      ((null card) (flasher-db-query [:insert-into cards :values $v1] (vector id type)))
      ((not (string= type (cl-second card)))
       (flasher-db-query [:update cards :set [(= type $s2)] :where (= id $s1)] id type)
-      (flasher-db-query [:delete-from results :where (= card-id $s1)] id)))))
+      (flasher-db-query [:delete-from variants :where (= card $s1)] id)))
+    (funcall (flasher-card--type-var-init-fn type) id)))
 
 (defun flasher-card-sync ()
-  "Add all new cards to Flasher."
+  "Add all new cards and update already existing."
   (interactive)
-  (flasher-core--map-cards #'flasher-card-update))
+  (flasher-core--map-cards #'flasher-card--update))
 
-(defun flasher-card-first-result (&optional id)
+(defun flasher-card--add-variants (variants &optional id)
+  "Update VARIANTS of card at point or with ID in Flasher."
+  (unless id (setq id (org-id-get)))
+  (dolist (variant variants)
+    (flasher-db-query [:insert-into variants :values $v1] (vector id variant))))
+
+(defun flasher-card--first-result (&optional id)
   "Return first result of card at point or with ID."
   (unless id (setq id (org-id-get)))
   (car (flasher-db-query [:select * :from results :where (= card-id $s1)
                           :order-by (asc date) :limit 1] id)))
 
-(defun flasher-card-last-result (&optional id)
+(defun flasher-card--last-result (&optional id)
   "Return last result of card at point or with ID."
   (unless id (setq id (org-id-get)))
   (car (flasher-db-query [:select * :from results :where (= card-id $s1)
@@ -170,7 +182,7 @@ UPDATE-FN is function to update a card when it's contents have changed."
   "Return number of days elapsed since card at point or with ID was first reviewed.
 FIRST-RESULT can be specified to reduce number of database calls."
   (unless id (setq id (org-id-get)))
-  (unless first-result (setq first-result (flasher-card-first-result id)))
+  (unless first-result (setq first-result (flasher-card--first-result id)))
   (cond ((null first-result) 0)
         (t (- (time-to-days (current-time)) (time-to-days (cl-sixth first-result))))))
 
@@ -178,7 +190,7 @@ FIRST-RESULT can be specified to reduce number of database calls."
   "Return TIME, card at point or with ID is scheduled to.
 LAST-RESULT can be specified to reduce number of database calls."
   (unless id (setq id (org-id-get)))
-  (unless last-result (setq last-result (flasher-card-last-result id)))
+  (unless last-result (setq last-result (flasher-card--last-result id)))
   (cond ((null last-result) (current-time))
         (t (time-add (cl-sixth last-result) (cl-fifth last-result)))))
 
@@ -188,7 +200,7 @@ LAST-RESULT can be specified to reduce number of database calls."
 - A negative integer - CARD is scheduled that many days in the future.
 - A positive integer - CARD is scheduled that many days in the past.
 LAST-RESULT can be specified to reduce number of database calls."
-  (unless last-result (setq last-result (flasher-card-last-result id)))
+  (unless last-result (setq last-result (flasher-card--last-result id)))
   (- (time-to-days (current-time)) (time-to-days (flasher-card-due id last-result))))
 
 (defun flasher-card-overdue-p (&optional id days-overdue last-result)
@@ -197,7 +209,7 @@ CARD is scheduled DAYS-OVERDUE days in the past. If argument is not given it is
 extracted from the CARD.
 LAST-RESULT can be specified to reduce number of database calls."
   (unless id (setq id (org-id-get)))
-  (unless last-result (setq last-result (flasher-card-last-result id)))
+  (unless last-result (setq last-result (flasher-card--last-result id)))
   (unless days-overdue (setq days-overdue (flasher-card-overdue id last-result)))
   (let ((interval (cl-fifth last-result)))
     (and (> days-overdue 0)
@@ -216,8 +228,8 @@ STATUS is one of the following values:
 - :old
 FIRST-RESULT, LAST-RESULT can be specified to reduce number of database calls."
   (unless id (setq id (org-id-get)))
-  (unless first-result (setq first-result (flasher-card-first-result id)))
-  (unless last-result (setq first-result (flasher-card-last-result id)))
+  (unless first-result (setq first-result (flasher-card--first-result id)))
+  (unless last-result (setq first-result (flasher-card--last-result id)))
   (let ((interval (if last-result (cl-fifth last-result) 0))
         (age (flasher-card-age id first-result))
         (due (flasher-card-overdue id last-result)))
