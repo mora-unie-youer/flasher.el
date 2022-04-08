@@ -59,7 +59,7 @@
       (erase-buffer)
       (insert (propertize "Flasher Dashboard\n\n" 'face 'org-level-1))
       (insert "Cards:\n")
-      (dolist (card (flasher-db-get-all-cards))
+      (dolist (card (flasher-db-query [:select * :from cards]))
         (insert (format "\tCard -> %s\n" card))))))
 
 ;;;###autoload
