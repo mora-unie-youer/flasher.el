@@ -48,63 +48,17 @@
   "Manage, learn and review flashcards in Emacs."
   :group 'external)
 
-(define-widget 'flasher-difficulty 'lazy
-  "Difficulty factor in Flasher card entries."
-  :group 'flasher
-  :type 'float)
-
-(define-widget 'flasher-interval 'lazy
-  "Interval count in Flasher card entries."
-  :group 'flasher
-  :type 'integer)
-
 (defcustom flasher-directories '("~/.flasher")
   "Directories to search for flashcards."
   :group 'flasher
   :type 'directory)
-
-(defcustom flasher-card-tag "card"
-  "Tag for marking headlines as flashcards."
-  :group 'flasher
-  :type 'string)
-
-(defcustom flasher-card-initial-difficulty 1.0
-  "Initial difficulty that will be set to card."
-  :group 'flasher
-  :type 'flasher-difficulty)
-
-(defcustom flasher-card-initial-interval 0
-  "Initial interval count until card review.
-You shouldn't change this as it can lead to some bugs, I guess."
-  :group 'flasher
-  :type 'flasher-interval)
-
-(defcustom flasher-card-intervals-before-old 10
-  "When item's interval is above this value, it's no longer considered 'young'."
-  :group 'flasher
-  :type 'flasher-interval)
-
-(defcustom flasher-card-interval-overdue-factor 0.2
-  "Multiply factor to check if item is overdue.
-Item is considered overdue, when its scheduled review date is more than
-FLASHER-CARD-INTERVAL-OVERDUE-FACTOR * LAST-INTERVAL days in the past."
-  :group 'flasher
-  :type 'float)
-
-(defun flasher-entry-p (&optional marker)
-  "Is MARKER, or the point, in a 'flasher card'?
-This will return NIL if the point is inside a subheading of a card."
-  (save-excursion
-    (when marker
-      (switch-to-buffer (marker-buffer marker))
-      (goto-char marker))
-    (member flasher-card-tag (org-get-tags nil t))))
 
 (provide 'flasher)
 
 (cl-eval-when (load eval)
   (require 'flasher-db)
   (require 'flasher-core)
+  (require 'flasher-card)
   (require 'flasher-session)
   (require 'flasher-dashboard)
   (require 'flasher-learn)
