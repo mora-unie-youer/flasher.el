@@ -47,12 +47,12 @@
   :group 'flasher-card
   :type 'string)
 
-(define-widget 'flasher-difficulty 'lazy
+(define-widget 'flasher-card-difficulty 'lazy
   "Difficulty factor in Flasher card entries."
   :group 'flasher
   :type 'float)
 
-(define-widget 'flasher-interval 'lazy
+(define-widget 'flasher-card-interval 'lazy
   "Interval count in Flasher card entries."
   :group 'flasher
   :type 'integer)
@@ -60,17 +60,17 @@
 (defcustom flasher-card-initial-interval 1
   "Initial interval count for :new card."
   :group 'flasher-card
-  :type 'flasher-interval)
+  :type 'flasher-card-interval)
 
 (defcustom flasher-card-initial-difficulty 1.0
   "Initial difficulty that will be set to card."
   :group 'flasher
-  :type 'flasher-difficulty)
+  :type 'flasher-card-difficulty)
 
 (defcustom flasher-card-intervals-before-old 10
   "When item's interval is above this value, it's no longer considered 'young'."
   :group 'flasher-card
-  :type 'flasher-interval)
+  :type 'flasher-card-interval)
 
 (defcustom flasher-card-interval-overdue-factor 0.2
   "Multiply factor to check if item is overdue.
