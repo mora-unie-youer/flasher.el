@@ -1,13 +1,13 @@
-;;; flasher.el --- Simple and extensible flashcard system  -*- lexical-binding: t; -*-
+;;; flasher-type-normal.el --- Flasher 'normal card -*- lexical-binding: t; -*-
 ;;
-;; Filename: flasher.el
-;; Description: Simple and extensible flashcard system
+;; Filename: flasher-type-normal.el
+;; Description: Flasher 'normal card
 ;; Version: 0.1.0
 ;; Package-Requires: ((emacs "26.1") (org "9.4") (emacsql "3.0.0") (emacsql-sqlite "1.0.0"))
 ;; Author: Mora Unie Youer <mora_unie_youer@riseup.net>
 ;; Maintainer: Mora Unie Youer <mora_unie_youer@riseup.net>
 ;; Copyright (c) 2022 Mora Unie Youer
-;; Created: March 24 2022
+;; Created: April 02, 2022
 ;; URL: https://github.com/mora-unie-youer/flasher
 ;;      https://gitlab.com/mora-unie-youer/flasher
 ;;      https://notabug.org/mora-unie-youer/flasher
@@ -15,7 +15,7 @@
 
 ;;; Commentary:
 ;;
-;; Simple and extensible flashcard system
+;; Flasher 'normal card
 
 ;; Permission is hereby granted, free of charge, to any person obtaining a copy
 ;; of this software and associated documentation files (the "Software"), to deal
@@ -36,36 +36,31 @@
 ;; SOFTWARE.
 
 ;;; Code:
+(require 'flasher)
 
-(require 'eieio)
+(defgroup flasher-type-normal nil
+  "Flasher 'normal card."
+  :group 'flasher)
 
-(require 'emacsql)
-(require 'emacsql-sqlite)
+(defun flasher-type-normal-init ()
+  "Initialize 'normal card."
+  (interactive))
 
-(require 'org)
+(defun flasher-type-normal-setup ()
+  "Prepare a 'normal card for review.")
 
-(defgroup flasher nil
-  "Manage, learn and review flashcards in Emacs."
-  :group 'external)
+(defun flasher-type-normal-flip ()
+  "Flip 'normal card.")
 
-(defcustom flasher-directories '("~/.flasher")
-  "Directories to search for flashcards."
-  :group 'flasher
-  :type 'directory)
+(defun flasher-type-normal-update ()
+  "Update review data for 'normal card.")
 
-(provide 'flasher)
+(flasher-card-register-type
+ 'normal
+ 'flasher-type-normal-setup
+ 'flasher-type-normal-flip
+ 'flasher-type-normal-update)
 
-(cl-eval-when (load eval)
-  (require 'flasher-db)
-  (require 'flasher-core)
-  (require 'flasher-card)
-  (require 'flasher-type-normal)
-  (require 'flasher-type-typed)
-  (require 'flasher-type-double)
-  (require 'flasher-type-cloze)
-  (require 'flasher-session)
-  (require 'flasher-dashboard)
-  (require 'flasher-learn)
-  (require 'flasher-review))
+(provide 'flasher-type-normal)
 
-;;; flasher.el ends here
+;;; flasher-type-normal.el ends here

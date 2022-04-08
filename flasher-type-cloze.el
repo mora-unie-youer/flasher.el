@@ -1,13 +1,13 @@
-;;; flasher.el --- Simple and extensible flashcard system  -*- lexical-binding: t; -*-
+;;; flasher-type-cloze.el --- Flasher 'cloze card -*- lexical-binding: t; -*-
 ;;
-;; Filename: flasher.el
-;; Description: Simple and extensible flashcard system
+;; Filename: flasher-type-cloze.el
+;; Description: Flasher 'cloze card
 ;; Version: 0.1.0
 ;; Package-Requires: ((emacs "26.1") (org "9.4") (emacsql "3.0.0") (emacsql-sqlite "1.0.0"))
 ;; Author: Mora Unie Youer <mora_unie_youer@riseup.net>
 ;; Maintainer: Mora Unie Youer <mora_unie_youer@riseup.net>
 ;; Copyright (c) 2022 Mora Unie Youer
-;; Created: March 24 2022
+;; Created: April 02, 2022
 ;; URL: https://github.com/mora-unie-youer/flasher
 ;;      https://gitlab.com/mora-unie-youer/flasher
 ;;      https://notabug.org/mora-unie-youer/flasher
@@ -15,7 +15,7 @@
 
 ;;; Commentary:
 ;;
-;; Simple and extensible flashcard system
+;; Flasher 'cloze card
 
 ;; Permission is hereby granted, free of charge, to any person obtaining a copy
 ;; of this software and associated documentation files (the "Software"), to deal
@@ -36,36 +36,31 @@
 ;; SOFTWARE.
 
 ;;; Code:
+(require 'flasher)
 
-(require 'eieio)
+(defgroup flasher-type-cloze nil
+  "Flasher 'cloze card."
+  :group 'flasher)
 
-(require 'emacsql)
-(require 'emacsql-sqlite)
+(defun flasher-type-cloze-init ()
+  "Initialize 'cloze card."
+  (interactive))
 
-(require 'org)
+(defun flasher-type-cloze-setup ()
+  "Prepare a 'cloze card for review.")
 
-(defgroup flasher nil
-  "Manage, learn and review flashcards in Emacs."
-  :group 'external)
+(defun flasher-type-cloze-flip ()
+  "Flip 'cloze card.")
 
-(defcustom flasher-directories '("~/.flasher")
-  "Directories to search for flashcards."
-  :group 'flasher
-  :type 'directory)
+(defun flasher-type-cloze-update ()
+  "Update review data for 'cloze card.")
 
-(provide 'flasher)
+(flasher-card-register-type
+ 'cloze
+ 'flasher-type-cloze-setup
+ 'flasher-type-cloze-flip
+ 'flasher-type-cloze-update)
 
-(cl-eval-when (load eval)
-  (require 'flasher-db)
-  (require 'flasher-core)
-  (require 'flasher-card)
-  (require 'flasher-type-normal)
-  (require 'flasher-type-typed)
-  (require 'flasher-type-double)
-  (require 'flasher-type-cloze)
-  (require 'flasher-session)
-  (require 'flasher-dashboard)
-  (require 'flasher-learn)
-  (require 'flasher-review))
+(provide 'flasher-type-cloze)
 
-;;; flasher.el ends here
+;;; flasher-type-cloze.el ends here

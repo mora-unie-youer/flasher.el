@@ -1,13 +1,13 @@
-;;; flasher.el --- Simple and extensible flashcard system  -*- lexical-binding: t; -*-
+;;; flasher-type-typed.el --- Flasher 'typed card -*- lexical-binding: t; -*-
 ;;
-;; Filename: flasher.el
-;; Description: Simple and extensible flashcard system
+;; Filename: flasher-type-typed.el
+;; Description: Flasher 'typed card
 ;; Version: 0.1.0
 ;; Package-Requires: ((emacs "26.1") (org "9.4") (emacsql "3.0.0") (emacsql-sqlite "1.0.0"))
 ;; Author: Mora Unie Youer <mora_unie_youer@riseup.net>
 ;; Maintainer: Mora Unie Youer <mora_unie_youer@riseup.net>
 ;; Copyright (c) 2022 Mora Unie Youer
-;; Created: March 24 2022
+;; Created: April 02, 2022
 ;; URL: https://github.com/mora-unie-youer/flasher
 ;;      https://gitlab.com/mora-unie-youer/flasher
 ;;      https://notabug.org/mora-unie-youer/flasher
@@ -15,7 +15,7 @@
 
 ;;; Commentary:
 ;;
-;; Simple and extensible flashcard system
+;; Flasher 'typed card
 
 ;; Permission is hereby granted, free of charge, to any person obtaining a copy
 ;; of this software and associated documentation files (the "Software"), to deal
@@ -36,36 +36,31 @@
 ;; SOFTWARE.
 
 ;;; Code:
+(require 'flasher)
 
-(require 'eieio)
+(defgroup flasher-type-typed nil
+  "Flasher 'typed card."
+  :group 'flasher)
 
-(require 'emacsql)
-(require 'emacsql-sqlite)
+(defun flasher-type-typed-init ()
+  "Initialize 'typed card."
+  (interactive))
 
-(require 'org)
+(defun flasher-type-typed-setup ()
+  "Prepare a 'typed card for review.")
 
-(defgroup flasher nil
-  "Manage, learn and review flashcards in Emacs."
-  :group 'external)
+(defun flasher-type-typed-flip ()
+  "Flip 'typed card.")
 
-(defcustom flasher-directories '("~/.flasher")
-  "Directories to search for flashcards."
-  :group 'flasher
-  :type 'directory)
+(defun flasher-type-typed-update ()
+  "Update review data for 'typed card.")
 
-(provide 'flasher)
+(flasher-card-register-type
+ 'typed
+ 'flasher-type-typed-setup
+ 'flasher-type-typed-flip
+ 'flasher-type-typed-update)
 
-(cl-eval-when (load eval)
-  (require 'flasher-db)
-  (require 'flasher-core)
-  (require 'flasher-card)
-  (require 'flasher-type-normal)
-  (require 'flasher-type-typed)
-  (require 'flasher-type-double)
-  (require 'flasher-type-cloze)
-  (require 'flasher-session)
-  (require 'flasher-dashboard)
-  (require 'flasher-learn)
-  (require 'flasher-review))
+(provide 'flasher-type-typed)
 
-;;; flasher.el ends here
+;;; flasher-type-typed.el ends here
