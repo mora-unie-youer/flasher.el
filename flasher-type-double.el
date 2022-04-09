@@ -47,11 +47,11 @@
   (interactive)
   (flasher-card-init "double"))
 
-(defun flasher-type-double-variant-init (&optional id)
+(defun flasher-type-double-var-init (&optional id)
   "Initialize 'double card variants for card with ID."
-  (flasher-card--add-variants '("front" "back") id))
+  (flasher-card--update-variants '("front" "back") id))
 
-(defun flasher-type-double-setup ()
+(defun flasher-type-double-setup (_variant)
   "Prepare a 'double card for review.")
 
 (defun flasher-type-double-flip ()
@@ -62,7 +62,7 @@
 
 (flasher-card-register-type
  'double
- 'flasher-type-double-variant-init
+ 'flasher-type-double-var-init
  'flasher-type-double-setup
  'flasher-type-double-flip
  'flasher-type-double-update)

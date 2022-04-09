@@ -54,14 +54,16 @@
 (defun flasher-dashboard-view ()
   "Show the Flasher dashboard view in the current buffer."
   (let ((buf (get-buffer-create flasher-dashboard-buffer-name))
+        (cards (flasher-core--map-cards #'flasher-card--get-variants))
         (inhibit-read-only t))
     (with-current-buffer buf
       (erase-buffer)
       (insert (propertize "Flasher Dashboard\n\n" 'face 'org-level-1))
       (insert "Cards:\n")
-      (dolist (card (flasher-db-query [:select * :from cards]))
-        (insert (format "\tCard -> %s %s\n"
-                        card (flasher-card--status (car card))))))))
+      (dolist (card cards)
+        (insert (format "\tCard %s\n" (car card)))
+        (dolist (variant (cdr card))
+          (insert (format "\t\tVariant %s\n" variant)))))))
 
 ;;;###autoload
 (defun flasher-dashboard ()

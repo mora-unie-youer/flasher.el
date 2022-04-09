@@ -47,11 +47,11 @@
   (interactive)
   (flasher-card-init "normal"))
 
-(defun flasher-type-normal-variant-init (&optional id)
+(defun flasher-type-normal-var-init (&optional id)
   "Initialize 'normal card variants for card with ID."
-  (flasher-card--add-variants '("front") id))
+  (flasher-card--update-variants '("front") id))
 
-(defun flasher-type-normal-setup ()
+(defun flasher-type-normal-setup (_variant)
   "Prepare a 'normal card for review.")
 
 (defun flasher-type-normal-flip ()
@@ -62,7 +62,7 @@
 
 (flasher-card-register-type
  'normal
- 'flasher-type-normal-variant-init
+ 'flasher-type-normal-var-init
  'flasher-type-normal-setup
  'flasher-type-normal-flip
  'flasher-type-normal-update)

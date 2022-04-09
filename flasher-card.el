@@ -100,7 +100,7 @@ Use `flasher-card-register-type' for adding card types.")
   "Return non-nil if TYPE exists."
   (not (null (flasher-card-type type))))
 
-(defun flasher-card--type-variant-init-fn (type)
+(defun flasher-card--type-var-init-fn (type)
   "Get the variants init function for a card of TYPE."
   (cl-first (flasher-card-type type)))
 
@@ -145,66 +145,76 @@ UPDATE-FN is function to update a card when it's contents have changed."
   "Update card in Flasher."
   (let ((id (org-id-get))
         (type (org-entry-get (point) flasher-card-type-property)))
-    (funcall (flasher-card--type-variant-init-fn type) id)))
+    (funcall (flasher-card--type-var-init-fn type) id)))
 
 (defun flasher-card-sync ()
   "Add all new cards and update already existing."
   (interactive)
   (flasher-core--map-cards #'flasher-card--update))
 
-(defun flasher-card--add-variants (variants &optional id)
-  "Update VARIANTS of card at point or with ID in Flasher."
+(defun flasher-card--get-variants (&optional id)
+  "Get CARD variants (ID VARIANT) at point or with ID."
   (unless id (setq id (org-id-get)))
+  (cons id (flasher-db-query [:select [id variant] :from cards :where (= uuid $s1)] id)))
+
+(defun flasher-card--update-variants (variants &optional id)
+  "Update VARIANTS of CARD at point or with ID."
+  (unless id (setq id (org-id-get)))
+  ;; Removing unused variants
+  (let ((old-variants (flasher-card--get-variants id)))
+    (dolist (variant (cdr old-variants))
+      (unless (member (cl-second variant) variants)
+        (flasher-db-query [:delete-from cards :where (= id $s1)] (car variant)))))
+  ;; Adding new variants
   (let (cards)
     (dolist (variant variants) (push (vector id variant) cards))
-    (setq cards (reverse cards))
     (flasher-db-query [:insert-or-ignore-into cards [uuid variant] :values $v1] cards)))
 
-(defun flasher-card--first-result (id)
+(defun flasher-card-variant--first-result (id)
   "Return first result of CARD variant with ID."
   (car (flasher-db-query [:select * :from results :where (= card $s1)
                           :order-by (asc date) :limit 1] id)))
 
-(defun flasher-card--last-result (id)
+(defun flasher-card-variant--last-result (id)
   "Return last result of CARD variant with ID."
   (car (flasher-db-query [:select * :from results :where (= card $s1)
                           :order-by (desc date) :limit 1] id)))
 
-(defun flasher-card--age (id &optional first-result)
+(defun flasher-card-variant--age (id &optional first-result)
   "Return number of days elapsed since CARD variant with ID was first reviewed.
 FIRST-RESULT can be specified to reduce number of database calls."
-  (unless first-result (setq first-result (flasher-card--first-result id)))
+  (unless first-result (setq first-result (flasher-card-variant--first-result id)))
   (cond ((null first-result) 0)
         (t (- (time-to-days (current-time)) (time-to-days (cl-sixth first-result))))))
 
-(defun flasher-card--due (id &optional last-result)
+(defun flasher-card-variant--due (id &optional last-result)
   "Return TIME, CARD variant with ID is scheduled to.
 LAST-RESULT can be specified to reduce number of database calls."
-  (unless last-result (setq last-result (flasher-card--last-result id)))
+  (unless last-result (setq last-result (flasher-card-variant--last-result id)))
   (cond ((null last-result) (current-time))
         (t (time-add (cl-sixth last-result) (cl-fifth last-result)))))
 
-(defun flasher-card--overdue (id &optional last-result)
+(defun flasher-card-variant--overdue (id &optional last-result)
   "Return for CARD variant with ID:
 - 0 if CARD is new, or if it scheduled for review today.
 - A negative integer - CARD is scheduled that many days in the future.
 - A positive integer - CARD is scheduled that many days in the past.
 LAST-RESULT can be specified to reduce number of database calls."
-  (unless last-result (setq last-result (flasher-card--last-result id)))
-  (- (time-to-days (current-time)) (time-to-days (flasher-card--due id last-result))))
+  (unless last-result (setq last-result (flasher-card-variant--last-result id)))
+  (- (time-to-days (current-time)) (time-to-days (flasher-card-variant--due id last-result))))
 
-(defun flasher-card--overdue-p (id &optional days-overdue last-result)
+(defun flasher-card-variant--overdue-p (id &optional days-overdue last-result)
   "Return non-nil if CARD variant with ID should be considered 'overdue'.
 CARD is scheduled DAYS-OVERDUE days in the past. If argument is not given it is
 extracted from the CARD.
 LAST-RESULT can be specified to reduce number of database calls."
-  (unless last-result (setq last-result (flasher-card--last-result id)))
-  (unless days-overdue (setq days-overdue (flasher-card--overdue id last-result)))
+  (unless last-result (setq last-result (flasher-card-variant--last-result id)))
+  (unless days-overdue (setq days-overdue (flasher-card-variant--overdue id last-result)))
   (let ((interval (cl-fifth last-result)))
     (and (> days-overdue 0)
          (> (/ days-overdue interval) flasher-card-interval-overdue-factor))))
 
-(defun flasher-card--status (id &optional first-result last-result)
+(defun flasher-card-variant--status (id &optional first-result last-result)
   "Fetch status list (STATUS DUE AGE) of CARD variant with ID.
 DUE is the number of days overdue, zero being due today, -1 being scheduled
 1 day in the future.
@@ -216,14 +226,14 @@ STATUS is one of the following values:
 - :young
 - :old
 FIRST-RESULT, LAST-RESULT can be specified to reduce number of database calls."
-  (unless first-result (setq first-result (flasher-card--first-result id)))
-  (unless last-result (setq first-result (flasher-card--last-result id)))
+  (unless first-result (setq first-result (flasher-card-variant--first-result id)))
+  (unless last-result (setq first-result (flasher-card-variant--last-result id)))
   (let ((interval (if last-result (cl-fifth last-result) 0))
-        (age (flasher-card--age id first-result))
-        (due (flasher-card--overdue id last-result)))
+        (age (flasher-card-variant--age id first-result))
+        (due (flasher-card-variant--overdue id last-result)))
     (list (cond ((= age 0) :new)
                 ((= interval 0) :failed)
-                ((flasher-card--overdue-p id due last-result) :overdue)
+                ((flasher-card-variant--overdue-p id due last-result) :overdue)
                 ((<= interval flasher-card-intervals-before-old) :young)
                 (t :old))
           due age)))

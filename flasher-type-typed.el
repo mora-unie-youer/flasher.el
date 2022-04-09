@@ -47,11 +47,11 @@
   (interactive)
   (flasher-card-init "typed"))
 
-(defun flasher-type-typed-variant-init (&optional id)
+(defun flasher-type-typed-var-init (&optional id)
   "Initialize 'typed card variants for card with ID."
-  (flasher-card--add-variants '("front") id))
+  (flasher-card--update-variants '("front") id))
 
-(defun flasher-type-typed-setup ()
+(defun flasher-type-typed-setup (_variant)
   "Prepare a 'typed card for review.")
 
 (defun flasher-type-typed-flip ()
@@ -62,7 +62,7 @@
 
 (flasher-card-register-type
  'typed
- 'flasher-type-typed-variant-init
+ 'flasher-type-typed-var-init
  'flasher-type-typed-setup
  'flasher-type-typed-flip
  'flasher-type-typed-update)
