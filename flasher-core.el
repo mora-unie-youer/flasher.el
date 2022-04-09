@@ -47,8 +47,17 @@
 
 (defun flasher-core--map-cards (func)
   "Call FUNC at each entry marked with Flasher card tag."
-  (let ((org-tags-exclude-from-inheritance (list flasher-card-tag)))
-    (org-map-entries func (concat "+" flasher-card-tag) (flasher-core--scope))))
+  (with-temp-buffer
+    (mapc #'insert-file-contents (flasher-core--scope))
+    (goto-char (point-min))
+    (let ((org-tags-exclude-from-inheritance (list flasher-card-tag))
+          rtn rtn1)
+      (while (re-search-forward flasher-card-headline-regexp nil t)
+        (let ((tags (org-get-tags)))
+          (when (member flasher-card-tag tags)
+            (setq rtn1 (funcall func))
+            (push rtn1 rtn))))
+      (nreverse rtn))))
 
 (defun flasher-core--add-tag (tag)
   "Add TAG to the heading at point."
