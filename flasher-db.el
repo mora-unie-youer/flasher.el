@@ -73,6 +73,7 @@ Initializes and stores database and connection."
       (make-directory (file-name-directory flasher-db-location) t)
       (let ((conn (emacsql-sqlite flasher-db-location)))
         (emacsql conn [:pragma (= foreign_keys ON)])
+        (emacsql conn [:pragma (= synchronous OFF)])
         (when-let ((process (emacsql-process conn)))
           (set-process-query-on-exit-flag process nil))
         (setq flasher-db--connection conn)
