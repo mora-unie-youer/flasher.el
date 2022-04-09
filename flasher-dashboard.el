@@ -63,7 +63,8 @@
       (dolist (card cards)
         (insert (format "\tCard %s\n" (car card)))
         (dolist (variant (cdr card))
-          (insert (format "\t\tVariant %s\n" variant)))))))
+          (insert (format "\t\tVariant %s\t%s\n" variant
+                          (flasher-card-variant--status variant))))))))
 
 ;;;###autoload
 (defun flasher-dashboard ()

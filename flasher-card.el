@@ -157,18 +157,20 @@ UPDATE-FN is function to update a card when it's contents have changed."
   (unless id (setq id (org-id-get)))
   (cons id (flasher-db-query [:select [id variant] :from cards :where (= uuid $s1)] id)))
 
-(defun flasher-card--update-variants (variants &optional id)
-  "Update VARIANTS of CARD at point or with ID."
+(defun flasher-card--update-variants (variants &optional id old-variants)
+  "Update VARIANTS of CARD at point or with ID according to OLD-VARIANTS."
   (unless id (setq id (org-id-get)))
-  ;; Removing unused variants
-  (let ((old-variants (flasher-card--get-variants id)))
-    (dolist (variant (cdr old-variants))
-      (unless (member (cl-second variant) variants)
-        (flasher-db-query [:delete-from cards :where (= id $s1)] (car variant)))))
-  ;; Adding new variants
-  (let (cards)
-    (dolist (variant variants) (push (vector id variant) cards))
-    (flasher-db-query [:insert-or-ignore-into cards [uuid variant] :values $v1] cards)))
+  (unless old-variants (setq old-variants (flasher-card--get-variants id)))
+  (setq old-variants (cdr old-variants))
+  (flasher-db-transaction
+   ;; Removing unused variants
+   (pcase-dolist (`(,id ,variant) old-variants)
+     (unless (member variant variants)
+       (flasher-db-query [:delete-from cards :where (= id $s1)] id)))
+   ;; Adding new variants
+   (dolist (variant variants)
+     (flasher-db-query [:insert-or-ignore-into cards [uuid variant] :values $v1]
+                       (vector id variant)))))
 
 (defun flasher-card-variant--first-result (id)
   "Return first result of CARD variant with ID."

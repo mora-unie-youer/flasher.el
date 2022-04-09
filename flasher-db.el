@@ -82,9 +82,9 @@ Initializes and stores database and connection."
 
 (defun flasher-db--init ()
   "Initialize Flasher database."
-  (emacsql-with-transaction flasher-db--connection
-    (pcase-dolist (`(,table ,schema) flasher-db--schemata)
-      (emacsql flasher-db--connection [:create-table $i1 $S2] table schema))))
+  (flasher-db-transaction
+   (dolist (table flasher-db--schemata)
+     (apply #'flasher-db-query [:create-table $i1 $S2] table))))
 
 (defun flasher-db--close ()
   "Close Flasher database connection."
@@ -96,6 +96,10 @@ Initializes and stores database and connection."
 (defun flasher-db-query (sql &rest args)
   "Execute SQL query on Flasher database with ARGS."
   (apply #'emacsql (flasher-db) sql args))
+
+(defmacro flasher-db-transaction (&rest body)
+  "Eval BODY as database transaction."
+  `(emacsql-with-transaction (flasher-db) ,@body))
 
 (provide 'flasher-db)
 
