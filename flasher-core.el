@@ -52,7 +52,7 @@
     (goto-char (point-min))
     (let ((org-tags-exclude-from-inheritance (list flasher-card-tag))
           rtn rtn1)
-      (while (re-search-forward flasher-card-headline-regexp nil t)
+      (while (re-search-forward flasher-card--headline-regexp nil t)
         (let ((tags (org-get-tags)))
           (when (member flasher-card-tag tags)
             (setq rtn1 (funcall func))

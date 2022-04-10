@@ -47,10 +47,9 @@
   :group 'flasher-card
   :type 'string)
 
-(defconst flasher-card-headline-regexp
+(defconst flasher-card--headline-regexp
   (rx-to-string `(and line-start (+ "*") (+ space) (* any)
-                      (group ":" ,flasher-card-tag ":")
-                      (* any) line-end))
+                      (group ":" ,flasher-card-tag ":") line-end))
   "Regular expression to match headline tagged as card.")
 
 (define-widget 'flasher-card-difficulty 'lazy
