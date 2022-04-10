@@ -62,7 +62,7 @@
   :group 'flasher-algo
   :type 'flasher-algo-ease)
 
-(defcustom flasher-algo-initial-ease flasher-algo-minimum-ease
+(defcustom flasher-algo-initial-ease 2.0
   "Initial ease factor that will be set to card."
   :group 'flasher-algo
   :type 'flasher-algo-ease)
