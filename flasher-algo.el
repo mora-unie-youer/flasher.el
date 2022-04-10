@@ -1,13 +1,13 @@
-;;; flasher.el --- Simple and extensible flashcard system  -*- lexical-binding: t; -*-
+;;; flasher-algo.el --- Flasher algorithm API -*- lexical-binding: t; -*-
 ;;
-;; Filename: flasher.el
-;; Description: Simple and extensible flashcard system
+;; Filename: flasher-algo.el
+;; Description: Flasher algorithm API
 ;; Version: 0.1.0
 ;; Package-Requires: ((emacs "26.1") (org "9.4") (emacsql "3.0.0") (emacsql-sqlite "1.0.0"))
 ;; Author: Mora Unie Youer <mora_unie_youer@riseup.net>
 ;; Maintainer: Mora Unie Youer <mora_unie_youer@riseup.net>
 ;; Copyright (c) 2022 Mora Unie Youer
-;; Created: March 24 2022
+;; Created: April 02, 2022
 ;; URL: https://github.com/mora-unie-youer/flasher
 ;;      https://gitlab.com/mora-unie-youer/flasher
 ;;      https://notabug.org/mora-unie-youer/flasher
@@ -15,7 +15,7 @@
 
 ;;; Commentary:
 ;;
-;; Simple and extensible flashcard system
+;; Flasher algorithm API
 
 ;; Permission is hereby granted, free of charge, to any person obtaining a copy
 ;; of this software and associated documentation files (the "Software"), to deal
@@ -36,39 +36,12 @@
 ;; SOFTWARE.
 
 ;;; Code:
+(require 'flasher)
 
-(require 'eieio)
+(defgroup flasher-algo nil
+  "Flasher algorithm API."
+  :group 'flasher)
 
-(require 'emacsql)
-(require 'emacsql-sqlite)
+(provide 'flasher-algo)
 
-(require 'org)
-
-(defgroup flasher nil
-  "Manage, learn and review flashcards in Emacs."
-  :group 'external)
-
-(defcustom flasher-directories '("~/.flasher")
-  "Directories to search for flashcards."
-  :group 'flasher
-  :type 'directory)
-
-(provide 'flasher)
-
-(cl-eval-when (load eval)
-  (require 'flasher-algo)
-  (require 'flasher-db)
-  (require 'flasher-core)
-  (require 'flasher-card)
-  (require 'flasher-type-normal)
-  (require 'flasher-type-double)
-  (require 'flasher-type-typed)
-  (require 'flasher-type-typed-double)
-  (require 'flasher-type-cloze)
-  (require 'flasher-type-cloze-double)
-  (require 'flasher-session)
-  (require 'flasher-dashboard)
-  (require 'flasher-learn)
-  (require 'flasher-review))
-
-;;; flasher.el ends here
+;;; flasher-algo.el ends here
