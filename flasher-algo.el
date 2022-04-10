@@ -57,13 +57,13 @@
   :group 'flasher-algo
   :type 'flasher-algo-interval)
 
-(defcustom flasher-algo-initial-ease 2.5
-  "Initial ease factor that will be set to card."
+(defcustom flasher-algo-minimum-ease 1.25
+  "Minimum ease factor card can have."
   :group 'flasher-algo
   :type 'flasher-algo-ease)
 
-(defcustom flasher-algo-minimum-ease 1
-  "Minimum ease factor card can have."
+(defcustom flasher-algo-initial-ease flasher-algo-minimum-ease
+  "Initial ease factor that will be set to card."
   :group 'flasher-algo
   :type 'flasher-algo-ease)
 
@@ -126,7 +126,6 @@ QUALITY is the quality of the answer:
     (setq next-interval (cond ((or failed (< quality 3)) 0)
                               ((= interval 0) 1)
                               ((= interval 1) 4)
-                              ((< quality 5) (flasher-algo-fuzz (* 1.25 interval)))
                               (t (flasher-algo-fuzz (* next-ease interval)))))
     (when flasher-algo-max-interval-count
       (setq next-interval (min flasher-algo-max-interval-count next-interval)))
