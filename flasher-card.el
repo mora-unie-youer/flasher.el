@@ -48,8 +48,7 @@
   :type 'string)
 
 (defconst flasher-card--headline-regexp
-  (rx-to-string `(and line-start (+ "*") (+ space) (* any)
-                      (group ":" ,flasher-card-tag ":") line-end))
+  (rx-to-string `(: bol (+ "*") (+ space) (* any) (group ":" ,flasher-card-tag ":") eol) t)
   "Regular expression to match headline tagged as card.")
 
 (define-widget 'flasher-card-difficulty 'lazy
@@ -180,12 +179,12 @@ UPDATE-FN is function to update a card when it's contents have changed."
 (defun flasher-card-variant--first-result (id)
   "Return first result of CARD variant with ID."
   (car (flasher-db-query [:select * :from results :where (= card $s1)
-                          :order-by (asc date) :limit 1] id)))
+                          :order-by (asc due) :limit 1] id)))
 
 (defun flasher-card-variant--last-result (id)
   "Return last result of CARD variant with ID."
   (car (flasher-db-query [:select * :from results :where (= card $s1)
-                          :order-by (desc date) :limit 1] id)))
+                          :order-by (desc due) :limit 1] id)))
 
 (defun flasher-card-variant--due (id &optional last-result)
   "Return TIME, CARD variant with ID is scheduled to.
