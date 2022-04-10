@@ -203,7 +203,7 @@ STATUS is one of the following values:
 - :old
 FIRST-RESULT, LAST-RESULT can be specified to reduce number of database calls."
   (unless first-result (setq first-result (flasher-card-variant--first-result id)))
-  (unless last-result (setq first-result (flasher-card-variant--last-result id)))
+  (unless last-result (setq last-result (flasher-card-variant--last-result id)))
   (let ((interval (if last-result (cl-fourth last-result) 0))
         (due (flasher-card-variant--overdue id last-result)))
     (list (cond ((null last-result) :new)
