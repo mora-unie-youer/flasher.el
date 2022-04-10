@@ -51,26 +51,6 @@
   (rx-to-string `(: bol (+ "*") (+ space) (* any) (group ":" ,flasher-card-tag ":") eol) t)
   "Regular expression to match headline tagged as card.")
 
-(define-widget 'flasher-card-difficulty 'lazy
-  "Difficulty factor in Flasher card entries."
-  :group 'flasher
-  :type 'float)
-
-(define-widget 'flasher-card-interval 'lazy
-  "Interval count in Flasher card entries."
-  :group 'flasher
-  :type 'integer)
-
-(defcustom flasher-card-initial-interval 1
-  "Initial interval count for learned card."
-  :group 'flasher-card
-  :type 'flasher-card-interval)
-
-(defcustom flasher-card-initial-difficulty 1.0
-  "Initial difficulty that will be set to card."
-  :group 'flasher
-  :type 'flasher-card-difficulty)
-
 (defcustom flasher-card-intervals-before-old 10
   "When item's interval is above this value, it's no longer considered 'young'."
   :group 'flasher-card

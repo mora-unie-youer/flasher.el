@@ -54,7 +54,7 @@
             (:unique [uuid variant])))
     (results ([(card       :not-null)
                (result     :not-null)
-               (difficulty :not-null)
+               (ease       :not-null)
                (interval   :not-null)
                (due        :not-null)]
               (:primary-key [card due])
