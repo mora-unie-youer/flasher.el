@@ -125,6 +125,8 @@ QUALITY is the quality of the answer:
       (setq next-ease (min flasher-algo-maximum-ease next-ease)))
     (setq next-interval (cond ((or failed (< quality 3)) 0)
                               ((= interval 0) 1)
+                              ((= interval 1) 4)
+                              ((< quality 5) (flasher-algo-fuzz (* 1.25 interval)))
                               (t (flasher-algo-fuzz (* next-ease interval)))))
     (when flasher-algo-max-interval-count
       (setq next-interval (min flasher-algo-max-interval-count next-interval)))
