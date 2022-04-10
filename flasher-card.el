@@ -188,19 +188,11 @@ UPDATE-FN is function to update a card when it's contents have changed."
   (car (flasher-db-query [:select * :from results :where (= card $s1)
                           :order-by (desc date) :limit 1] id)))
 
-(defun flasher-card-variant--age (id &optional first-result)
-  "Return number of days elapsed since CARD variant with ID was first reviewed.
-FIRST-RESULT can be specified to reduce number of database calls."
-  (unless first-result (setq first-result (flasher-card-variant--first-result id)))
-  (cond ((null first-result) 0)
-        (t (- (time-to-days (current-time)) (time-to-days (cl-sixth first-result))))))
-
 (defun flasher-card-variant--due (id &optional last-result)
   "Return TIME, CARD variant with ID is scheduled to.
 LAST-RESULT can be specified to reduce number of database calls."
   (unless last-result (setq last-result (flasher-card-variant--last-result id)))
-  (cond ((null last-result) (current-time))
-        (t (time-add (cl-sixth last-result) (cl-fifth last-result)))))
+  (if last-result (cl-fifth last-result) (current-time)))
 
 (defun flasher-card-variant--overdue (id &optional last-result)
   "Return for CARD variant with ID:
@@ -218,15 +210,13 @@ extracted from the CARD.
 LAST-RESULT can be specified to reduce number of database calls."
   (unless last-result (setq last-result (flasher-card-variant--last-result id)))
   (unless days-overdue (setq days-overdue (flasher-card-variant--overdue id last-result)))
-  (let ((interval (cl-fifth last-result)))
+  (let ((interval (cl-fourth last-result)))
     (and (> days-overdue 0)
          (> (/ days-overdue interval) flasher-card-interval-overdue-factor))))
 
 (defun flasher-card-variant--status (id &optional first-result last-result)
-  "Fetch status list (STATUS DUE AGE) of CARD variant with ID.
-DUE is the number of days overdue, zero being due today, -1 being scheduled
-1 day in the future.
-AGE is the number of days elapsed since the item was learned for the first time.
+  "Fetch status list (STATUS DUE) of CARD variant with ID.
+DUE is the number of days overdue, see `flasher-card-variant--overdue'.
 STATUS is one of the following values:
 - :new
 - :failed
@@ -236,15 +226,14 @@ STATUS is one of the following values:
 FIRST-RESULT, LAST-RESULT can be specified to reduce number of database calls."
   (unless first-result (setq first-result (flasher-card-variant--first-result id)))
   (unless last-result (setq first-result (flasher-card-variant--last-result id)))
-  (let ((interval (if last-result (cl-fifth last-result) 0))
-        (age (flasher-card-variant--age id first-result))
+  (let ((interval (if last-result (cl-fourth last-result) 0))
         (due (flasher-card-variant--overdue id last-result)))
-    (list (cond ((= age 0) :new)
+    (list (cond ((null last-result) :new)
                 ((= interval 0) :failed)
                 ((flasher-card-variant--overdue-p id due last-result) :overdue)
                 ((<= interval flasher-card-intervals-before-old) :young)
                 (t :old))
-          due age)))
+          due)))
 
 (provide 'flasher-card)
 

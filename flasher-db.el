@@ -52,12 +52,12 @@
              (uuid       :not-null)
              (variant    :not-null)]
             (:unique [uuid variant])))
-    (results ([(card    :not-null)
+    (results ([(card       :not-null)
                (result     :not-null)
                (difficulty :not-null)
                (interval   :not-null)
-               (date       :not-null)]
-              (:primary-key [card date])
+               (due        :not-null)]
+              (:primary-key [card due])
               (:foreign-key [card] :references cards [id] :on-delete :cascade))))
   "Flasher database structure.")
 
