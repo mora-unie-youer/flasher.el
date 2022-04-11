@@ -52,7 +52,7 @@
   :group 'flasher-dashboard)
 
 (defun flasher-dashboard-view ()
-  "Show the Flasher dashboard view in the current buffer."
+  "Show the Flasher dashboard view in the dashboard buffer."
   (let ((buf (get-buffer-create flasher-dashboard-buffer-name))
         (cards (flasher-core--map-cards #'flasher-card--get-variants))
         (inhibit-read-only t))
