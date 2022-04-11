@@ -42,9 +42,30 @@
   "Flasher reviewing mode."
   :group 'flasher)
 
+(defcustom flasher-review-buffer-name "*Flasher Review*"
+  "Name of the buffer to use for displaying the review view."
+  :group 'flasher-review
+  :type 'string)
+
 (define-derived-mode flasher-review-mode special-mode "Flasher Review"
   "This mode is used to review learned flashcards."
   :group 'flasher-review)
+
+(defun flasher-review-view ()
+  "Show the Flasher review view in the review buffer."
+  (let ((buf (get-buffer-create flasher-review-buffer-name)))
+    (with-current-buffer buf
+      (erase-buffer)
+      (insert (propertize "Flasher Review\n\n" 'face 'org-level-1)))))
+
+;;;###autoload
+(defun flasher-review ()
+  "Open Flasher review."
+  (interactive)
+  (flasher-review-view)
+  (switch-to-buffer flasher-review-buffer-name)
+  (goto-char (point-min))
+  (flasher-review-mode))
 
 (provide 'flasher-review)
 
