@@ -42,7 +42,7 @@
   "Flasher 'double card."
   :group 'flasher)
 
-(defvar flasher-type-double-variant nil
+(defvar flasher-type-double--variant nil
   "Current card variant.")
 
 (defun flasher-type-double-init ()
@@ -60,12 +60,12 @@
                 ("front" (flasher-core--card-front-side))
                 ("back" (flasher-core--card-back-side)))))
     (flasher-review-with-buffer
-     (setq flasher-type-double-variant variant)
+     (setq flasher-type-double--variant variant)
      (insert side "\n"))))
 
 (defun flasher-type-double-flip ()
   "Flip 'double card."
-  (let* ((variant flasher-type-double-variant)
+  (let* ((variant flasher-type-double--variant)
          (side (pcase variant
                  ("front" (flasher-core--card-back-side))
                  ("back" (flasher-core--card-front-side)))))
