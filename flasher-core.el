@@ -91,6 +91,19 @@
           (set-text-properties 0 (length text) nil text)
           text)))))
 
+(defun flasher-core--card-side-heading (side)
+  "Return point marker at the beginning of card's SIDE subheading."
+  (let ((level (cl-first (org-heading-components)))
+        found)
+    (org-map-entries (lambda ()
+                       (when (let ((components (org-heading-components)))
+                               (and (not found)
+                                    (= (cl-first components) (1+ level))
+                                    (string= (cl-fifth components) side)))
+                         (setq found (point-marker))))
+                     t 'tree)
+    found))
+
 (defun flasher-core--card-front-side ()
   "Return card's front side."
   (if-let ((heading (flasher-core--card-side-heading "Front")))
