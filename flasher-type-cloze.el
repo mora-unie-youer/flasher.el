@@ -42,6 +42,13 @@
   "Flasher 'cloze card."
   :group 'flasher)
 
+(defconst flasher-type-cloze--regex (rx "{"
+                                        (: "{" (group (+ (not (any "}")))) "}")
+                                        (? "{" (group (+ (not (any "}")))) "}")
+                                        (? "@" (group (+ digit)))
+                                        "}")
+  "Regular expression to match cloze holes.")
+
 (defun flasher-type-cloze-init ()
   "Initialize 'cloze card."
   (interactive)
