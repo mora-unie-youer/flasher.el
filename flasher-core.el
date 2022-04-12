@@ -91,6 +91,14 @@
           (set-text-properties 0 (length text) nil text)
           text)))))
 
+(defun flasher-core--card-explain-marker ()
+  "Return marker to card's explanation."
+  (if-let ((has-tag (member flasher-card-explain-tag (org-get-tags))))
+      (save-excursion
+        (re-search-backward flasher-card-explain-tag nil t)
+        (point-marker))
+    (error "Card doesn't have explanation")))
+
 (defun flasher-core--card-task ()
   "Return card's task."
   (if-let ((has-tag (member flasher-card-task-tag (org-get-tags)))
