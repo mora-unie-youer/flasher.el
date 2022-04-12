@@ -79,17 +79,17 @@
         (goto-char heading)
         (end-of-line 1)
         (setq text (buffer-substring (min (1+ (point)) (point-max))
-                                     (progn (outline-next-heading) (point))))
-        (with-temp-buffer
-          (insert text)
-          (goto-char (point-min))
-          (while (re-search-forward org-drawer-regexp nil t)
-            (delete-region (match-beginning 0)
-                           (progn (re-search-forward "^[ \t]*:END:.*\n?" nil t)
-                                  (point))))
-          (setq text (buffer-string))
-          (set-text-properties 0 (length text) nil text)
-          text)))))
+                                     (progn (outline-next-heading) (point))))))
+    (with-temp-buffer
+      (insert text)
+      (goto-char (point-min))
+      (while (re-search-forward org-drawer-regexp nil t)
+        (delete-region (match-beginning 0)
+                       (progn (re-search-forward "^[ \t]*:END:.*\n?" nil t)
+                              (point))))
+      (setq text (replace-regexp-in-string "\n$" "" (buffer-string)))
+      (set-text-properties 0 (length text) nil text)
+      text)))
 
 (defun flasher-core--card-explain-marker ()
   "Return marker to card's explanation."
