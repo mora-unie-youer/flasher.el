@@ -91,6 +91,14 @@
           (set-text-properties 0 (length text) nil text)
           text)))))
 
+(defun flasher-core--card-task ()
+  "Return card's task."
+  (if-let ((has-tag (member flasher-card-task-tag (org-get-tags)))
+           (heading (save-excursion (re-search-backward flasher-card-task-tag nil t)
+                                    (point-marker))))
+      (flasher-core--heading-text heading)
+    (error "Card doesn't have task")))
+
 (defun flasher-core--card-side-heading (side)
   "Return point marker at the beginning of card's SIDE subheading."
   (let ((level (cl-first (org-heading-components)))
