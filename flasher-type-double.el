@@ -42,6 +42,9 @@
   "Flasher 'double card."
   :group 'flasher)
 
+(defvar flasher-type-double-variant nil
+  "Current card variant.")
+
 (defun flasher-type-double-init ()
   "Initialize 'double card."
   (interactive)
@@ -51,11 +54,23 @@
   "Initialize 'double card variants for card with ID."
   (flasher-card--update-variants '("front" "back") id))
 
-(defun flasher-type-double-setup (_variant)
-  "Prepare a 'double card for review.")
+(defun flasher-type-double-setup (variant)
+  "Prepare a 'double card VARIANT for review."
+  (let ((side (pcase variant
+                ("front" (flasher-core--card-front-side))
+                ("back" (flasher-core--card-back-side)))))
+    (flasher-review-with-buffer
+     (setq flasher-type-double-variant variant)
+     (insert side "\n"))))
 
 (defun flasher-type-double-flip ()
-  "Flip 'double card.")
+  "Flip 'double card."
+  (let* ((variant flasher-type-double-variant)
+         (side (pcase variant
+                 ("front" (flasher-core--card-back-side))
+                 ("back" (flasher-core--card-front-side)))))
+    (flasher-review-with-buffer
+     (insert side "\n"))))
 
 (defun flasher-type-double-update ()
   "Update review data for 'double card.")
