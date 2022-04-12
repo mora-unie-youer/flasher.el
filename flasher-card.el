@@ -59,17 +59,17 @@
 
 (defconst flasher-card--headline-regexp
   (rx-to-string `(: bol (+ "*") (+ space) (* any)
-                  (group ":" ,flasher-card-tag ":") eol) t)
+                  (group ":" ,flasher-card-tag ":") (* any) eol) t)
   "Regular expression to match headline tagged as card.")
 
 (defconst flasher-card--explain-regexp
   (rx-to-string `(: bol (+ "*") (+ space) (* any)
-                  (group ":" ,flasher-card-explain-tag ":") eol) t)
+                  (group ":" ,flasher-card-explain-tag ":") (* any) eol) t)
   "Regular expression to match headline tagged as card.")
 
 (defconst flasher-card--task-regexp
   (rx-to-string `(: bol (+ "*") (+ space) (* any)
-                  (group ":" ,flasher-card-task-tag ":") eol) t)
+                  (group ":" ,flasher-card-task-tag ":") (* any) eol) t)
   "Regular expression to match headline tagged as card.")
 
 (defcustom flasher-card-intervals-before-old 10
