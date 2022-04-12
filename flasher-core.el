@@ -71,21 +71,8 @@
   (org-set-tags
    (remove tag (org-get-tags nil 'local))))
 
-(defun flasher-core--card-side-heading (side)
-  "Return point marker at the beginning of card's SIDE subheading."
-  (let ((level (cl-first (org-heading-components)))
-        found)
-    (org-map-entries (lambda ()
-                       (when (let ((components (org-heading-components)))
-                               (and (not found)
-                                    (= (cl-first components) (1+ level))
-                                    (string= (cl-fifth components) side)))
-                         (setq found (point-marker))))
-                     t 'tree)
-    found))
-
-(defun flasher-core--card-side-heading-text (heading)
-  "Return list of strings (text splitted by newline) from HEADING point marker."
+(defun flasher-core--heading-text (heading)
+  "Return text from HEADING point marker."
   (let (text)
     (with-current-buffer (marker-buffer heading)
       (save-excursion
@@ -100,25 +87,26 @@
             (delete-region (match-beginning 0)
                            (progn (re-search-forward "^[ \t]*:END:.*\n?" nil t)
                                   (point))))
-          (split-string (replace-regexp-in-string "\n$" "" (buffer-string))
-                        "\n"))))))
+          (setq text (buffer-string))
+          (set-text-properties 0 (length text) nil text)
+          text)))))
 
 (defun flasher-core--card-front-side ()
   "Return card's front side."
   (if-let ((heading (flasher-core--card-side-heading "Front")))
-      (flasher-core--card-side-heading-text heading)
+      (flasher-core--heading-text heading)
     (cl-fifth (org-heading-components))))
 
 (defun flasher-core--card-back-side ()
   "Return card's front side."
   (if-let ((heading (flasher-core--card-side-heading "Back")))
-      (flasher-core--card-side-heading-text heading)
-    (flasher-core--card-side-heading-text (point-marker))))
+      (flasher-core--heading-text heading)
+    (flasher-core--heading-text (point-marker))))
 
 (defun flasher-core--card-side (side)
   "Return card's SIDE."
   (if-let ((heading (flasher-core--card-side-heading side)))
-      (flasher-core--card-side-heading-text heading)
+      (flasher-core--heading-text heading)
     (error "Card doesn't have '%s' side" side)))
 
 (provide 'flasher-core)
