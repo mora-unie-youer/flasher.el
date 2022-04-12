@@ -95,13 +95,13 @@
   "Return marker to card's explanation."
   (if-let ((has-tag (member flasher-card-explain-tag (org-get-tags))))
       (save-excursion
-        (re-search-backward flasher-card-explain-tag nil t)
+        (re-search-backward flasher-card--explain-regexp nil t)
         (point-marker))))
 
 (defun flasher-core--card-task ()
   "Return card's task."
   (if-let ((has-tag (member flasher-card-task-tag (org-get-tags)))
-           (heading (save-excursion (re-search-backward flasher-card-task-tag nil t)
+           (heading (save-excursion (re-search-backward flasher-card--task-regexp nil t)
                                     (point-marker))))
       (flasher-core--heading-text heading)))
 
