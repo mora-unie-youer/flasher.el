@@ -52,10 +52,16 @@
   (flasher-card--update-variants '("front") id))
 
 (defun flasher-type-normal-setup (_variant)
-  "Prepare a 'normal card for review.")
+  "Prepare a 'normal card for review."
+  (let ((front (flasher-core--card-front-side)))
+    (flasher-review-with-buffer
+     (insert front "\n"))))
 
 (defun flasher-type-normal-flip ()
-  "Flip 'normal card.")
+  "Flip 'normal card."
+  (let ((back (flasher-core--card-back-side)))
+    (flasher-review-with-buffer
+     (insert back "\n"))))
 
 (defun flasher-type-normal-update ()
   "Update review data for 'normal card.")
