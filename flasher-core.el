@@ -103,6 +103,24 @@
           (split-string (replace-regexp-in-string "\n$" "" (buffer-string))
                         "\n"))))))
 
+(defun flasher-core--card-front-side ()
+  "Return card's front side."
+  (if-let ((heading (flasher-core--card-side-heading "Front")))
+      (flasher-core--card-side-heading-text heading)
+    (cl-fifth (org-heading-components))))
+
+(defun flasher-core--card-back-side ()
+  "Return card's front side."
+  (if-let ((heading (flasher-core--card-side-heading "Back")))
+      (flasher-core--card-side-heading-text heading)
+    (flasher-core--card-side-heading-text (point-marker))))
+
+(defun flasher-core--card-side (side)
+  "Return card's SIDE."
+  (if-let ((heading (flasher-core--card-side-heading side)))
+      (flasher-core--card-side-heading-text heading)
+    (error "Card doesn't have '%s' side" side)))
+
 (provide 'flasher-core)
 
 ;;; flasher-core.el ends here
