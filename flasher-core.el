@@ -84,6 +84,25 @@
                      t 'tree)
     found))
 
+(defun flasher-core--card-side-heading-text (heading)
+  "Return list of strings (text splitted by newline) from HEADING point marker."
+  (let (text)
+    (with-current-buffer (marker-buffer heading)
+      (save-excursion
+        (goto-char heading)
+        (end-of-line 1)
+        (setq text (buffer-substring (min (1+ (point)) (point-max))
+                                     (progn (outline-next-heading) (point))))
+        (with-temp-buffer
+          (insert text)
+          (goto-char (point-min))
+          (while (re-search-forward org-drawer-regexp nil t)
+            (delete-region (match-beginning 0)
+                           (progn (re-search-forward "^[ \t]*:END:.*\n?" nil t)
+                                  (point))))
+          (split-string (replace-regexp-in-string "\n$" "" (buffer-string))
+                        "\n"))))))
+
 (provide 'flasher-core)
 
 ;;; flasher-core.el ends here
