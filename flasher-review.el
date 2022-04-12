@@ -51,6 +51,10 @@
   "This mode is used to review learned flashcards."
   :group 'flasher-review)
 
+(defmacro flasher-review-with-buffer (&rest body)
+  "Eval BODY with Flasher review buffer."
+  `(with-current-buffer (get-buffer-create flasher-review-buffer-name) ,@body))
+
 (defun flasher-review-view ()
   "Show the Flasher review view in the review buffer."
   (let ((buf (get-buffer-create flasher-review-buffer-name)))
