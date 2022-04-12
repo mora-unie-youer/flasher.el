@@ -57,10 +57,16 @@
 
 (defun flasher-review-view ()
   "Show the Flasher review view in the review buffer."
-  (let ((buf (get-buffer-create flasher-review-buffer-name)))
-    (with-current-buffer buf
-      (erase-buffer)
-      (insert (propertize "Flasher Review\n\n" 'face 'org-level-1)))))
+  (let ((cards (flasher-core--map-cards #'flasher-card--get-info))
+        (inhibit-read-only t))
+    (flasher-review-with-buffer
+     (erase-buffer)
+     (insert (propertize "Flasher Review\n\n" 'face 'org-level-1)))
+    (pcase-dolist (`(,id ,type ,variants) cards)
+      (org-id-goto id)
+      (dolist (variant variants)
+        (funcall (flasher-card--type-setup-fn type) (cl-second variant))
+        (funcall (flasher-card--type-flip-fn type))))))
 
 ;;;###autoload
 (defun flasher-review ()
