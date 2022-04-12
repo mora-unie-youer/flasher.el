@@ -47,8 +47,29 @@
   :group 'flasher-card
   :type 'string)
 
+(defcustom flasher-card-explain-tag "explain"
+  "Tag for marking headlines as explanations."
+  :group 'flasher-card
+  :type 'string)
+
+(defcustom flasher-card-task-tag "task"
+  "Tag for marking headlines as tasks."
+  :group 'flasher-card
+  :type 'string)
+
 (defconst flasher-card--headline-regexp
-  (rx-to-string `(: bol (+ "*") (+ space) (* any) (group ":" ,flasher-card-tag ":") eol) t)
+  (rx-to-string `(: bol (+ "*") (+ space) (* any)
+                  (group ":" ,flasher-card-tag ":") eol) t)
+  "Regular expression to match headline tagged as card.")
+
+(defconst flasher-card--explain-regexp
+  (rx-to-string `(: bol (+ "*") (+ space) (* any)
+                  (group ":" ,flasher-card-explain-tag ":") eol) t)
+  "Regular expression to match headline tagged as card.")
+
+(defconst flasher-card--task-regexp
+  (rx-to-string `(: bol (+ "*") (+ space) (* any)
+                  (group ":" ,flasher-card-task-tag ":") eol) t)
   "Regular expression to match headline tagged as card.")
 
 (defcustom flasher-card-intervals-before-old 10
