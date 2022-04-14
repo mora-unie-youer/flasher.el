@@ -79,6 +79,15 @@
         (setf (alist-get id holes) holes-id)))
     holes))
 
+(defun flasher-type-cloze--hole-visible-p (type id current-id)
+  "Check if hole with ID is visible.
+TYPE is type of cloze card.
+CURRENT-ID is ID of current cloze card variant."
+  (pcase type
+    ("delete" t)
+    ("enum" (< id current-id))
+    (_ (error "Unknown cloze card type %s" type))))
+
 (defun flasher-type-cloze-init ()
   "Initialize 'cloze card."
   (interactive)
