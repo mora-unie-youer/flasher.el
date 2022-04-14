@@ -61,7 +61,7 @@
   "Flip 'normal card."
   (let ((back (flasher-core--card-back-side)))
     (flasher-review-with-buffer
-      (insert back "\n"))))
+      (insert "\n" back "\n"))))
 
 (defun flasher-type-normal-update ()
   "Update review data for 'normal card.")

@@ -70,7 +70,7 @@
                  ("front" (flasher-core--card-back-side))
                  ("back" (flasher-core--card-front-side)))))
     (flasher-review-with-buffer
-      (insert side "\n"))))
+      (insert "\n" side "\n"))))
 
 (defun flasher-type-double-update ()
   "Update review data for 'double card.")
