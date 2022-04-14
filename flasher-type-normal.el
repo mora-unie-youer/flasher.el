@@ -55,13 +55,13 @@
   "Prepare a 'normal card for review."
   (let ((front (flasher-core--card-front-side)))
     (flasher-review-with-buffer
-     (insert front "\n"))))
+      (insert front "\n"))))
 
 (defun flasher-type-normal-flip ()
   "Flip 'normal card."
   (let ((back (flasher-core--card-back-side)))
     (flasher-review-with-buffer
-     (insert back "\n"))))
+      (insert back "\n"))))
 
 (defun flasher-type-normal-update ()
   "Update review data for 'normal card.")

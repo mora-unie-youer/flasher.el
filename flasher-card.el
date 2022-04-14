@@ -180,14 +180,14 @@ UPDATE-FN is function to update a card when it's contents have changed."
   (unless old-variants (setq old-variants (flasher-card--get-variants id)))
   (setq old-variants (cdr old-variants))
   (flasher-db-transaction
-   ;; Removing unused variants
-   (pcase-dolist (`(,id ,variant) old-variants)
-     (unless (member variant variants)
-       (flasher-db-query [:delete-from cards :where (= id $s1)] id)))
-   ;; Adding new variants
-   (dolist (variant variants)
-     (flasher-db-query [:insert-or-ignore-into cards [uuid variant] :values $v1]
-                       (vector id variant)))))
+    ;; Removing unused variants
+    (pcase-dolist (`(,id ,variant) old-variants)
+      (unless (member variant variants)
+        (flasher-db-query [:delete-from cards :where (= id $s1)] id)))
+    ;; Adding new variants
+    (dolist (variant variants)
+      (flasher-db-query [:insert-or-ignore-into cards [uuid variant] :values $v1]
+                        (vector id variant)))))
 
 (defun flasher-card-variant--first-result (id)
   "Return first result of CARD variant with ID."

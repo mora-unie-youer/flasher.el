@@ -60,8 +60,8 @@
                 ("front" (flasher-core--card-front-side))
                 ("back" (flasher-core--card-back-side)))))
     (flasher-review-with-buffer
-     (setq flasher-type-double--variant variant)
-     (insert side "\n"))))
+      (setq flasher-type-double--variant variant)
+      (insert side "\n"))))
 
 (defun flasher-type-double-flip ()
   "Flip 'double card."
@@ -70,7 +70,7 @@
                  ("front" (flasher-core--card-back-side))
                  ("back" (flasher-core--card-front-side)))))
     (flasher-review-with-buffer
-     (insert side "\n"))))
+      (insert side "\n"))))
 
 (defun flasher-type-double-update ()
   "Update review data for 'double card.")

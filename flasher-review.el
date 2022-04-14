@@ -53,6 +53,7 @@
 
 (defmacro flasher-review-with-buffer (&rest body)
   "Eval BODY with Flasher review buffer."
+  (declare (indent defun))
   `(with-current-buffer (get-buffer-create flasher-review-buffer-name) ,@body))
 
 (defun flasher-review-view ()
