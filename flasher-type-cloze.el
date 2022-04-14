@@ -53,6 +53,14 @@
                                                 (? (group (+ digit))))
   "Regular expression to match cloze variants.")
 
+(defun flasher-type-cloze--parse-variant (variant)
+  "Return (SIDE . INDEX) by parsing cloze card VARIANT."
+  (save-match-data
+    (string-match flasher-type-cloze--variant-regex variant)
+    (let ((side (match-string 1 variant))
+          (id (match-string 2 variant)))
+      (cons side (if id (string-to-number id))))))
+
 (defun flasher-type-cloze-init ()
   "Initialize 'cloze card."
   (interactive)
