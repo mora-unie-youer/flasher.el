@@ -61,6 +61,22 @@
           (id (match-string 2 variant)))
       (cons side (if id (string-to-number id))))))
 
+(defun flasher-type-cloze--parse-holes ()
+  "Return list of (ID . HOLES) parsed from cloze holes."
+  (let (holes (next-id 0))
+    (while (re-search-forward flasher-type-cloze--regex nil t)
+      (let* ((id-string (match-string 3))
+             (id (if id-string (string-to-number id-string)))
+             (holes-id (alist-get id holes)))
+        (cond
+         ((or (null id) (= id next-id))
+          (setq id next-id)
+          (cl-incf next-id)
+          (push (cons id (list (match-data))) holes))
+         ((null holes-id) (error "IDs must be in order"))
+         (t (push (match-data) holes-id)))))
+    holes))
+
 (defun flasher-type-cloze-init ()
   "Initialize 'cloze card."
   (interactive)
