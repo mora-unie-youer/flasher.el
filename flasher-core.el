@@ -48,6 +48,7 @@
 (defun flasher-core--map-cards (func)
   "Call FUNC at each entry marked with Flasher card tag."
   (with-temp-buffer
+    (org-mode)
     (mapc #'insert-file-contents (flasher-core--scope))
     (goto-char (point-min))
     (let ((org-tags-exclude-from-inheritance (list flasher-card-tag))
