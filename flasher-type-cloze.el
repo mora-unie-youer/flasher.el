@@ -82,12 +82,27 @@
   (interactive)
   (flasher-card-init "cloze"))
 
+(defun flasher-type-cloze--get-variants (side &optional holes)
+  "Generate 'cloze card variants from HOLES for SIDE."
+  (let (variants)
+    (unless holes (setq holes (flasher-type-cloze--parse-holes)))
+    (if holes
+        (dolist (holes-id holes)
+          (push (concat side (number-to-string (car holes-id))) variants))
+      (push side variants))
+    variants))
+
 (defun flasher-type-cloze-var-init (&optional id)
   "Initialize 'cloze card variants for card with ID."
-  (flasher-card--update-variants '("1" "2" "3") id))
+  (let ((back (flasher-core--card-back-side))
+        variants)
+    (with-temp-buffer
+      (save-excursion (insert back "\n"))
+      (setq variants (flasher-type-cloze--get-variants "back")))
+    (flasher-card--update-variants variants id)))
 
-(defun flasher-type-cloze-setup (_variant)
-  "Prepare a 'cloze card for review.")
+(defun flasher-type-cloze-setup (variant)
+  "Prepare a 'cloze card VARIANT for review.")
 
 (defun flasher-type-cloze-flip ()
   "Flip 'cloze card.")
