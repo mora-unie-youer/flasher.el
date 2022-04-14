@@ -61,15 +61,14 @@
   (let ((cards (flasher-core--map-cards #'flasher-card--get-info))
         (inhibit-read-only t))
     (flasher-review-with-buffer
-     (erase-buffer)
-     (insert (propertize "Flasher Review\n\n" 'face 'org-level-1)))
+      (erase-buffer)
+      (insert (propertize "Flasher Review\n\n" 'face 'org-level-1)))
     (pcase-dolist (`(,id ,type ,variants) cards)
       (org-id-goto id)
       (dolist (variant variants)
         (funcall (flasher-card--type-setup-fn type) (cl-second variant))
-        (flasher-review-with-buffer (insert "------------\n"))
         (funcall (flasher-card--type-flip-fn type))
-        (flasher-review-with-buffer (insert "\n"))))))
+        (flasher-review-with-buffer (insert "\n\n\n"))))))
 
 ;;;###autoload
 (defun flasher-review ()
