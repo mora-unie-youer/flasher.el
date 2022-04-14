@@ -57,8 +57,8 @@
 (defun flasher-type-double-setup (variant)
   "Prepare a 'double card VARIANT for review."
   (let ((side (pcase variant
-                ("front" (flasher-core--card-front-side))
-                ("back" (flasher-core--card-back-side)))))
+                ("front" (flasher-core--card-back-side))
+                ("back" (flasher-core--card-front-side)))))
     (flasher-review-with-buffer
       (setq flasher-type-double--variant variant)
       (insert side "\n"))))
@@ -67,8 +67,8 @@
   "Flip 'double card."
   (let* ((variant flasher-type-double--variant)
          (side (pcase variant
-                 ("front" (flasher-core--card-back-side))
-                 ("back" (flasher-core--card-front-side)))))
+                 ("front" (flasher-core--card-front-side))
+                 ("back" (flasher-core--card-back-side)))))
     (flasher-review-with-buffer
       (insert "\n" side "\n"))))
 
