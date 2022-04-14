@@ -48,8 +48,16 @@
   (flasher-card-init "cloze-double"))
 
 (defun flasher-type-cloze-double-var-init (&optional id)
-  "Initialize 'cloze-double card variants for card with ID."
-  (flasher-card--update-variants '("front1" "front2" "back1") id))
+  "Initialize 'cloze card variants for card with ID."
+  (let ((front (flasher-core--card-front-side))
+        (back (flasher-core--card-back-side))
+        variants)
+    (with-temp-buffer
+      (save-excursion (insert front "\n"))
+      (setq variants (flasher-type-cloze--get-variants "front"))
+      (save-excursion (insert back "\n"))
+      (setq variants (flasher-type-cloze--get-variants "back" variants)))
+    (flasher-card--update-variants variants id)))
 
 (defun flasher-type-cloze-double-setup (_variant)
   "Prepare a 'cloze-double card for review.")
