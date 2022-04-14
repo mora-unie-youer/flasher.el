@@ -54,9 +54,9 @@
         variants)
     (with-temp-buffer
       (save-excursion (insert back "\n"))
-      (setq variants (flasher-type-cloze--get-variants "back" variants))
+      (setq variants (flasher-type-cloze--get-variants "back"))
       (save-excursion (insert front "\n"))
-      (setq variants (flasher-type-cloze--get-variants "front")))
+      (setq variants (flasher-type-cloze--get-variants "front" variants)))
     (flasher-card--update-variants variants id)))
 
 (defun flasher-type-cloze-double-setup (_variant)
