@@ -49,7 +49,8 @@
                                         "}")
   "Regular expression to match cloze holes.")
 
-(defconst flasher-type-cloze--variant-regex (rx "front" (group (+ digit)))
+(defconst flasher-type-cloze--variant-regex (rx (group (| "front" "back"))
+                                                (? (group (+ digit))))
   "Regular expression to match cloze variants.")
 
 (defun flasher-type-cloze-init ()
