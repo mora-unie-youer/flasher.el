@@ -47,9 +47,19 @@
   :group 'flasher-review
   :type 'string)
 
-(define-derived-mode flasher-review-mode special-mode "Flasher Review"
-  "This mode is used to review learned flashcards."
+(defclass flasher-review-session ()
+  ((current-card :initform nil
+                 :documentation "Current card in review session.")
+   (cards :initarg cards
+          :initform nil
+          :documentation "Cards in this review session.")
+   (results :initform '(:total 0 :0 0 :1 0 :2 0 :3 0 :4 0 :5 0)
+            :documentation "Result statistics for this review session."))
+  "Object used for Flasher review session."
   :group 'flasher-review)
+
+(defvar flasher-review--current-session nil
+  "It is an `flasher-review-session' object which represents current session.")
 
 (defmacro flasher-review-with-buffer (&rest body)
   "Eval BODY with Flasher review buffer."
@@ -79,6 +89,10 @@
   (switch-to-buffer flasher-review-buffer-name)
   (goto-char (point-min))
   (flasher-review-mode))
+
+(define-derived-mode flasher-review-mode special-mode "Flasher Review"
+  "This mode is used to review learned flashcards."
+  :group 'flasher-review)
 
 (provide 'flasher-review)
 

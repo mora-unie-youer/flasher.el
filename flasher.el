@@ -66,7 +66,6 @@
   (require 'flasher-type-typed-double)
   (require 'flasher-type-cloze)
   (require 'flasher-type-cloze-double)
-  (require 'flasher-session)
   (require 'flasher-dashboard)
   (require 'flasher-review))
 
