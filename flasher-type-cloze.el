@@ -169,7 +169,14 @@ ALL-VISIBLE can be used to mark all holes visible."
   "Show 'cloze card hole hint.")
 
 (defun flasher-type-cloze-flip ()
-  "Flip 'cloze card.")
+  "Flip 'cloze card."
+  (dolist (overlay flasher-type-cloze--text-overlay)
+    (overlay-put overlay 'invisible nil))
+  (dolist (overlay flasher-type-cloze--hint-overlay)
+    (let ((start (overlay-start overlay)) (end (overlay-end overlay)))
+      (flasher-review-with-buffer
+        (remove-overlays start end)
+        (flasher-core--hide-region start end)))))
 
 (defun flasher-type-cloze-update ()
   "Update review data for 'cloze card.")
