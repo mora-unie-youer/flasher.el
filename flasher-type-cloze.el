@@ -155,7 +155,15 @@ ALL-VISIBLE can be used to mark all holes visible."
     (flasher-card--update-variants variants id)))
 
 (defun flasher-type-cloze-setup (variant)
-  "Prepare a 'cloze card VARIANT for review.")
+  "Prepare a 'cloze card VARIANT for review."
+  (setq flasher-type-cloze--text-overlay '())
+  (setq flasher-type-cloze--hint-overlay '())
+  (let ((back (flasher-core--card-back-side))
+        (type (org-entry-get (point) flasher-type-cloze-type-property))
+        (variant (flasher-type-cloze--parse-variant variant)))
+    (flasher-review-with-buffer
+      (save-excursion (insert back "\n"))
+      (flasher-type-cloze--hide-holes type (cdr variant)))))
 
 (defun flasher-type-cloze-hint ()
   "Show 'cloze card hole hint.")
