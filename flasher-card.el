@@ -183,7 +183,11 @@ UPDATE-FN is function to update a card when it's contents have changed."
   "Get CARD info at point or with ID."
   (save-excursion
     (when id (org-id-goto id))
-    (list (org-id-get) (flasher-card--get-type) (flasher-card--get-variants id))))
+    (let ((variants (flasher-card--get-variants id)))
+      (unless variants
+        (flasher-card--update)
+        (setq variants (flasher-card--get-variants id)))
+      (list (org-id-get) (flasher-card--get-type) variants))))
 
 (defun flasher-card--update-variants (variants &optional id old-variants)
   "Update VARIANTS of CARD at point or with ID according to OLD-VARIANTS."
