@@ -42,6 +42,11 @@
   "Flasher 'cloze card."
   :group 'flasher)
 
+(defcustom flasher-type-cloze-type-property "CLOZE_TYPE"
+  "Property used to store cloze type."
+  :group 'flasher-type-cloze
+  :type 'string)
+
 (defconst flasher-type-cloze--regex (rx "{"
                                         (: "{" (group (+ (not (any "}")))) "}")
                                         (? "{" (group (+ (not (any "}")))) "}")
