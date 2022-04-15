@@ -87,7 +87,7 @@
   "Update review data for 'cloze-double card.")
 
 (flasher-card-register-type
- 'cloze-double
+ 'cloze-double 'sort
  'flasher-type-cloze-double-var-init
  'flasher-type-cloze-double-setup
  'flasher-type-cloze-double-hint

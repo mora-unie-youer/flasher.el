@@ -184,7 +184,7 @@ ALL-VISIBLE can be used to mark all holes visible."
   "Update review data for 'cloze card.")
 
 (flasher-card-register-type
- 'cloze
+ 'cloze 'sort
  'flasher-type-cloze-var-init
  'flasher-type-cloze-setup
  'flasher-type-cloze-hint

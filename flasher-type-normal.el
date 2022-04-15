@@ -70,7 +70,7 @@
   "Update review data for 'normal card.")
 
 (flasher-card-register-type
- 'normal
+ 'normal nil
  'flasher-type-normal-var-init
  'flasher-type-normal-setup
  'flasher-type-normal-hint

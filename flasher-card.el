@@ -87,7 +87,7 @@ FLASHER-CARD-INTERVAL-OVERDUE-FACTOR * LAST-INTERVAL days in the past."
 
 (defvar flasher-card-types '()
   "Alist for registering card types.
-Entries should be lists (name var-init-fn setup-fn hint-fn flip-fn update-fn).
+Entries have form (name sort var-init-fn setup-fn hint-fn flip-fn update-fn).
 Use `flasher-card-register-type' for adding card types.")
 
 (defcustom flasher-card-type-property "CARD_TYPE"
@@ -105,35 +105,40 @@ Use `flasher-card-register-type' for adding card types.")
   "Return non-nil if TYPE exists."
   (not (null (flasher-card-type type))))
 
+(defun flasher-card--type-sort-p (type)
+  "Does card variants of TYPE need to be sorted?"
+  (not (null (cl-first (flasher-card-type type)))))
+
 (defun flasher-card--type-var-init-fn (type)
   "Get the variants init function for a card of TYPE."
-  (cl-first (flasher-card-type type)))
+  (cl-second (flasher-card-type type)))
 
 (defun flasher-card--type-setup-fn (type)
   "Get the setup function for a card of TYPE."
-  (cl-second (flasher-card-type type)))
+  (cl-third (flasher-card-type type)))
 
 (defun flasher-card--type-hint-fn (type)
   "Get the hint function for a card of TYPE."
-  (cl-third (flasher-card-type type)))
+  (cl-fourth (flasher-card-type type)))
 
 (defun flasher-card--type-flip-fn (type)
   "Get the flip function for a card of TYPE."
-  (cl-fourth (flasher-card-type type)))
+  (cl-fifth (flasher-card-type type)))
 
 (defun flasher-card--type-update-fn (type)
   "Get the update function for a card of TYPE."
-  (cl-fifth (flasher-card-type type)))
+  (cl-sixth (flasher-card-type type)))
 
-(defun flasher-card-register-type (name var-init-fn setup-fn hint-fn flip-fn update-fn)
+(defun flasher-card-register-type (name sort var-init-fn setup-fn hint-fn flip-fn update-fn)
   "Register a new card type.
 NAME is name of the new type.
+SORT - if non-nil, card variants must be sorted.
 VAR-INIT-FN is function for initializing card variants.
 SETUP-FN is function for initializing a new card of this type.
 HINT-FN is function for showing hint for a card.
 FLIP-FN is function for flipping a card during review.
 UPDATE-FN is function to update a card when it's contents have changed."
-  (push (list name var-init-fn setup-fn hint-fn flip-fn update-fn) flasher-card-types))
+  (push (list name sort var-init-fn setup-fn hint-fn flip-fn update-fn) flasher-card-types))
 
 
 (defun flasher-card-p ()

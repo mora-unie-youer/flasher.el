@@ -64,7 +64,7 @@
   "Update review data for 'typed-double card.")
 
 (flasher-card-register-type
- 'typed-double
+ 'typed-double nil
  'flasher-type-typed-double-var-init
  'flasher-type-typed-double-setup
  'flasher-type-typed-double-hint
