@@ -59,14 +59,28 @@
       (setq variants (flasher-type-cloze--get-variants "front" variants)))
     (flasher-card--update-variants variants id)))
 
-(defun flasher-type-cloze-double-setup (_variant)
-  "Prepare a 'cloze-double card for review.")
+(defun flasher-type-cloze-double-setup (variant)
+  "Prepare a 'cloze-double card VARIANT for review."
+  (setq flasher-type-cloze--text-overlay '())
+  (setq flasher-type-cloze--hint-overlay '())
+  (let* ((type (org-entry-get (point) flasher-type-cloze-type-property))
+         (variant (flasher-type-cloze--parse-variant variant))
+         (side (car variant))
+         (id (cdr variant))
+         (front (flasher-core--card-front-side))
+         (back (flasher-core--card-back-side)))
+    (flasher-review-with-buffer
+      (save-excursion (insert (pcase side ("front" back) ("back" front)) "\n"))
+      (flasher-type-cloze--hide-holes nil nil t)
+      (save-excursion (insert (pcase side ("front" front) ("back" back)) "\n"))
+      (flasher-type-cloze--hide-holes type id))))
 
 (defun flasher-type-cloze-double-hint ()
   "Show 'cloze-double card hint.")
 
 (defun flasher-type-cloze-double-flip ()
-  "Flip 'cloze-double card.")
+  "Flip 'cloze-double card."
+  (flasher-type-cloze-flip))
 
 (defun flasher-type-cloze-double-update ()
   "Update review data for 'cloze-double card.")
