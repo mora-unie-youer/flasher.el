@@ -38,6 +38,37 @@
 ;;; Code:
 (require 'flasher)
 
+(defgroup flasher-core nil
+  "Flasher core API."
+  :group 'flasher)
+
+(defun flasher-core--hide-region (from to &optional text face)
+  "."
+  (let ((overlay (make-overlay from to nil t)))
+    (overlay-put overlay 'category 'flasher-core)
+    (overlay-put overlay 'evaporate t)
+    (when face (overlay-put overlay 'face face))
+    (if (stringp text)
+        (progn
+          (overlay-put overlay 'invisible nil)
+          (overlay-put overlay 'display text))
+      (overlay-put overlay 'invisible t))
+    overlay))
+
+(defun flasher-core--make-overlay (from to &rest props)
+  "."
+  (let ((overlay (make-overlay from to nil t)))
+    (overlay-put overlay 'category 'flasher-core)
+    (cl-loop for (prop value) on props by #'cddr do
+             (overlay-put overlay prop value))
+    overlay))
+
+(defun flasher-core--overlay-surround (overlay before after &optional face)
+  "."
+  (overlay-put overlay 'before-string (propertize before 'face face))
+  (overlay-put overlay 'after-string (propertize after 'face face))
+  overlay)
+
 (defun flasher-core--scope ()
   "Convert `flasher-directories' to scope suitable for `org-map-entries'."
   (let (files)
