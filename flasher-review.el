@@ -67,8 +67,9 @@
       (org-id-goto id)
       (dolist (variant variants)
         (funcall (flasher-card--type-setup-fn type) (cl-second variant))
-        (funcall (flasher-card--type-flip-fn type))
-        (flasher-review-with-buffer (insert "\n\n\n"))))))
+        (funcall (flasher-card--type-hint-fn type))
+        (funcall (flasher-card--type-flip-fn type)))
+      (flasher-review-with-buffer (insert "\n")))))
 
 ;;;###autoload
 (defun flasher-review ()
