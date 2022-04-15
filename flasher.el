@@ -68,7 +68,6 @@
   (require 'flasher-type-cloze-double)
   (require 'flasher-session)
   (require 'flasher-dashboard)
-  (require 'flasher-learn)
   (require 'flasher-review))
 
 ;;; flasher.el ends here
