@@ -240,7 +240,7 @@ LAST-RESULT can be specified to reduce number of database calls."
     (and (> days-overdue 0)
          (> (/ days-overdue interval) flasher-card-interval-overdue-factor))))
 
-(defun flasher-card-variant--status (id &optional first-result last-result)
+(defun flasher-card-variant--status (id &optional last-result)
   "Fetch status list (STATUS DUE) of CARD variant with ID.
 DUE is the number of days overdue, see `flasher-card-variant--overdue'.
 STATUS is one of the following values:
@@ -249,8 +249,7 @@ STATUS is one of the following values:
 - :overdue
 - :young
 - :old
-FIRST-RESULT, LAST-RESULT can be specified to reduce number of database calls."
-  (unless first-result (setq first-result (flasher-card-variant--first-result id)))
+LAST-RESULT can be specified to reduce number of database calls."
   (unless last-result (setq last-result (flasher-card-variant--last-result id)))
   (let ((interval (if last-result (cl-fourth last-result) 0))
         (due (flasher-card-variant--overdue id last-result)))
