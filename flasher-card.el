@@ -200,6 +200,10 @@ UPDATE-FN is function to update a card when it's contents have changed."
       (flasher-db-query [:insert-or-ignore-into cards [uuid variant] :values $v1]
                         (vector id variant)))))
 
+(defun flasher-card-variant (id)
+  "Return CARD variant with ID."
+  (car (flasher-db-query [:select * :from cards :where (= id $s1)] id)))
+
 (defun flasher-card-variant--first-result (id)
   "Return first result of CARD variant with ID."
   (car (flasher-db-query [:select * :from results :where (= card $s1)
