@@ -76,7 +76,8 @@
       (flasher-type-cloze--hide-holes type id))))
 
 (defun flasher-type-cloze-double-hint ()
-  "Show 'cloze-double card hint.")
+  "Show 'cloze-double card hint."
+  (flasher-type-cloze-hint))
 
 (defun flasher-type-cloze-double-flip ()
   "Flip 'cloze-double card."

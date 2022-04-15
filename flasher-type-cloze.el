@@ -166,7 +166,9 @@ ALL-VISIBLE can be used to mark all holes visible."
       (flasher-type-cloze--hide-holes type (cdr variant)))))
 
 (defun flasher-type-cloze-hint ()
-  "Show 'cloze card hole hint.")
+  "Show 'cloze card hole hint."
+  (dolist (overlay flasher-type-cloze--hint-overlay)
+    (overlay-put overlay 'display nil)))
 
 (defun flasher-type-cloze-flip ()
   "Flip 'cloze card."
