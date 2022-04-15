@@ -63,6 +63,9 @@
       (setq flasher-type-double--variant variant)
       (insert side "\n"))))
 
+(defun flasher-type-double-hint ()
+  "Show 'double card hint.")
+
 (defun flasher-type-double-flip ()
   "Flip 'double card."
   (let* ((variant flasher-type-double--variant)
@@ -79,6 +82,7 @@
  'double
  'flasher-type-double-var-init
  'flasher-type-double-setup
+ 'flasher-type-double-hint
  'flasher-type-double-flip
  'flasher-type-double-update)
 

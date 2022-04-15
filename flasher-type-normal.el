@@ -57,6 +57,9 @@
     (flasher-review-with-buffer
       (insert front "\n"))))
 
+(defun flasher-type-normal-hint ()
+  "Show 'normal card hint.")
+
 (defun flasher-type-normal-flip ()
   "Flip 'normal card."
   (let ((back (flasher-core--card-back-side)))
@@ -70,6 +73,7 @@
  'normal
  'flasher-type-normal-var-init
  'flasher-type-normal-setup
+ 'flasher-type-normal-hint
  'flasher-type-normal-flip
  'flasher-type-normal-update)
 

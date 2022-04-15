@@ -54,6 +54,9 @@
 (defun flasher-type-typed-double-setup (_variant)
   "Prepare a 'typed-double card for review.")
 
+(defun flasher-type-typed-double-hint ()
+  "Show 'typed-double card hint.")
+
 (defun flasher-type-typed-double-flip ()
   "Flip 'typed-double card.")
 
@@ -64,6 +67,7 @@
  'typed-double
  'flasher-type-typed-double-var-init
  'flasher-type-typed-double-setup
+ 'flasher-type-typed-double-hint
  'flasher-type-typed-double-flip
  'flasher-type-typed-double-update)
 

@@ -54,6 +54,9 @@
 (defun flasher-type-typed-setup (_variant)
   "Prepare a 'typed card for review.")
 
+(defun flasher-type-typed-hint ()
+  "Show 'typed card hint.")
+
 (defun flasher-type-typed-flip ()
   "Flip 'typed card.")
 
@@ -64,6 +67,7 @@
  'typed
  'flasher-type-typed-var-init
  'flasher-type-typed-setup
+ 'flasher-type-typed-hint
  'flasher-type-typed-flip
  'flasher-type-typed-update)
 

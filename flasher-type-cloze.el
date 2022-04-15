@@ -157,6 +157,9 @@ ALL-VISIBLE can be used to mark all holes visible."
 (defun flasher-type-cloze-setup (variant)
   "Prepare a 'cloze card VARIANT for review.")
 
+(defun flasher-type-cloze-hint ()
+  "Show 'cloze card hole hint.")
+
 (defun flasher-type-cloze-flip ()
   "Flip 'cloze card.")
 
@@ -167,6 +170,7 @@ ALL-VISIBLE can be used to mark all holes visible."
  'cloze
  'flasher-type-cloze-var-init
  'flasher-type-cloze-setup
+ 'flasher-type-cloze-hint
  'flasher-type-cloze-flip
  'flasher-type-cloze-update)
 

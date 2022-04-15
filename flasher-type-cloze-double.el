@@ -62,6 +62,9 @@
 (defun flasher-type-cloze-double-setup (_variant)
   "Prepare a 'cloze-double card for review.")
 
+(defun flasher-type-cloze-double-hint ()
+  "Show 'cloze-double card hint.")
+
 (defun flasher-type-cloze-double-flip ()
   "Flip 'cloze-double card.")
 
@@ -72,6 +75,7 @@
  'cloze-double
  'flasher-type-cloze-double-var-init
  'flasher-type-cloze-double-setup
+ 'flasher-type-cloze-double-hint
  'flasher-type-cloze-double-flip
  'flasher-type-cloze-double-update)
 
