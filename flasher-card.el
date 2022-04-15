@@ -171,7 +171,8 @@ UPDATE-FN is function to update a card when it's contents have changed."
 (defun flasher-card--get-variants (&optional id)
   "Get CARD variants (ID VARIANT) at point or with ID."
   (unless id (setq id (org-id-get)))
-  (flasher-db-query [:select [id variant] :from cards :where (= uuid $s1)] id))
+  (flasher-db-query [:select [id variant] :from cards :where (= uuid $s1)
+                     :order-by (asc id)] id))
 
 (defun flasher-card--get-info (&optional id)
   "Get CARD info at point or with ID."
