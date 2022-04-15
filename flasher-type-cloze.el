@@ -47,6 +47,11 @@
   :group 'flasher-type-cloze
   :type 'string)
 
+(defface flasher-type-cloze-hole-face
+  '((t (:bold t)))
+  "Face for Flasher cloze card holes."
+  :group 'flasher-type-cloze)
+
 (defconst flasher-type-cloze--regex (rx "{"
                                         (: "{" (group (+ (not (any "}")))) "}")
                                         (? "{" (group (+ (not (any "}")))) "}")
@@ -57,6 +62,12 @@
 (defconst flasher-type-cloze--variant-regex (rx (group (| "front" "back"))
                                                 (? (group (+ digit))))
   "Regular expression to match cloze variants.")
+
+(defvar flasher-type-cloze--text-overlay '()
+  "Text overlay.")
+
+(defvar flasher-type-cloze--hint-overlay '()
+  "Hint overlay.")
 
 (defun flasher-type-cloze--parse-variant (variant)
   "Return (SIDE . INDEX) by parsing cloze card VARIANT."
@@ -92,6 +103,33 @@ CURRENT-ID is ID of current cloze card variant."
     ("delete" t)
     ("enum" (< id current-id))
     (_ (error "Unknown cloze card type %s" type))))
+
+(defun flasher-type-cloze--hide-holes (type current-id &optional all-visible)
+  "Hide holes of a cloze card with TYPE and CURRENT-ID variant.
+ALL-VISIBLE can be used to mark all holes visible."
+  (flasher-review-with-buffer
+    (let* ((holes (flasher-type-cloze--parse-holes)))
+      (goto-char (point-max))
+      (pcase-dolist (`(,id . ,holes-id) holes)
+        (pcase-dolist (`(,hole-beg ,hole-end ,text-beg ,text-end ,hint-beg ,hint-end) holes-id)
+          (unless hint-beg (setq hint-beg text-end hint-end text-end))
+          (cond
+           ((and (not (null current-id)) (= id current-id))
+            (flasher-core--hide-region hole-beg text-beg "")
+            (push (flasher-core--make-overlay text-beg text-end 'invisible t)
+                  flasher-type-cloze--text-overlay)
+            (flasher-core--hide-region text-end hint-beg "")
+            (push (flasher-core--overlay-surround
+                   (flasher-core--make-overlay hint-beg hint-end 'display "...")
+                   (if (= hint-beg hint-end) "[..." "[") "]"
+                   'flasher-type-cloze-hole-face)
+                  flasher-type-cloze--hint-overlay)
+            (flasher-core--hide-region hint-end hole-end "")
+            (flasher-core--make-overlay hole-beg hole-end 'face 'flasher-type-cloze-hole-face))
+           ((or all-visible (flasher-type-cloze--hole-visible-p type id current-id))
+            (flasher-core--hide-region hole-beg text-beg)
+            (flasher-core--hide-region text-end hole-end))
+           (t (flasher-core--hide-region hole-beg hole-end "..."))))))))
 
 (defun flasher-type-cloze-init ()
   "Initialize 'cloze card."
