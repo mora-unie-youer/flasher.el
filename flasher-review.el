@@ -61,6 +61,16 @@
 (defvar flasher-review--current-session nil
   "It is an `flasher-review-session' object which represents current session.")
 
+(defun flasher-review--make-session (cards)
+  "Create new review session with CARDS."
+  (make-instance 'flasher-review-session :cards cards))
+
+(defun flasher-review--add-result (result)
+  "Store RESULT in the review history of session."
+  (with-slots (results) flasher-review--current-session
+    (cl-incf (cl-getf results (intern-soft (concat ":" (number-to-string result)))))
+    (cl-incf (cl-getf results :total))))
+
 (defmacro flasher-review-with-buffer (&rest body)
   "Eval BODY with Flasher review buffer."
   (declare (indent defun))
