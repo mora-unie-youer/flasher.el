@@ -58,7 +58,7 @@
   "Object used for Flasher review session."
   :group 'flasher-review)
 
-(defvar flasher-review--current-session nil
+(defvar flasher-review--session nil
   "It is an `flasher-review-session' object which represents current session.")
 
 (defun flasher-review--make-session (cards)
