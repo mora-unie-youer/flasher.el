@@ -140,17 +140,17 @@ REVIEW-COUNT is maximum count of cards to review."
   "Write TASK to Flasher review buffer."
   (when task
     (flasher-review-with-buffer-end
-      (insert "T:\n" task "\n"))))
+      (insert "T:\n" task "\n\n"))))
 
 (defun flasher-review--write-question (question)
   "Write QUESTION to Flasher review buffer."
   (flasher-review-with-buffer-end
-    (insert "Q:\n" question "\n")))
+    (insert "Q:\n" question "\n\n")))
 
 (defun flasher-review--write-answer (answer)
   "Write ANSWER to Flasher review buffer."
   (flasher-review-with-buffer-end
-    (insert "A:\n" answer "\n")))
+    (insert "A:\n" answer "\n\n")))
 
 (defun flasher-review-next-card (&optional resuming)
   "Show next card in Flasher review session.
@@ -201,6 +201,7 @@ If RESUMING is non-nil, use current-card."
               (inhibit-read-only t))
           (funcall (flasher-card--type-flip-fn type)))
         (switch-to-buffer flasher-review-buffer-name)
+        (goto-char (point-max))
         (flasher-review-flip-mode -1)
         (flasher-review-rate-mode))
     (error (flasher-review-quit)
