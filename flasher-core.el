@@ -133,41 +133,60 @@
         (re-search-backward flasher-card--explain-regexp nil t)
         (point-marker))))
 
-(defun flasher-core--card-task ()
-  "Return card's task."
+(defun flasher-core--card-subheading-match (level title)
+  "."
+  (let ((components (org-heading-components)))
+    (and (= (cl-first components) (1+ level))
+         (string= (cl-fifth components) title))))
+
+(defun flasher-core--card-subheading (title &optional heading)
+  "Return point marker at the beginning of card's TITLE subheading at HEADING."
+  (unless heading (setq heading (point-marker)))
+  (save-excursion
+    (with-current-buffer (marker-buffer heading)
+      (goto-char heading)
+      (let ((level (cl-first (org-heading-components)))
+            found)
+        (org-map-entries (lambda ()
+                           (when (and (not found)
+                                      (flasher-core--card-subheading-match level title))
+                             (setq found (point-marker))))
+                         t 'tree)
+        found))))
+
+(defun flasher-core--card-task-heading ()
+  "Return point marker at the card's task heading."
   (if-let ((has-tag (member flasher-card-task-tag (org-get-tags)))
            (heading (save-excursion (re-search-backward flasher-card--task-regexp nil t)
                                     (point-marker))))
-      (flasher-core--heading-text heading)))
+      heading
+    (flasher-core--card-subheading "Task")))
 
-(defun flasher-core--card-side-heading (side)
-  "Return point marker at the beginning of card's SIDE subheading."
-  (let ((level (cl-first (org-heading-components)))
-        found)
-    (org-map-entries (lambda ()
-                       (when (let ((components (org-heading-components)))
-                               (and (not found)
-                                    (= (cl-first components) (1+ level))
-                                    (string= (cl-fifth components) side)))
-                         (setq found (point-marker))))
-                     t 'tree)
-    found))
+(defun flasher-core--card-task (&optional side)
+  "Return card's task for SIDE (nth . title)."
+  (if-let ((heading (flasher-core--card-task-heading))
+           (heading-text (flasher-core--heading-text heading)))
+      (cond
+       ((null side) heading-text)
+       (t (if-let ((side-heading (flasher-core--card-subheading (cdr side) heading)))
+              (flasher-core--heading-text side-heading)
+            (elt (split-string heading-text "\n") (car side)))))))
 
 (defun flasher-core--card-front-side ()
   "Return card's front side."
-  (if-let ((heading (flasher-core--card-side-heading "Front")))
+  (if-let ((heading (flasher-core--card-subheading "Front")))
       (flasher-core--heading-text heading)
     (cl-fifth (org-heading-components))))
 
 (defun flasher-core--card-back-side ()
   "Return card's front side."
-  (if-let ((heading (flasher-core--card-side-heading "Back")))
+  (if-let ((heading (flasher-core--card-subheading "Back")))
       (flasher-core--heading-text heading)
     (flasher-core--heading-text (point-marker))))
 
 (defun flasher-core--card-side (side)
   "Return card's SIDE."
-  (if-let ((heading (flasher-core--card-side-heading side)))
+  (if-let ((heading (flasher-core--card-subheading side)))
       (flasher-core--heading-text heading)
     (error "Card doesn't have '%s' side" side)))
 
