@@ -42,6 +42,9 @@
   "Flasher 'cloze-double card."
   :group 'flasher)
 
+(defvar flasher-type-cloze-double--variant nil
+  "Variant ID of 'cloze-double.")
+
 (defun flasher-type-cloze-double-init ()
   "Initialize 'cloze-double card."
   (interactive)
@@ -69,10 +72,11 @@
          (id (cdr variant))
          (front (flasher-core--card-front-side))
          (back (flasher-core--card-back-side)))
-    (flasher-review-with-buffer
-      (save-excursion (insert (pcase side ("front" back) ("back" front)) "\n"))
-      (flasher-type-cloze--hide-holes nil nil t)
-      (save-excursion (insert (pcase side ("front" front) ("back" back)) "\n"))
+    (setq flasher-type-cloze-double--variant variant)
+    (flasher-review--write-question (pcase side ("front" back) ("back" front)))
+    (flasher-type-cloze--hide-holes nil nil t)
+    (when id
+      (flasher-review--write-answer (pcase side ("front" front) ("back" back)))
       (flasher-type-cloze--hide-holes type id))))
 
 (defun flasher-type-cloze-double-hint ()
@@ -81,7 +85,13 @@
 
 (defun flasher-type-cloze-double-flip ()
   "Flip 'cloze-double card."
-  (flasher-type-cloze-flip))
+  (let ((side (car flasher-type-cloze-double--variant))
+        (id (cdr flasher-type-cloze-double--variant))
+        (front (flasher-core--card-front-side))
+        (back (flasher-core--card-back-side)))
+    (flasher-type-cloze-flip)
+    (unless id
+      (flasher-review--write-answer (pcase side ("front" front) ("back" back))))))
 
 (defun flasher-type-cloze-double-update ()
   "Update review data for 'cloze-double card.")
