@@ -50,7 +50,7 @@
 (defclass flasher-review-session ()
   ((current-card :initform nil
                  :documentation "Current card in review session.")
-   (cards :initarg cards
+   (cards :initarg :cards
           :initform nil
           :documentation "Cards in this review session.")
    (results :initform '(:total 0 :0 0 :1 0 :2 0 :3 0 :4 0 :5 0)
