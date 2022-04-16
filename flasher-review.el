@@ -165,7 +165,9 @@ If RESUMING is non-nil, use current-card."
             (let ((type (flasher-card--get-type))
                   (variant (cl-third card))
                   (inhibit-read-only t))
-              (flasher-review-with-buffer (erase-buffer))
+              (flasher-review-with-buffer
+                (remove-overlays (point-min) (point-max))
+                (erase-buffer))
               (funcall (flasher-card--type-setup-fn type) variant))
             (switch-to-buffer flasher-review-buffer-name)
             (goto-char (point-max))
