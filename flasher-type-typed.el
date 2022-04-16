@@ -47,9 +47,9 @@
   (interactive)
   (flasher-card-init "typed"))
 
-(defun flasher-type-typed-var-init (&optional id)
-  "Initialize 'typed card variants for card with ID."
-  (flasher-card--update-variants '("front") id))
+(defun flasher-type-typed-var-init ()
+  "Initialize 'typed card variants for card."
+  (flasher-card--update-variants '("front")))
 
 (defun flasher-type-typed-setup (_variant)
   "Prepare a 'typed card for review.")

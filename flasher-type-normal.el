@@ -47,9 +47,9 @@
   (interactive)
   (flasher-card-init "normal"))
 
-(defun flasher-type-normal-var-init (&optional id)
-  "Initialize 'normal card variants for card with ID."
-  (flasher-card--update-variants '("back") id))
+(defun flasher-type-normal-var-init ()
+  "Initialize 'normal card variants for card."
+  (flasher-card--update-variants '("back")))
 
 (defun flasher-type-normal-setup (_variant)
   "Prepare a 'normal card for review."

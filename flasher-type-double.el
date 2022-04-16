@@ -50,9 +50,9 @@
   (interactive)
   (flasher-card-init "double"))
 
-(defun flasher-type-double-var-init (&optional id)
-  "Initialize 'double card variants for card with ID."
-  (flasher-card--update-variants '("front" "back") id))
+(defun flasher-type-double-var-init ()
+  "Initialize 'double card variants for card."
+  (flasher-card--update-variants '("front" "back")))
 
 (defun flasher-type-double-setup (variant)
   "Prepare a 'double card VARIANT for review."

@@ -144,14 +144,14 @@ ALL-VISIBLE can be used to mark all holes visible."
     (push side variants))
   variants)
 
-(defun flasher-type-cloze-var-init (&optional id)
-  "Initialize 'cloze card variants for card with ID."
+(defun flasher-type-cloze-var-init ()
+  "Initialize 'cloze card variants for card."
   (let ((back (flasher-core--card-back-side))
         variants)
     (with-temp-buffer
       (save-excursion (insert back "\n"))
       (setq variants (flasher-type-cloze--get-variants "back")))
-    (flasher-card--update-variants variants id)))
+    (flasher-card--update-variants variants)))
 
 (defun flasher-type-cloze-setup (variant)
   "Prepare a 'cloze card VARIANT for review."
