@@ -100,6 +100,20 @@
   (goto-char (point-min))
   (flasher-review-mode))
 
+(defun flasher-review--assign-variants (card)
+  "Return list of CARD variants with assigned random numbers."
+  (let* ((type (cl-second card))
+         (sort-p (flasher-card--type-sort-p type))
+         (variants (flasher-card--filter-due card))
+         (numbers (cl-loop for i below (length variants) collect (cl-random 1.0))))
+    (when sort-p (setq numbers (sort numbers #'<)))
+    (cl-loop for n in numbers for var in variants collect (cons n var))))
+
+(defun flasher-review--shuffle-cards (cards)
+  "Return list of shuffled CARDS."
+  (let ((variants (mapcan #'flasher-review--assign-variants cards)))
+    (mapcar #'cdr (sort variants (lambda (a b) (< (car a) (car b)))))))
+
 (defvar flasher-review-mode-map
   (let ((map (make-sparse-keymap)))
     map)
