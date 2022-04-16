@@ -134,7 +134,7 @@
         (point-marker))))
 
 (defun flasher-core--card-subheading-match (level title)
-  "."
+  "Return non-nil if subheading matched LEVEL and TITLE conditions."
   (let ((components (org-heading-components)))
     (and (= (cl-first components) (1+ level))
          (string= (cl-fifth components) title))))
@@ -157,9 +157,15 @@
 (defun flasher-core--card-task-heading ()
   "Return point marker at the card's task heading."
   (if-let ((has-tag (member flasher-card-task-tag (org-get-tags)))
-           (heading (save-excursion (re-search-backward flasher-card--task-regexp nil t)
-                                    (point-marker))))
-      heading
+           (level (cl-first (org-heading-components))))
+      (save-excursion
+        (let (heading)
+          (while (and (null heading)
+                      (re-search-backward flasher-card--task-regexp nil t))
+            (let ((components (org-heading-components)))
+              (when (= (cl-first components) (1- level))
+                (setq heading (point-marker)))))
+          heading))
     (flasher-core--card-subheading "Task")))
 
 (defun flasher-core--card-task (&optional side)
