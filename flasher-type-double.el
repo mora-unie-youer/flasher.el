@@ -59,9 +59,8 @@
   (let ((side (pcase variant
                 ("front" (flasher-core--card-back-side))
                 ("back" (flasher-core--card-front-side)))))
-    (flasher-review-with-buffer
-      (setq flasher-type-double--variant variant)
-      (insert side "\n"))))
+    (setq flasher-type-double--variant variant)
+    (flasher-review--write-question side)))
 
 (defun flasher-type-double-hint ()
   "Show 'double card hint.")
@@ -72,8 +71,7 @@
          (side (pcase variant
                  ("front" (flasher-core--card-front-side))
                  ("back" (flasher-core--card-back-side)))))
-    (flasher-review-with-buffer
-      (insert "\n" side "\n"))))
+    (flasher-review--write-answer side)))
 
 (defun flasher-type-double-update ()
   "Update review data for 'double card.")
