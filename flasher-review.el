@@ -132,6 +132,30 @@ NIL = unlimited."
   (flasher-review-with-buffer-end
     (insert "A:\n" answer "\n")))
 
+(defun flasher-review-next-card (&optional resuming)
+  "Show next card in Flasher review session.
+If RESUMING is non-nil, use current-card."
+  (if (not (null (oref flasher-review--session cards)))
+      (condition-case err
+          (let ((card (pop (oref flasher-review--session cards))))
+            (if (null resuming)
+                (setf (oref flasher-review--session current-card) card)
+              (push card (oref flasher-review--session cards))
+              (setq card (oref flasher-review--session current-card)))
+            (org-id-goto (cl-second card))
+            (let ((type (flasher-card--get-type))
+                  (variant (cl-third card))
+                  (inhibit-read-only t))
+              (flasher-review-with-buffer (erase-buffer))
+              (funcall (flasher-card--type-setup-fn type) variant))
+            (switch-to-buffer flasher-review-buffer-name)
+            (goto-char (point-max))
+            (flasher-review-flip-mode))
+        (error (flasher-review-quit)
+               (signal (car err) (cdr err))))
+    (message "Review done")
+    (flasher-review-quit)))
+
 (defun flasher-review--assign-variants (card)
   "Return list of CARD variants with assigned random numbers."
   (let* ((type (cl-second card))
