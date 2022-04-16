@@ -121,6 +121,18 @@
   :lighter "Flip"
   :keymap flasher-review-flip-mode-map)
 
+(defvar flasher-review-rate-mode-map
+  (let ((map (make-sparse-keymap)))
+    map)
+  "Keymap for `flasher-review-rate-mode'.")
+
+(define-minor-mode flasher-review-rate-mode
+  "Minor mode for card rating."
+  :group 'flasher-review
+  :init-value nil
+  :lighter "Rate"
+  :keymap flasher-review-rate-mode-map)
+
 (provide 'flasher-review)
 
 ;;; flasher-review.el ends here
