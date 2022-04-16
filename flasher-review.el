@@ -169,6 +169,21 @@ If RESUMING is non-nil, use current-card."
     (error (flasher-review-quit)
            (signal (car err) (cdr err)))))
 
+(defun flasher-review-flip ()
+  "Flip current card in Flasher review session."
+  (interactive)
+  (condition-case err
+      (let ((card (oref flasher-review--session current-card)))
+        (org-id-goto (cl-second card))
+        (let ((type (flasher-card--get-type))
+              (inhibit-read-only t))
+          (funcall (flasher-card--type-flip-fn type)))
+        (switch-to-buffer flasher-review-buffer-name)
+        (flasher-review-flip-mode -1)
+        (flasher-review-rate-mode))
+    (error (flasher-review-quit)
+           (signal (car err) (cdr err)))))
+
 (defun flasher-review--assign-variants (card)
   "Return list of CARD variants with assigned random numbers."
   (let* ((type (cl-second card))
