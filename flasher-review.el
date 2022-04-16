@@ -203,6 +203,12 @@ If RESUMING is non-nil, use current-card."
     (error (flasher-review-quit)
            (signal (car err) (cdr err)))))
 
+(defun flasher-review-skip ()
+  "Skip current card in this session."
+  (interactive)
+  (flasher-review-rate-mode -1)
+  (flasher-review-next-card))
+
 (defun flasher-review--assign-variants (card)
   "Return list of CARD variants with assigned random numbers."
   (let* ((type (cl-second card))
