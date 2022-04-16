@@ -47,9 +47,13 @@
   :group 'flasher-dashboard
   :type 'string)
 
-(define-derived-mode flasher-dashboard-mode special-mode "Flasher Dashboard"
-  "This mode is used to display Flasher dashboard."
-  :group 'flasher-dashboard)
+(defvar flasher-dashboard--cards nil
+  "List of cards in Flasher database.")
+
+(defun flasher-dashboard--cards-reload ()
+  "Reload list of cards."
+  (setq flasher-dashboard--cards (flasher-core--map-cards #'flasher-card--get-info)))
+
 
 (defun flasher-dashboard-view ()
   "Show the Flasher dashboard view in the dashboard buffer."
@@ -60,20 +64,25 @@
       (erase-buffer)
       (insert (propertize "Flasher Dashboard\n\n" 'face 'org-level-1))
       (insert "Cards:\n")
-      (dolist (card cards)
+      (dolist (card flasher-dashboard--cards)
         (insert (format "\tCard %s (%s)\n" (cl-first card) (cl-second card)))
         (dolist (variant (cl-third card))
           (insert (format "\t\tVariant %s\t%s\n" variant
-                          (flasher-card-variant--status (cl-second variant)))))))))
+                          (flasher-card-variant--status variant))))))))
 
 ;;;###autoload
 (defun flasher-dashboard ()
   "Open Flasher dashboard."
   (interactive)
+  (flasher-dashboard--cards-reload)
   (flasher-dashboard-view)
   (switch-to-buffer flasher-dashboard-buffer-name)
   (goto-char (point-min))
   (flasher-dashboard-mode))
+
+(define-derived-mode flasher-dashboard-mode special-mode "Flasher Dashboard"
+  "This mode is used to display Flasher dashboard."
+  :group 'flasher-dashboard)
 
 (provide 'flasher-dashboard)
 
