@@ -54,13 +54,16 @@
   "Reload list of cards."
   (setq flasher-dashboard--cards (flasher-core--map-cards #'flasher-card--get-info)))
 
+(defmacro flasher-dashboard-with-buffer (&rest body)
+  "Eval BODY with Flasher review buffer."
+  (declare (indent defun))
+  `(with-current-buffer (get-buffer-create flasher-dashboard-buffer-name) ,@body))
+
 
 (defun flasher-dashboard-view ()
   "Show the Flasher dashboard view in the dashboard buffer."
-  (let ((buf (get-buffer-create flasher-dashboard-buffer-name))
-        (cards (flasher-core--map-cards #'flasher-card--get-info))
-        (inhibit-read-only t))
-    (with-current-buffer buf
+  (let ((inhibit-read-only t))
+    (flasher-dashboard-with-buffer
       (erase-buffer)
       (insert (propertize "Flasher Dashboard\n\n" 'face 'org-level-1))
       (insert "Cards:\n")
