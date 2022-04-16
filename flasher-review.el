@@ -109,6 +109,18 @@
   "This mode is used to review learned flashcards."
   :group 'flasher-review)
 
+(defvar flasher-review-flip-mode-map
+  (let ((map (make-sparse-keymap)))
+    map)
+  "Keymap for `flasher-review-flip-mode'.")
+
+(define-minor-mode flasher-review-flip-mode
+  "Minor mode for card flipping."
+  :group 'flasher-review
+  :init-value nil
+  :lighter "Flip"
+  :keymap flasher-review-flip-mode-map)
+
 (provide 'flasher-review)
 
 ;;; flasher-review.el ends here
