@@ -88,21 +88,6 @@ NIL = unlimited."
   (declare (indent defun))
   `(with-current-buffer (get-buffer-create flasher-review-buffer-name) ,@body))
 
-(defun flasher-review-view ()
-  "Show the Flasher review view in the review buffer."
-  (let ((cards (flasher-core--map-cards #'flasher-card--get-info))
-        (inhibit-read-only t))
-    (flasher-review-with-buffer
-      (erase-buffer)
-      (insert (propertize "Flasher Review\n\n" 'face 'org-level-1)))
-    (pcase-dolist (`(,id ,type ,variants) cards)
-      (org-id-goto id)
-      (dolist (variant variants)
-        (funcall (flasher-card--type-setup-fn type) (cl-second variant))
-        (funcall (flasher-card--type-hint-fn type))
-        (funcall (flasher-card--type-flip-fn type)))
-      (flasher-review-with-buffer (insert "\n")))))
-
 (defmacro flasher-review-with-buffer-start (&rest body)
   "Eval BODY at the start of Flasher review buffer."
   (declare (indent defun))
@@ -114,13 +99,42 @@ NIL = unlimited."
   `(flasher-review-with-buffer (goto-char (point-max)) ,@body))
 
 ;;;###autoload
-(defun flasher-review ()
-  "Open Flasher review."
+(defun flasher-review (&optional learn-count review-count cards)
+  "Open new Flasher review session with CARDS.
+LEARN-COUNT is maximum count of new cards to learn.
+REVIEW-COUNT is maximum count of cards to review."
   (interactive)
-  (flasher-review-view)
+  (unless learn-count (setq learn-count flasher-review-learn-count))
+  (unless review-count (setq review-count flasher-review-review-count))
+  (unless cards
+    (unless flasher-dashboard--cards (flasher-dashboard--cards-reload))
+    (setq cards flasher-dashboard--cards))
   (switch-to-buffer flasher-review-buffer-name)
-  (goto-char (point-min))
-  (flasher-review-mode))
+  (flasher-review-mode)
+  (flasher-review--set-header-line)
+  (if flasher-review--session
+      (if (yes-or-no-p "Cards are already being reviewed. Resume session?")
+          (flasher-review-resume)
+        (setq flasher-review--session nil)
+        (flasher-review learn-count review-count cards))
+    (let ((variants (flasher-review--shuffle-cards cards)))
+      (if (null cards)
+          (message "No cards due right now")
+        (setq flasher-review--session (flasher-review--make-session variants))
+        (flasher-review-next-card)))))
+
+(defun flasher-review-resume ()
+  "Resume previous Flasher review session."
+  (interactive)
+  (if flasher-review--current-session
+      (flasher-review-next-card 'resuming)
+    (message "No session to resume")))
+
+(defun flasher-review-quit ()
+  "Quit Flasher review session."
+  (interactive)
+  (flasher-core--remove-overlays)
+  (kill-current-buffer))
 
 (defun flasher-review--write-task (task)
   "Write TASK to Flasher review buffer."
