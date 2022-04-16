@@ -79,7 +79,7 @@ NIL = unlimited."
 
 (defun flasher-review--add-result (result)
   "Store RESULT in the review history of session."
-  (with-slots (results) flasher-review--current-session
+  (with-slots (results) flasher-review--session
     (cl-incf (cl-getf results (intern-soft (concat ":" (number-to-string result)))))
     (cl-incf (cl-getf results :total))))
 
@@ -126,7 +126,7 @@ REVIEW-COUNT is maximum count of cards to review."
 (defun flasher-review-resume ()
   "Resume previous Flasher review session."
   (interactive)
-  (if flasher-review--current-session
+  (if flasher-review--session
       (flasher-review-next-card 'resuming)
     (message "No session to resume")))
 
