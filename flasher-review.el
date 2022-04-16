@@ -138,8 +138,9 @@ REVIEW-COUNT is maximum count of cards to review."
 
 (defun flasher-review--write-task (task)
   "Write TASK to Flasher review buffer."
-  (flasher-review-with-buffer-end
-    (insert "T:\n" task "\n")))
+  (when task
+    (flasher-review-with-buffer-end
+      (insert "T:\n" task "\n"))))
 
 (defun flasher-review--write-question (question)
   "Write QUESTION to Flasher review buffer."

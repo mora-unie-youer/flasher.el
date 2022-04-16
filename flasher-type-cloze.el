@@ -160,6 +160,7 @@ ALL-VISIBLE can be used to mark all holes visible."
   (let ((back (flasher-core--card-back-side))
         (type (org-entry-get (point) flasher-type-cloze-type-property))
         (variant (flasher-type-cloze--parse-variant variant)))
+    (flasher-review--write-task (flasher-core--card-task))
     (flasher-review--write-question back)
     (flasher-type-cloze--hide-holes type (cdr variant))))
 

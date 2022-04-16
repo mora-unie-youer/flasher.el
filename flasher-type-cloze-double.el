@@ -73,6 +73,10 @@
          (front (flasher-core--card-front-side))
          (back (flasher-core--card-back-side)))
     (setq flasher-type-cloze-double--variant variant)
+    (flasher-review--write-task
+     (flasher-core--card-task (pcase side
+                                ("front" '(1 . "Back"))
+                                ("back" '(0 . "Front")))))
     (flasher-review--write-question (pcase side ("front" back) ("back" front)))
     (flasher-type-cloze--hide-holes nil nil t)
     (when id

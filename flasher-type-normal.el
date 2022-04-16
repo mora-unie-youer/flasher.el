@@ -53,16 +53,15 @@
 
 (defun flasher-type-normal-setup (_variant)
   "Prepare a 'normal card for review."
-  (let ((front (flasher-core--card-front-side)))
-    (flasher-review--write-question front)))
+  (flasher-review--write-task (flasher-core--card-task))
+  (flasher-review--write-question (flasher-core--card-front-side)))
 
 (defun flasher-type-normal-hint ()
   "Show 'normal card hint.")
 
 (defun flasher-type-normal-flip ()
   "Flip 'normal card."
-  (let ((back (flasher-core--card-back-side)))
-    (flasher-review--write-answer back)))
+  (flasher-review--write-answer (flasher-core--card-back-side)))
 
 (defun flasher-type-normal-update ()
   "Update review data for 'normal card.")

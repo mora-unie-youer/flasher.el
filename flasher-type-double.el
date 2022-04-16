@@ -60,6 +60,10 @@
                 ("front" (flasher-core--card-back-side))
                 ("back" (flasher-core--card-front-side)))))
     (setq flasher-type-double--variant variant)
+    (flasher-review--write-task
+     (flasher-core--card-task (pcase variant
+                                ("front" '(1 . "Back"))
+                                ("back" '(0 . "Front")))))
     (flasher-review--write-question side)))
 
 (defun flasher-type-double-hint ()
