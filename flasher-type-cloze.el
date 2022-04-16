@@ -107,9 +107,8 @@ CURRENT-ID is ID of current cloze card variant."
 (defun flasher-type-cloze--hide-holes (type current-id &optional all-visible)
   "Hide holes of a cloze card with TYPE and CURRENT-ID variant.
 ALL-VISIBLE can be used to mark all holes visible."
-  (flasher-review-with-buffer
+  (flasher-review-with-buffer-start
     (let* ((holes (flasher-type-cloze--parse-holes)))
-      (goto-char (point-max))
       (pcase-dolist (`(,id . ,holes-id) holes)
         (pcase-dolist (`(,hole-beg ,hole-end ,text-beg ,text-end ,hint-beg ,hint-end) holes-id)
           (unless hint-beg (setq hint-beg text-end hint-end text-end))
@@ -161,9 +160,8 @@ ALL-VISIBLE can be used to mark all holes visible."
   (let ((back (flasher-core--card-back-side))
         (type (org-entry-get (point) flasher-type-cloze-type-property))
         (variant (flasher-type-cloze--parse-variant variant)))
-    (flasher-review-with-buffer
-      (save-excursion (insert back "\n"))
-      (flasher-type-cloze--hide-holes type (cdr variant)))))
+    (flasher-review--write-question back)
+    (flasher-type-cloze--hide-holes type (cdr variant))))
 
 (defun flasher-type-cloze-hint ()
   "Show 'cloze card hole hint."
