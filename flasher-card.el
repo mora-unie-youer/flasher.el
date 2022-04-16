@@ -156,16 +156,17 @@ UPDATE-FN is function to update a card when it's contents have changed."
     (org-id-get-create)
     (flasher-card--update)))
 
-(defun flasher-card--update ()
-  "Update card in Flasher."
-  (let ((id (org-id-get))
-        (type (org-entry-get (point) flasher-card-type-property)))
-    (funcall (flasher-card--type-var-init-fn type) id)))
-
 (defun flasher-card-sync ()
   "Add all new cards and update already existing."
   (interactive)
   (flasher-core--map-cards #'flasher-card--update))
+
+(defun flasher-card--update (&optional id)
+  "Update card with ID in Flasher."
+  (save-excursion
+    (when id (org-id-goto id))
+    (let ((type (org-entry-get (point) flasher-card-type-property)))
+      (funcall (flasher-card--type-var-init-fn type)))))
 
 (defun flasher-card--get-type (&optional id)
   "Get CARD type at point or with ID."
