@@ -223,6 +223,12 @@ If RESUMING is non-nil, use current-card."
   (let ((variants (mapcan #'flasher-review--assign-variants cards)))
     (mapcar #'cdr (sort variants (lambda (a b) (< (car a) (car b)))))))
 
+(defun flasher-review--set-header-line ()
+  "Set header line for Flasher review buffer."
+  (setq-local header-line-format `((flasher-review-flip-mode "Flip")
+                                   (flasher-review-rate-mode "Rate")
+                                   (flasher-review-edit-mode "Edit"))))
+
 (defvar flasher-review-mode-map
   (let ((map (make-sparse-keymap)))
     map)
