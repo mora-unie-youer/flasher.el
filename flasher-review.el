@@ -47,6 +47,18 @@
   :group 'flasher-review
   :type 'string)
 
+(defcustom flasher-review-learn-count 20
+  "Maximum count of cards to learn in a single session.
+NIL = unlimited."
+  :group 'flasher-review
+  :type '(choice integer (const nil)))
+
+(defcustom flasher-review-review-count 50
+  "Maximum count of cards to review in a single session.
+NIL = unlimited."
+  :group 'flasher-review
+  :type '(choice integer (const nil)))
+
 (defclass flasher-review-session ()
   ((current-card :initform nil
                  :documentation "Current card in review session.")
