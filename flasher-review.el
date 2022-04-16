@@ -110,6 +110,16 @@
   (goto-char (point-min))
   (flasher-review-mode))
 
+(defun flasher-review--write-question (question)
+  "Write QUESTION to Flasher review buffer."
+  (flasher-review-with-buffer-end
+    (insert "Q:\n" question "\n")))
+
+(defun flasher-review--write-answer (answer)
+  "Write ANSWER to Flasher review buffer."
+  (flasher-review-with-buffer-end
+    (insert "A:\n" answer "\n")))
+
 (defun flasher-review--assign-variants (card)
   "Return list of CARD variants with assigned random numbers."
   (let* ((type (cl-second card))
