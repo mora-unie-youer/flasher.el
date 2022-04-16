@@ -122,6 +122,11 @@ NIL = unlimited."
   (goto-char (point-min))
   (flasher-review-mode))
 
+(defun flasher-review--write-task (task)
+  "Write TASK to Flasher review buffer."
+  (flasher-review-with-buffer-end
+    (insert "T:\n" task "\n")))
+
 (defun flasher-review--write-question (question)
   "Write QUESTION to Flasher review buffer."
   (flasher-review-with-buffer-end
