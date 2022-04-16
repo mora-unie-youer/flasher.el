@@ -100,6 +100,11 @@
   (goto-char (point-min))
   (flasher-review-mode))
 
+(defvar flasher-review-mode-map
+  (let ((map (make-sparse-keymap)))
+    map)
+  "Keymap for `flasher-review-mode'.")
+
 (define-derived-mode flasher-review-mode special-mode "Flasher Review"
   "This mode is used to review learned flashcards."
   :group 'flasher-review)
