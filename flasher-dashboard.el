@@ -83,6 +83,13 @@
   (goto-char (point-min))
   (flasher-dashboard-mode))
 
+(defvar flasher-dashboard-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "r") #'flasher-review)
+    (define-key map (kbd "q") #'kill-current-buffer)
+    map)
+  "Keymap for `flasher-dashboard-mode'.")
+
 (define-derived-mode flasher-dashboard-mode special-mode "Flasher Dashboard"
   "This mode is used to display Flasher dashboard."
   :group 'flasher-dashboard)
