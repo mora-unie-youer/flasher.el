@@ -209,6 +209,57 @@ If RESUMING is non-nil, use current-card."
   (flasher-review-rate-mode -1)
   (flasher-review-next-card))
 
+(defun flasher-review-edit ()
+  "Edit current card in Flasher review session."
+  (interactive)
+  (print "Edit"))
+
+(defun flasher-review-edit-save ()
+  "Save current card in Flasher review session."
+  (interactive)
+  (print "Edit save"))
+
+(defun flasher-review-edit-quit ()
+  "Abort editting current card in Flasher review session."
+  (interactive)
+  (print "Edit quit"))
+
+(defun flasher-review-rate (result)
+  "Rate current card with RESULT."
+  (interactive "P")
+  (cl-assert (and (>= result 0) (<= result 5)))
+  (print result))
+
+(defun flasher-review-rate-0 ()
+  "Rate current card with 0."
+  (interactive)
+  (flasher-review-rate 0))
+
+(defun flasher-review-rate-1 ()
+  "Rate current card with 1."
+  (interactive)
+  (flasher-review-rate 1))
+
+(defun flasher-review-rate-2 ()
+  "Rate current card with 2."
+  (interactive)
+  (flasher-review-rate 2))
+
+(defun flasher-review-rate-3 ()
+  "Rate current card with 3."
+  (interactive)
+  (flasher-review-rate 3))
+
+(defun flasher-review-rate-4 ()
+  "Rate current card with 4."
+  (interactive)
+  (flasher-review-rate 4))
+
+(defun flasher-review-rate-5 ()
+  "Rate current card with 5."
+  (interactive)
+  (flasher-review-rate 5))
+
 (defun flasher-review--assign-variants (card)
   "Return list of CARD variants with assigned random numbers."
   (let* ((type (cl-second card))
@@ -240,6 +291,11 @@ If RESUMING is non-nil, use current-card."
 
 (defvar flasher-review-flip-mode-map
   (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "RET") #'flasher-review-flip)
+    (define-key map (kbd "e")   #'flasher-review-edit)
+    (define-key map (kbd "s")   #'flasher-review-skip)
+    (define-key map (kbd "q")   #'flasher-review-quit)
+    (define-key map (kbd "w")   #'flasher-review-hint)
     map)
   "Keymap for `flasher-review-flip-mode'.")
 
@@ -252,6 +308,15 @@ If RESUMING is non-nil, use current-card."
 
 (defvar flasher-review-rate-mode-map
   (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "0") #'flasher-review-rate-0)
+    (define-key map (kbd "1") #'flasher-review-rate-1)
+    (define-key map (kbd "2") #'flasher-review-rate-2)
+    (define-key map (kbd "3") #'flasher-review-rate-3)
+    (define-key map (kbd "4") #'flasher-review-rate-4)
+    (define-key map (kbd "5") #'flasher-review-rate-5)
+    (define-key map (kbd "e") #'flasher-review-edit)
+    (define-key map (kbd "s") #'flasher-review-skip)
+    (define-key map (kbd "q") #'flasher-review-quit)
     map)
   "Keymap for `flasher-review-rate-mode'.")
 
@@ -264,6 +329,8 @@ If RESUMING is non-nil, use current-card."
 
 (defvar flasher-review-edit-mode-map
   (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-c C-c") #'flasher-review-edit-save)
+    (define-key map (kbd "C-c C-k") #'flasher-review-edit-quit)
     map)
   "Keymap for `flasher-review-edit-mode'.")
 
