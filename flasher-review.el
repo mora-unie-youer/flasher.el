@@ -91,6 +91,16 @@
         (funcall (flasher-card--type-flip-fn type)))
       (flasher-review-with-buffer (insert "\n")))))
 
+(defmacro flasher-review-with-buffer-start (&rest body)
+  "Eval BODY at the start of Flasher review buffer."
+  (declare (indent defun))
+  `(flasher-review-with-buffer (goto-char (point-min)) ,@body))
+
+(defmacro flasher-review-with-buffer-end (&rest body)
+  "Eval BODY at the end of Flasher review buffer."
+  (declare (indent defun))
+  `(flasher-review-with-buffer (goto-char (point-max)) ,@body))
+
 ;;;###autoload
 (defun flasher-review ()
   "Open Flasher review."
