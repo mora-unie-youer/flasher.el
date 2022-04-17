@@ -109,11 +109,6 @@ NIL = unlimited."
 LEARN-COUNT is maximum count of new cards to learn.
 REVIEW-COUNT is maximum count of cards to review."
   (interactive)
-  (unless learn-count (setq learn-count flasher-review-learn-count))
-  (unless review-count (setq review-count flasher-review-review-count))
-  (unless cards
-    (unless flasher-dashboard--cards (flasher-dashboard--cards-reload))
-    (setq cards flasher-dashboard--cards))
   (switch-to-buffer flasher-review-buffer-name)
   (flasher-review-mode)
   (if flasher-review--session
@@ -121,7 +116,9 @@ REVIEW-COUNT is maximum count of cards to review."
           (flasher-review-resume)
         (setq flasher-review--session nil)
         (flasher-review learn-count review-count cards))
-    (let ((variants (flasher-review--shuffle-cards cards)))
+    (unless learn-count (setq learn-count flasher-review-learn-count))
+    (unless review-count (setq review-count flasher-review-review-count))
+    (unless cards (setq cards (flasher-core--map-cards #'flasher-card--get-info)))
       (if (null cards)
           (message "No cards due right now")
         (setq flasher-review--session (flasher-review--make-session variants))

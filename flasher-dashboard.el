@@ -47,13 +47,6 @@
   :group 'flasher-dashboard
   :type 'string)
 
-(defvar flasher-dashboard--cards nil
-  "List of cards in Flasher database.")
-
-(defun flasher-dashboard--cards-reload ()
-  "Reload list of cards."
-  (setq flasher-dashboard--cards (flasher-core--map-cards #'flasher-card--get-info)))
-
 (defmacro flasher-dashboard-with-buffer (&rest body)
   "Eval BODY with Flasher review buffer."
   (declare (indent defun))
