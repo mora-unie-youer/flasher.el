@@ -70,7 +70,6 @@
 (defun flasher-dashboard ()
   "Open Flasher dashboard."
   (interactive)
-  (flasher-dashboard--cards-reload)
   (flasher-dashboard-view)
   (switch-to-buffer flasher-dashboard-buffer-name)
   (goto-char (point-min))
