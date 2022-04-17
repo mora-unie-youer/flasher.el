@@ -119,6 +119,7 @@ REVIEW-COUNT is maximum count of cards to review."
     (unless learn-count (setq learn-count flasher-review-learn-count))
     (unless review-count (setq review-count flasher-review-review-count))
     (unless cards (setq cards (flasher-core--map-cards #'flasher-card--get-info)))
+    (let ((variants (flasher-review--shuffle-cards cards learn-count review-count)))
       (if (null cards)
           (message "No cards due right now")
         (setq flasher-review--session (flasher-review--make-session variants))
@@ -280,10 +281,22 @@ If RESUMING is non-nil, use current-card."
     (when sort-p (setq numbers (sort numbers #'<)))
     (cl-loop for n in numbers for var in variants collect (cons n var))))
 
-(defun flasher-review--shuffle-cards (cards)
-  "Return list of shuffled CARDS."
+(defmacro flasher-review--pick-card (card learn-count review-count)
+  "Return CARD if it satisfies LEARN-COUNT or REVIEW-COUNT."
+  `(if (eq (cl-second ,card) :new)
+       (when (or (not ,learn-count) (> ,learn-count 0))
+         (when ,learn-count (cl-decf ,learn-count))
+         ,card)
+     (when (or (not ,review-count) (> ,review-count 0))
+       (when ,review-count (cl-decf ,review-count))
+       ,card)))
+
+(defun flasher-review--shuffle-cards (cards learn-count review-count)
+  "Return list of maximum size LEARN-COUNT + REVIEW-COUNT of shuffled CARDS."
   (let ((variants (mapcan #'flasher-review--assign-variants cards)))
-    (mapcar #'cdr (sort variants (lambda (a b) (< (car a) (car b)))))))
+    (delq nil (mapcar
+               (lambda (card) (flasher-review--pick-card card learn-count review-count))
+               (mapcar #'cdr (sort variants (lambda (a b) (< (car a) (car b)))))))))
 
 (defun flasher-review--set-header-line ()
   "Set header line for Flasher review buffer."
