@@ -240,7 +240,18 @@ If RESUMING is non-nil, use current-card."
   "Rate current card with RESULT."
   (interactive "P")
   (cl-assert (and (>= result 0) (<= result 5)))
-  (print result))
+  (condition-case err
+      (let* ((card-info (oref flasher-review--session current-card))
+             (new-card-info (flasher-algo card-info result)))
+        (flasher-review--add-result result)
+        (flasher-card-variant--save-result new-card-info result)
+        (when (= (cl-sixth new-card-info) 0)
+          (setf (oref flasher-review--session cards)
+                (append (oref flasher-review--session cards)
+                        (list new-card-info))))
+        (flasher-review-next-card))
+    (error (flasher-review-quit)
+           (signal (car err) (cdr err)))))
 
 (defun flasher-review-rate-0 ()
   "Rate current card with 0."
