@@ -269,7 +269,8 @@ FAILED is non-nil when card either new or failed.
 INTERVAL is current card interval count.
 LAST-RESULT can be specified to reduce number of database calls."
   (unless last-result (setq last-result (flasher-card-variant--last-result id)))
-  (let* ((interval (if last-result (cl-fourth last-result) 0))
+  (let* ((result (if last-result (cl-second last-result) 0))
+         (interval (if last-result (cl-fourth last-result) 0))
          (ease (if last-result (cl-third last-result) flasher-algo-initial-ease))
          (new (null last-result))
          (failed (= interval 0))
@@ -279,7 +280,7 @@ LAST-RESULT can be specified to reduce number of database calls."
                        ((flasher-card-variant--overdue-p id due last-result) :overdue)
                        ((<= interval flasher-card-intervals-before-old) :young)
                        (t :old))))
-    (list status due ease (or new failed) interval)))
+    (list status due ease (< result 3) interval)))
 
 (provide 'flasher-card)
 
