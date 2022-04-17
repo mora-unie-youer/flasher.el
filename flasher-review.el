@@ -111,7 +111,6 @@ REVIEW-COUNT is maximum count of cards to review."
     (setq cards flasher-dashboard--cards))
   (switch-to-buffer flasher-review-buffer-name)
   (flasher-review-mode)
-  (flasher-review--set-header-line)
   (if flasher-review--session
       (if (yes-or-no-p "Cards are already being reviewed. Resume session?")
           (flasher-review-resume)
@@ -121,14 +120,16 @@ REVIEW-COUNT is maximum count of cards to review."
       (if (null cards)
           (message "No cards due right now")
         (setq flasher-review--session (flasher-review--make-session variants))
+        (flasher-review--set-header-line)
         (flasher-review-next-card)))))
 
 (defun flasher-review-resume ()
   "Resume previous Flasher review session."
   (interactive)
-  (if flasher-review--session
-      (flasher-review-next-card 'resuming)
-    (message "No session to resume")))
+  (if (null flasher-review--session)
+      (message "No session to resume")
+    (flasher-review--set-header-line)
+    (flasher-review-next-card 'resuming)))
 
 (defun flasher-review-quit ()
   "Quit Flasher review session."
@@ -283,9 +284,13 @@ If RESUMING is non-nil, use current-card."
 
 (defun flasher-review--set-header-line ()
   "Set header line for Flasher review buffer."
-  (setq-local header-line-format `((flasher-review-flip-mode "Flip")
-                                   (flasher-review-rate-mode "Rate")
-                                   (flasher-review-edit-mode "Edit"))))
+  (let ((remaining (1+ (length (oref flasher-review--session cards)))))
+    (setq-local header-line-format `("Review: "
+                                     (flasher-review-flip-mode "Flip")
+                                     (flasher-review-rate-mode "Rate")
+                                     (flasher-review-edit-mode "Edit")
+                                     " card "
+                                     ,(format "(%d cards remaining)" remaining)))))
 
 (defvar flasher-review-mode-map
   (let ((map (make-sparse-keymap)))
