@@ -157,11 +157,12 @@ REVIEW-COUNT is maximum count of cards to review."
 If RESUMING is non-nil, use current-card."
   (if (not (null (oref flasher-review--session cards)))
       (condition-case err
-          (let ((card (pop (oref flasher-review--session cards))))
+          (let* ((card-info (pop (oref flasher-review--session cards)))
+                 (card (car card-info)))
             (if (null resuming)
-                (setf (oref flasher-review--session current-card) card)
-              (push card (oref flasher-review--session cards))
-              (setq card (oref flasher-review--session current-card)))
+                (setf (oref flasher-review--session current-card) card-info)
+              (push card-info (oref flasher-review--session cards))
+              (setq card-info (oref flasher-review--session current-card)))
             (org-id-goto (cl-second card))
             (let ((type (flasher-card--get-type))
                   (variant (cl-third card))
@@ -182,7 +183,8 @@ If RESUMING is non-nil, use current-card."
   "Show hint for current card in Flasher review session."
   (interactive)
   (condition-case err
-      (let ((card (oref flasher-review--session current-card)))
+      (let* ((card-info (oref flasher-review--session current-card))
+             (card (car card-info)))
         (org-id-goto (cl-second card))
         (let ((type (flasher-card--get-type))
               (inhibit-read-only t))
@@ -195,7 +197,8 @@ If RESUMING is non-nil, use current-card."
   "Flip current card in Flasher review session."
   (interactive)
   (condition-case err
-      (let ((card (oref flasher-review--session current-card)))
+      (let* ((card-info (oref flasher-review--session current-card))
+             (card (car card-info)))
         (org-id-goto (cl-second card))
         (let ((type (flasher-card--get-type))
               (inhibit-read-only t))

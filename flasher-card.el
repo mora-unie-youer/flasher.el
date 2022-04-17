@@ -192,7 +192,7 @@ UPDATE-FN is function to update a card when it's contents have changed."
 
 (defun flasher-card--filter-due (card)
   "Filter CARD variants to include only due variants."
-  (seq-filter (lambda (variant) (>= (cl-fifth variant) 0))
+  (seq-filter (lambda (variant) (>= (cl-third variant) 0))
               (mapcar #'flasher-card-variant--get-info (cl-third card))))
 
 (defun flasher-card--update-variants (variants &optional old-variants)
@@ -217,7 +217,7 @@ UPDATE-FN is function to update a card when it's contents have changed."
 
 (defun flasher-card-variant--get-info (id)
   "Return CARD variant info with ID."
-  (append (flasher-card-variant id) (flasher-card-variant--status id)))
+  (cons (flasher-card-variant id) (flasher-card-variant--status id)))
 
 (defun flasher-card-variant--first-result (id)
   "Return first result of CARD variant with ID."
