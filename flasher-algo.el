@@ -102,12 +102,9 @@ even after perfectly remembering it."
   :group 'flasher-algo
   :type 'float)
 
-(defun flasher-algo (card-stats quality)
-  "Determine the next iteration of CARD-STATS based on QUALITY.
-CARD-STATS is (EASE FAILED INTERVAL). Result has the same shape.
-EASE is ease factor of card.
-FAILED - was card failed before? All new cards are considered failed.
-INTERVAL is interval count of card.
+(defun flasher-algo (card-info quality)
+  "Determine the next iteration of CARD-INFO based on QUALITY.
+For CARD-STATS see `flasher-card-variant--get-info'. Result has the same shape.
 QUALITY is the quality of the answer:
   5 - perfect answer
   4 - correct answer took a while
@@ -115,21 +112,19 @@ QUALITY is the quality of the answer:
   2 - incorrect answer; where the correct one seemed easy to recall
   1 - incorrect answer; remembered the correct one
   0 - complete blackout"
-  (let ((ease (cl-first card-stats))
-        (failed (cl-second card-stats))
-        (interval (cl-third card-stats))
-        next-ease next-interval)
-    (setq next-ease (max flasher-algo-minimum-ease
-                         (+ ease (alist-get quality flasher-algo-ease-deltas))))
-    (when flasher-algo-maximum-ease
-      (setq next-ease (min flasher-algo-maximum-ease next-ease)))
-    (setq next-interval (cond ((or failed (< quality 3)) 0)
-                              ((= interval 0) 1)
-                              ((= interval 1) 4)
-                              (t (flasher-algo-fuzz (* next-ease interval)))))
-    (when flasher-algo-max-interval-count
-      (setq next-interval (min flasher-algo-max-interval-count next-interval)))
-    (list next-ease (< quality 3) next-interval)))
+  (pcase-let ((`(,card ,status ,due ,ease ,failed ,interval) card-info))
+    (let (next-ease next-interval)
+      (setq next-ease (max flasher-algo-minimum-ease
+                           (+ ease (alist-get quality flasher-algo-ease-deltas))))
+      (when flasher-algo-maximum-ease
+        (setq next-ease (min flasher-algo-maximum-ease next-ease)))
+      (setq next-interval (cond ((or failed (< quality 3)) 0)
+                                ((= interval 0) 1)
+                                ((= interval 1) 4)
+                                (t (flasher-algo-fuzz (* next-ease interval)))))
+      (when flasher-algo-max-interval-count
+        (setq next-interval (min flasher-algo-max-interval-count next-interval)))
+      (cons card (list status due next-ease (< quality 3) next-interval)))))
 
 (defun flasher-algo-fuzz (interval)
   "Apply fuzz to INTERVAL.

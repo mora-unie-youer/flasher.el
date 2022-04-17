@@ -256,7 +256,7 @@ LAST-RESULT can be specified to reduce number of database calls."
          (> (/ days-overdue interval) flasher-card-interval-overdue-factor))))
 
 (defun flasher-card-variant--status (id &optional last-result)
-  "Fetch status list (STATUS DUE) of CARD variant with ID.
+  "Fetch status list (STATUS DUE EASE FAILED INTERVAL) of CARD variant with ID.
 DUE is the number of days overdue, see `flasher-card-variant--overdue'.
 STATUS is one of the following values:
 - :new
@@ -264,16 +264,22 @@ STATUS is one of the following values:
 - :overdue
 - :young
 - :old
+EASE is current ease factor.
+FAILED is non-nil when card either new or failed.
+INTERVAL is current card interval count.
 LAST-RESULT can be specified to reduce number of database calls."
   (unless last-result (setq last-result (flasher-card-variant--last-result id)))
-  (let ((interval (if last-result (cl-fourth last-result) 0))
-        (due (flasher-card-variant--overdue id last-result)))
-    (list (cond ((null last-result) :new)
-                ((= interval 0) :failed)
-                ((flasher-card-variant--overdue-p id due last-result) :overdue)
-                ((<= interval flasher-card-intervals-before-old) :young)
-                (t :old))
-          due)))
+  (let* ((interval (if last-result (cl-fourth last-result) 0))
+         (ease (if last-result (cl-third last-result) flasher-algo-initial-ease))
+         (new (null last-result))
+         (failed (= interval 0))
+         (due (flasher-card-variant--overdue id last-result))
+         (status (cond (new :new)
+                       (failed :failed)
+                       ((flasher-card-variant--overdue-p id due last-result) :overdue)
+                       ((<= interval flasher-card-intervals-before-old) :young)
+                       (t :old))))
+    (list status due ease (or new failed) interval)))
 
 (provide 'flasher-card)
 
