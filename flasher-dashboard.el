@@ -60,7 +60,7 @@
       (erase-buffer)
       (insert (propertize "Flasher Dashboard\n\n" 'face 'org-level-1))
       (insert "Cards:\n")
-      (dolist (card flasher-dashboard--cards)
+      (dolist (card (flasher-core--map-cards #'flasher-card--get-info))
         (insert (format "\tCard %s (%s)\n" (cl-first card) (cl-second card)))
         (dolist (variant (cl-third card))
           (insert (format "\t\tVariant %s\t%s\n" variant
