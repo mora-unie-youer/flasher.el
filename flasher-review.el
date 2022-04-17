@@ -158,6 +158,7 @@ If RESUMING is non-nil, use current-card."
       (condition-case err
           (let* ((card-info (pop (oref flasher-review--session cards)))
                  (card (car card-info)))
+            (flasher-review-rate-mode -1)
             (if (null resuming)
                 (setf (oref flasher-review--session current-card) card-info)
               (push card-info (oref flasher-review--session cards))
@@ -213,7 +214,6 @@ If RESUMING is non-nil, use current-card."
 (defun flasher-review-skip ()
   "Skip current card in this session."
   (interactive)
-  (flasher-review-rate-mode -1)
   (flasher-review-next-card))
 
 (defun flasher-review-edit ()
