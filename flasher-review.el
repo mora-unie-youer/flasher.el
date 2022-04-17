@@ -120,7 +120,6 @@ REVIEW-COUNT is maximum count of cards to review."
       (if (null cards)
           (message "No cards due right now")
         (setq flasher-review--session (flasher-review--make-session variants))
-        (flasher-review--set-header-line)
         (flasher-review-next-card)))))
 
 (defun flasher-review-resume ()
@@ -128,7 +127,6 @@ REVIEW-COUNT is maximum count of cards to review."
   (interactive)
   (if (null flasher-review--session)
       (message "No session to resume")
-    (flasher-review--set-header-line)
     (flasher-review-next-card 'resuming)))
 
 (defun flasher-review-quit ()
@@ -164,6 +162,7 @@ If RESUMING is non-nil, use current-card."
                 (setf (oref flasher-review--session current-card) card-info)
               (push card-info (oref flasher-review--session cards))
               (setq card-info (oref flasher-review--session current-card)))
+            (flasher-review--set-header-line)
             (org-id-goto (cl-second card))
             (let ((type (flasher-card--get-type))
                   (variant (cl-third card))
