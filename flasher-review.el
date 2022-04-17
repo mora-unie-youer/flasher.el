@@ -83,6 +83,11 @@ NIL = unlimited."
     (cl-incf (cl-getf results (intern-soft (concat ":" (number-to-string result)))))
     (cl-incf (cl-getf results :total))))
 
+(defun flasher-review--save-session ()
+  "Save current session to Flasher database."
+  (flasher-db-query [:insert-into sessions :values $v1]
+                    (vector (oref flasher-review--session results) (current-time))))
+
 (defmacro flasher-review-with-buffer (&rest body)
   "Eval BODY with Flasher review buffer."
   (declare (indent defun))
@@ -178,6 +183,8 @@ If RESUMING is non-nil, use current-card."
         (error (flasher-review-quit)
                (signal (car err) (cdr err))))
     (message "Review done")
+    (flasher-review--save-session)
+    (setq flasher-review--session nil)
     (flasher-review-quit)))
 
 (defun flasher-review-hint ()
