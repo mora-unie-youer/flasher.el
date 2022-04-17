@@ -58,7 +58,9 @@
                (interval   :not-null)
                (due        :not-null)]
               (:primary-key [card due])
-              (:foreign-key [card] :references cards [id] :on-delete :cascade))))
+              (:foreign-key [card] :references cards [id] :on-delete :cascade)))
+    (sessions ([(date    :primary-key)
+                (results :not-null)])))
   "Flasher database structure.")
 
 (defvar flasher-db--connection nil
