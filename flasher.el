@@ -109,35 +109,8 @@
   :group 'flasher-db
   :type 'file)
 
-;;;;;;;;;;;;;;;;;;
-;; Database API ;;
-;;;;;;;;;;;;;;;;;;
-
 (defvar flasher-db--connection nil
   "Database connection to Flasher database.")
-
-(defmacro flasher-db-transaction (&rest body)
-  "Eval BODY as database transaction."
-  (declare (indent defun))
-  `(emacsql-with-transaction (flasher-db) ,@body))
-
-(defun flasher-db ()
-  "Entrypoint to the Flasher database.
-Initializes and stores database and connection."
-  (unless (and flasher-db--connection
-               (emacsql-live-p flasher-db--connection))
-    (let ((init-db (not (file-exists-p flasher-db-location))))
-      (make-directory (file-name-directory flasher-db-location) t)
-      (let ((conn (emacsql-sqlite flasher-db-location)))
-        (emacsql conn [:pragma (= foreign_keys ON)])
-        (emacsql conn [:pragma (= synchronous OFF)])
-        (emacsql conn [:pragma (= journal_mode MEMORY)])
-        (when-let ((process (emacsql-process conn)))
-          (set-process-query-on-exit-flag process nil))
-        (setq flasher-db--connection conn)
-        (when init-db
-          (flasher-db--init)))))
-  flasher-db--connection)
 
 (defconst flasher-db--schemata
   '((files ([(file :unique)]))
@@ -164,6 +137,33 @@ Initializes and stores database and connection."
               (:primary-key [variant due])
               (:foreign-key [variant] :references variants [id] :on-delete :cascade))))
   "Flasher database structure.")
+
+;;;;;;;;;;;;;;;;;;
+;; Database API ;;
+;;;;;;;;;;;;;;;;;;
+
+(defmacro flasher-db-transaction (&rest body)
+  "Eval BODY as database transaction."
+  (declare (indent defun))
+  `(emacsql-with-transaction (flasher-db) ,@body))
+
+(defun flasher-db ()
+  "Entrypoint to the Flasher database.
+Initializes and stores database and connection."
+  (unless (and flasher-db--connection
+               (emacsql-live-p flasher-db--connection))
+    (let ((init-db (not (file-exists-p flasher-db-location))))
+      (make-directory (file-name-directory flasher-db-location) t)
+      (let ((conn (emacsql-sqlite flasher-db-location)))
+        (emacsql conn [:pragma (= foreign_keys ON)])
+        (emacsql conn [:pragma (= synchronous OFF)])
+        (emacsql conn [:pragma (= journal_mode MEMORY)])
+        (when-let ((process (emacsql-process conn)))
+          (set-process-query-on-exit-flag process nil))
+        (setq flasher-db--connection conn)
+        (when init-db
+          (flasher-db--init)))))
+  flasher-db--connection)
 
 (defun flasher-db--init ()
   "Initialize Flasher database."
