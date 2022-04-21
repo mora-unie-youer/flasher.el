@@ -44,6 +44,10 @@
 
 (require 'org)
 
+;;;;;;;;;;;;;
+;; Flasher ;;
+;;;;;;;;;;;;;
+
 (defgroup flasher nil
   "Manage, learn and review flashcards in Emacs."
   :group 'external)
@@ -52,6 +56,88 @@
   "Directories to search for flashcards."
   :group 'flasher
   :type 'directory)
+
+;;;;;;;;;;;;;;;;;;
+;; Database API ;;
+;;;;;;;;;;;;;;;;;;
+
+(defgroup flasher-db nil
+  "Flasher database API."
+  :group 'flasher)
+
+(defcustom flasher-db-location (locate-user-emacs-file "flasher.db")
+  "The path to file where Flasher database is stored."
+  :group 'flasher-db
+  :type 'file)
+
+(defvar flasher-db--connection nil
+  "Database connection to Flasher database.")
+
+(defmacro flasher-db-transaction (&rest body)
+  "Eval BODY as database transaction."
+  (declare (indent defun))
+  `(emacsql-with-transaction (flasher-db) ,@body))
+
+(defun flasher-db ()
+  "Entrypoint to the Flasher database.
+Initializes and stores database and connection."
+  (unless (and flasher-db--connection
+               (emacsql-live-p flasher-db--connection))
+    (let ((init-db (not (file-exists-p flasher-db-location))))
+      (make-directory (file-name-directory flasher-db-location) t)
+      (let ((conn (emacsql-sqlite flasher-db-location)))
+        (emacsql conn [:pragma (= foreign_keys ON)])
+        (emacsql conn [:pragma (= synchronous OFF)])
+        (emacsql conn [:pragma (= journal_mode MEMORY)])
+        (when-let ((process (emacsql-process conn)))
+          (set-process-query-on-exit-flag process nil))
+        (setq flasher-db--connection conn)
+        (when init-db
+          (flasher-db--init)))))
+  flasher-db--connection)
+
+(defconst flasher-db--schemata
+  '((files ([(file :unique)]))
+    (decks ([(id integer :primary-key)
+             parent
+             (name       :not-null)]
+            (:unique [parent name])))
+    (cards ([(uuid :primary-key)
+             deck]
+            (:foreign-key [deck] :references decks [id] :on-delete :cascade)))
+    (tags ([(card :not-null)
+            tag]
+           (:foreign-key [card] :references cards [uuid] :on-delete :cascade)))
+    (variants ([(id integer :primary-key)
+                (card       :not-null)
+                (name       :not-null)]
+               (:unique [card name])
+               (:foreign-key [card] :references cards [uuid] :on-delete :cascade)))
+    (results ([(variant  :not-null)
+               (result   :not-null)
+               (ease     :not-null)
+               (interval :not-null)
+               (due      :not-null)]
+              (:primary-key [variant due])
+              (:foreign-key [variant] :references variants [id] :on-delete :cascade))))
+  "Flasher database structure.")
+
+(defun flasher-db--init ()
+  "Initialize Flasher database."
+  (flasher-db-transaction
+    (dolist (table flasher-db--schemata)
+      (apply #'flasher-db-query [:create-table $i1 $S2] table))))
+
+(defun flasher-db--close ()
+  "Close Flasher database connection."
+  (when (and flasher-db--connection
+             (emacsql-live-p flasher-db--connection))
+    (emacsql-close flasher-db--connection)
+    (setq flasher-db--connection nil)))
+
+(defun flasher-db-query (sql &rest args)
+  "Execute SQL query on Flasher database with ARGS."
+  (apply #'emacsql (flasher-db) sql args))
 
 (provide 'flasher)
 
