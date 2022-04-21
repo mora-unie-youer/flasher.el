@@ -55,18 +55,5 @@
 
 (provide 'flasher)
 
-(cl-eval-when (load eval)
-  (require 'flasher-algo)
-  (require 'flasher-db)
-  (require 'flasher-core)
-  (require 'flasher-card)
-  (require 'flasher-type-normal)
-  (require 'flasher-type-double)
-  (require 'flasher-type-typed)
-  (require 'flasher-type-typed-double)
-  (require 'flasher-type-cloze)
-  (require 'flasher-type-cloze-double)
-  (require 'flasher-dashboard)
-  (require 'flasher-review))
 
 ;;; flasher.el ends here
