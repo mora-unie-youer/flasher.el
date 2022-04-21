@@ -57,9 +57,48 @@
   :group 'flasher
   :type 'directory)
 
-;;;;;;;;;;;;;;;;;;
-;; Database API ;;
-;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;
+;; Flasher API ;;
+;;;;;;;;;;;;;;;;;
+
+(defgroup flasher-card nil
+  "Flasher card API."
+  :group 'flasher)
+
+(defcustom flasher-card-tag "card"
+  "Tag for marking headlines as flashcards."
+  :group 'flasher-card
+  :type 'string)
+
+(defcustom flasher-card-explain-tag "explain"
+  "Tag for marking headlines as explanations."
+  :group 'flasher-card
+  :type 'string)
+
+(defcustom flasher-card-task-tag "task"
+  "Tag for marking headlines as tasks."
+  :group 'flasher-card
+  :type 'string)
+
+(defcustom flasher-card-deck-property "CARD_DECK"
+  "Property used to store card dec."
+  :group 'flasher-card
+  :type 'string)
+
+(defcustom flasher-card-tags-property "CARD_TAGS"
+  "Property used to store card tags."
+  :group 'flasher-card
+  :type 'string)
+
+(defcustom flasher-card-type-property "CARD_TYPE"
+  "Property used to store card type."
+  :group 'flasher-card
+  :type 'string)
+
+(defcustom flasher-card-modifiers-property "CARD_MODS"
+  "Property used to store card type modifiers."
+  :group 'flasher-card
+  :type 'string)
 
 (defgroup flasher-db nil
   "Flasher database API."
@@ -69,6 +108,10 @@
   "The path to file where Flasher database is stored."
   :group 'flasher-db
   :type 'file)
+
+;;;;;;;;;;;;;;;;;;
+;; Database API ;;
+;;;;;;;;;;;;;;;;;;
 
 (defvar flasher-db--connection nil
   "Database connection to Flasher database.")
