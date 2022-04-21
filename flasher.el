@@ -100,6 +100,16 @@
   :group 'flasher-card
   :type 'string)
 
+(defconst flasher-card--explain-heading-regexp
+  (rx-to-string `(: bol (+ "*") (+ space) (* any)
+                  (group ":" ,flasher-card-explain-tag ":") (* any) eol) t)
+  "Regular expression to match headline tagged as card.")
+
+(defconst flasher-card--task-heading-regexp
+  (rx-to-string `(: bol (+ "*") (+ space) (* any)
+                  (group ":" ,flasher-card-task-tag ":") (* any) eol) t)
+  "Regular expression to match headline tagged as card.")
+
 (defgroup flasher-db nil
   "Flasher database API."
   :group 'flasher)
