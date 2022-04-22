@@ -344,6 +344,24 @@ COMPARE-FN is used to compare levels."
             (flasher-core--heading-text side-heading)
           (elt (split-string heading-text "\n") (car side)))))))
 
+(defun flasher-card--front ()
+  "Return card's front side."
+  (if-let ((heading (flasher-card--subheading "Front")))
+      (flasher-core--heading-text heading)
+    (cl-fifth (org-heading-components))))
+
+(defun flasher-card--back ()
+  "Return card's back side."
+  (if-let ((heading (flasher-card--subheading "Back")))
+      (flasher-core--heading-text heading)
+    (flasher-core--heading-text (point-marker))))
+
+(defun flasher-card--side (side)
+  "Return card's SIDE."
+  (if-let ((heading (flasher-card--subheading side)))
+      (flasher-core--heading-text heading)
+    (error "Card doesn't have '%s' side" side)))
+
 (provide 'flasher)
 
 
