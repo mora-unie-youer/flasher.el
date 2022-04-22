@@ -204,6 +204,26 @@ Initializes and stores database and connection."
   "List all .org files in `flasher-directories'."
   (mapcan (lambda (dir) (directory-files-recursively dir "\\.org$")) flasher-directories))
 
+(defun flasher-core--list-indexed-files ()
+  "List all .org files that were indexed before."
+  (mapcan #'append (flasher-db-query [:select * :from files])))
+
+(defun flasher-core--file-contains-card-p (file)
+  "Return non-nil if FILE contain at least one card."
+  (member t (org-map-entries (lambda () t)
+                             (concat "+" flasher-card-tag) (list file))))
+
+;;;###autoload
+(defun flasher-sync-file-index ()
+  "Search for cards in files and add the file if it contain a card."
+  (interactive)
+  (flasher-db-transaction
+    (flasher-db-query [:delete-from files])
+    (dolist (file (flasher-core--list-all-files))
+      (when (flasher-core--file-contains-card-p file)
+        (flasher-db-query [:insert-into files :values $v1] (vector file)))))
+  (org-id-update-id-locations (flasher-core--list-indexed-files)))
+
 (provide 'flasher)
 
 
