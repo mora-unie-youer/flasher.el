@@ -125,7 +125,7 @@
 (defconst flasher-db--schemata
   '((files ([(file :unique)]))
     (decks ([(id integer :primary-key)
-             parent
+             (parent     :not-null)
              (name       :not-null)]
             (:unique [parent name])))
     (cards ([(uuid :primary-key)
