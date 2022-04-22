@@ -312,6 +312,28 @@ COMPARE-FN is used to compare levels."
                          t 'tree)
         found))))
 
+(defmacro flasher-card--heading (heading title)
+  "Create function with DOC to fetch HEADING with TITLE."
+  (let* ((doc (format "Return point marker at the card's %s heading." (symbol-name heading)))
+         (tag (intern (concat "flasher-card-" (symbol-name heading) "-tag")))
+         (prefix (concat "flasher-card--" (symbol-name heading)))
+         (func (intern (concat prefix "-heading")))
+         (regexp (intern (concat prefix "-heading-regexp"))))
+    `(defun ,func ()
+       ,doc
+       (if-let ((tag-p (member ,tag (org-get-tags)))
+                (level (cl-first (org-heading-components))))
+           (save-excursion
+             (let (heading)
+               (while (and (null heading) (re-search-backward ,regexp nil t))
+                 (when (flasher-core--heading-match level nil #'<)
+                   (setq heading (point-marker))))
+               heading))
+         (flasher-card--subheading ,title)))))
+
+(flasher-card--heading explain "Explain")
+(flasher-card--heading task "Task")
+
 (provide 'flasher)
 
 
