@@ -230,6 +230,18 @@ Initializes and stores database and connection."
     (org-map-entries func (concat "+" flasher-card-tag)
                      (flasher-core--list-indexed-files))))
 
+(defun flasher-core--heading-text (heading)
+  "Return text from HEADING point marker."
+  (org-agenda-get-some-entry-text heading most-positive-fixnum))
+
+(defun flasher-core--heading-match (level title &optional compare-fn)
+  "Return non-nil if heading matched LEVEL and TITLE conditions.
+COMPARE-FN is used to compare levels."
+  (unless compare-fn (setq compare-fn #'=))
+  (let ((components (org-heading-components)))
+    (and (funcall compare-fn (cl-first components) level)
+         (or (null title) (string= (cl-fifth components) title)))))
+
 (provide 'flasher)
 
 
