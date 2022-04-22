@@ -224,6 +224,12 @@ Initializes and stores database and connection."
         (flasher-db-query [:insert-into files :values $v1] (vector file)))))
   (org-id-update-id-locations (flasher-core--list-indexed-files)))
 
+(defun flasher-core--map-cards (func)
+  "Apply FUNC to each entry marked as Flasher card in indexed files."
+  (let ((org-tags-exclude-from-inheritance (list flasher-card-tag)))
+    (org-map-entries func (concat "+" flasher-card-tag)
+                     (flasher-core--list-indexed-files))))
+
 (provide 'flasher)
 
 
