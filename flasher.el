@@ -43,6 +43,7 @@
 (require 'emacsql-sqlite)
 
 (require 'org)
+(require 'org-agenda)
 
 ;;;;;;;;;;;;;
 ;; Flasher ;;
