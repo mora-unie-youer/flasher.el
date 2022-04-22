@@ -153,6 +153,15 @@
               (:foreign-key [variant] :references variants [id] :on-delete :cascade))))
   "Flasher database structure.")
 
+(defgroup flasher-deck nil
+  "Flasher deck API."
+  :group 'flasher)
+
+(defcustom flasher-deck-delimiter "::"
+  "Delimiter used for complex deck names."
+  :group 'flasher-deck
+  :type 'string)
+
 ;;;;;;;;;;;;;;;;;;
 ;; Database API ;;
 ;;;;;;;;;;;;;;;;;;
@@ -251,6 +260,39 @@ COMPARE-FN is used to compare levels."
   (let ((components (org-heading-components)))
     (and (funcall compare-fn (cl-first components) level)
          (or (null title) (string= (cl-fifth components) title)))))
+
+;;;;;;;;;;;;;;
+;; Deck API ;;
+;;;;;;;;;;;;;;
+
+(defun flasher-deck--create (name)
+  "Create deck with NAME."
+  (let* ((query [:insert-into decks [parent name] :values $v1])
+         (parts (split-string name flasher-deck-delimiter))
+         (name (car (last parts))))
+    (if-let* ((other (butlast parts))
+              (other-string (string-join other flasher-deck-delimiter))
+              (parent (flasher-deck--get-create other-string)))
+        (flasher-db-query query (vector parent name))
+      (flasher-db-query query (vector 0 name)))))
+
+(defun flasher-deck--get (name)
+  "Get deck with NAME."
+  (let* ((query [:select id :from decks :where (and (= parent $s1) (= name $s2))])
+         (parts (split-string name flasher-deck-delimiter))
+         (name (car (last parts))))
+    (caar (if-let* ((other (butlast parts))
+                    (other-string (string-join other flasher-deck-delimiter))
+                    (parent (flasher-deck--get other-string)))
+              (flasher-db-query query parent name)
+            (flasher-db-query query 0 name)))))
+
+(defun flasher-deck--get-create (name)
+  "Get or create deck with NAME."
+  (if-let ((deck (flasher-deck--get name)))
+      deck
+    (flasher-deck--create name)
+    (flasher-deck--get name)))
 
 (provide 'flasher)
 
