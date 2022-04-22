@@ -294,6 +294,24 @@ COMPARE-FN is used to compare levels."
     (flasher-deck--create name)
     (flasher-deck--get name)))
 
+;;;;;;;;;;;;;;
+;; Card API ;;
+;;;;;;;;;;;;;;
+
+(defun flasher-card--subheading (title &optional heading)
+  "Return point marker at the beginning of card's TITLE subheading at HEADING."
+  (unless heading (setq heading (point-marker)))
+  (save-excursion
+    (with-current-buffer (marker-buffer heading)
+      (goto-char heading)
+      (let ((level (cl-first (org-heading-components)))
+            found)
+        (org-map-entries (lambda () (when (and (null found)
+                                          (flasher-core--heading-match (1+ level) title))
+                                 (setq found (point-marker))))
+                         t 'tree)
+        found))))
+
 (provide 'flasher)
 
 
