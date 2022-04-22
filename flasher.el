@@ -334,6 +334,16 @@ COMPARE-FN is used to compare levels."
 (flasher-card--heading explain "Explain")
 (flasher-card--heading task "Task")
 
+(defun flasher-card--task (&optional side)
+  "Return card's task for SIDE (nth . title)."
+  (when-let ((heading (flasher-card--task-heading))
+             (heading-text (flasher-core--heading-text heading)))
+    (cond
+     ((null side) heading-text)
+     (t (if-let ((side-heading (flasher-card--subheading (cdr side) heading)))
+            (flasher-core--heading-text side-heading)
+          (elt (split-string heading-text "\n") (car side)))))))
+
 (provide 'flasher)
 
 
