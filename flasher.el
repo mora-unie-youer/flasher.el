@@ -110,6 +110,10 @@
                   (group ":" ,flasher-card-task-tag ":") (* any) eol) t)
   "Regular expression to match headline tagged as card.")
 
+(defgroup flasher-core nil
+  "Flasher core API."
+  :group 'flasher)
+
 (defgroup flasher-db nil
   "Flasher database API."
   :group 'flasher)
@@ -191,6 +195,14 @@ Initializes and stores database and connection."
 (defun flasher-db-query (sql &rest args)
   "Execute SQL query on Flasher database with ARGS."
   (apply #'emacsql (flasher-db) sql args))
+
+;;;;;;;;;;;;;;
+;; Core API ;;
+;;;;;;;;;;;;;;
+
+(defun flasher-core--list-all-files ()
+  "List all .org files in `flasher-directories'."
+  (mapcan (lambda (dir) (directory-files-recursively dir "\\.org$")) flasher-directories))
 
 (provide 'flasher)
 
