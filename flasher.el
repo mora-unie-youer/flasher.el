@@ -231,6 +231,15 @@ Initializes and stores database and connection."
     (org-map-entries func (concat "+" flasher-card-tag)
                      (flasher-core--list-indexed-files))))
 
+(defun flasher-core--add-tag (tag)
+  "Add TAG to the current heading."
+  (org-set-tags (cl-remove-duplicates (cons tag (org-get-tags nil 'local))
+                                      :test #'string=)))
+
+(defun flasher-core--remove-tag (tag)
+  "Remove TAG from the current heading."
+  (org-set-tags (remove tag (org-get-tags nil 'local))))
+
 (defun flasher-core--heading-text (heading)
   "Return text from HEADING point marker."
   (org-agenda-get-some-entry-text heading most-positive-fixnum))
