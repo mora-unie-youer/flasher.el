@@ -224,7 +224,7 @@ Initializes and stores database and connection."
                              (concat "+" flasher-card-tag) (list file))))
 
 ;;;###autoload
-(defun flasher-sync-file-index ()
+(defun flasher-index-sync ()
   "Search for cards in files and add the file if it contain a card."
   (interactive)
   (flasher-db-transaction
