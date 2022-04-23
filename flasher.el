@@ -130,9 +130,9 @@
 (defconst flasher-db--schemata
   '((files ([(file :unique)]))
     (decks ([(id integer :primary-key)
-             (parent     :not-null)
+             parent
              (name       :not-null)]
-            (:unique [parent name])))
+            (:foreign-key [parent] :references decks [id] :on-delete :cascade)))
     (cards ([(uuid :primary-key)
              deck]
             (:foreign-key [deck] :references decks [id] :on-delete :cascade)))
