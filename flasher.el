@@ -277,16 +277,17 @@ COMPARE-FN is used to compare levels."
       (flasher-db-query query (vector nil name)))))
 
 (defun flasher-deck-get (name)
-  "Get deck with NAME. If NAME is not a string, return 0."
-  (let* ((parts (split-string name flasher-deck-delimiter))
-         (name (car (last parts))))
-    (caar (if-let* ((other (butlast parts))
-                    (other-string (string-join other flasher-deck-delimiter))
-                    (parent (flasher-deck-get other-string)))
+  "Get deck with NAME. If NAME is not a string, return nil."
+  (when (stringp name)
+    (let* ((parts (split-string name flasher-deck-delimiter))
+           (name (car (last parts))))
+      (caar (if-let* ((other (butlast parts))
+                      (other-string (string-join other flasher-deck-delimiter))
+                      (parent (flasher-deck-get other-string)))
+                (flasher-db-query [:select id :from decks :where
+                                   (and (= name $s1) (= parent $s2))] name parent)
               (flasher-db-query [:select id :from decks :where
-                                 (and (= name $s1) (= parent $s2))] name parent)
-            (flasher-db-query [:select id :from decks :where
-                               (and (= name $s1) (is parent nil))] name)))))
+                                 (and (= name $s1) (is parent nil))] name))))))
 
 (defun flasher-deck-get-create (name)
   "Get or create deck with NAME."
