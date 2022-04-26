@@ -374,6 +374,8 @@ COMPARE-FN is used to compare levels."
 (defun flasher-card--sides ()
   "Return card's sides."
   (let ((subheadings (flasher-core--subheadings)))
+    (cl-pushnew "Front" subheadings :test #'string=)
+    (cl-pushnew "Back" subheadings :test #'string=)
     (cl-set-difference subheadings (list flasher-card-explain-heading-title
                                          flasher-card-task-heading-title)
                        :test #'string=)))
