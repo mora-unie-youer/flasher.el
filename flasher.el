@@ -149,6 +149,7 @@
             (:foreign-key [deck] :references decks [id] :on-delete :cascade)))
     (tags ([(card :not-null)
             tag]
+           (:unique [card tag])
            (:foreign-key [card] :references cards [uuid] :on-delete :cascade)))
     (variants ([(id integer :primary-key)
                 (card       :not-null)
