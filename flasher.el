@@ -77,8 +77,18 @@
   :group 'flasher-card
   :type 'string)
 
+(defcustom flasher-card-explain-heading-title "Explain"
+  "Heading title for card's explanation."
+  :group 'flasher-card
+  :type 'string)
+
 (defcustom flasher-card-task-tag "task"
   "Tag for marking headlines as tasks."
+  :group 'flasher-card
+  :type 'string)
+
+(defcustom flasher-card-task-heading-title "Task"
+  "Heading title for card's task."
   :group 'flasher-card
   :type 'string)
 
@@ -334,8 +344,8 @@ COMPARE-FN is used to compare levels."
                heading))
          (flasher-card--subheading ,title)))))
 
-(flasher-card--heading explain "Explain")
-(flasher-card--heading task "Task")
+(flasher-card--heading explain flasher-card-explain-heading-title)
+(flasher-card--heading task flasher-card-task-heading-title)
 
 (defun flasher-card--task (&optional side)
   "Return card's task for SIDE (nth . title)."
