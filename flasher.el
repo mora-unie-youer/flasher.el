@@ -272,6 +272,19 @@ COMPARE-FN is used to compare levels."
     (and (funcall compare-fn (cl-first components) level)
          (or (null title) (string= (cl-fifth components) title)))))
 
+(defun flasher-core--subheadings ()
+  "Return list of subheadings."
+  (let* ((heading-components (org-heading-components))
+         (level (cl-first heading-components)))
+    (delq nil
+          (org-map-entries
+           (lambda ()
+             (let* ((subheading-components (org-heading-components))
+                    (sublevel (cl-first subheading-components)))
+               (when (= sublevel (1+ level))
+                 (cl-fifth subheading-components))))
+           t 'tree))))
+
 ;;;;;;;;;;;;;;
 ;; Deck API ;;
 ;;;;;;;;;;;;;;
@@ -356,6 +369,13 @@ COMPARE-FN is used to compare levels."
      (t (if-let ((side-heading (flasher-card--subheading (cdr side) heading)))
             (flasher-core--heading-text side-heading)
           (elt (split-string heading-text "\n") (car side)))))))
+
+(defun flasher-card--sides ()
+  "Return card's sides."
+  (let ((subheadings (flasher-core--subheadings)))
+    (cl-set-difference subheadings (list flasher-card-explain-heading-title
+                                         flasher-card-task-heading-title)
+                       :test #'string=)))
 
 (defun flasher-card--front ()
   "Return card's front side."
