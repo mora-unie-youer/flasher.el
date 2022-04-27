@@ -153,8 +153,9 @@
            (:foreign-key [card] :references cards [uuid] :on-delete :cascade)))
     (variants ([(id integer :primary-key)
                 (card       :not-null)
-                (name       :not-null)]
-               (:unique [card name])
+                (side       :not-null)
+                data]
+               (:unique [card side data])
                (:foreign-key [card] :references cards [uuid] :on-delete :cascade)))
     (results ([(variant  :not-null)
                (result   :not-null)
