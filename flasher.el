@@ -322,6 +322,10 @@ COMPARE-FN is used to compare levels."
     (flasher-deck-create name)
     (flasher-deck-get name)))
 
+(defun flasher-deck--get-children (id)
+  "Get deck children for deck with ID."
+  (flasher-db-query [:select * :from decks :where (= parent $s1)] id))
+
 ;;;;;;;;;;;;;;
 ;; Card API ;;
 ;;;;;;;;;;;;;;
