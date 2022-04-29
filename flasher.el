@@ -403,6 +403,10 @@ COMPARE-FN is used to compare levels."
       (flasher-core--heading-text heading)
     (error "Card doesn't have '%s' side" side)))
 
+(defun flasher-card-p ()
+  "Return non-nil if current heading is a card."
+  (member flasher-card-tag (org-get-tags nil 'local)))
+
 (provide 'flasher)
 
 
