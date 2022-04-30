@@ -229,7 +229,7 @@ Initializes and stores database and connection."
 
 (defun flasher-core--list-indexed-files ()
   "List all .org files that were indexed before."
-  (mapcan #'append (flasher-db-query [:select * :from files])))
+  (mapcar #'car (flasher-db-query [:select * :from files])))
 
 (defun flasher-core--file-contains-card-p (file)
   "Return non-nil if FILE contain at least one card."
