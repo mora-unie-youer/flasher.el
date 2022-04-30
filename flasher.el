@@ -291,40 +291,43 @@ COMPARE-FN is used to compare levels."
 ;; Deck API ;;
 ;;;;;;;;;;;;;;
 
+(defun flasher-deck--get-children (id &optional filter &rest args)
+  "Get deck children for deck with ID. If ID is nil, fetch top-level decks.
+FILTER can contain vector with part of SQL for filtering children out.
+ARGS is the rest of arguments used in SQL query.
+NOTE: argument numbers in FILTER must start from 2 (as first is used for ID)."
+  (let* ((base-query [:select id :from decks :where])
+         (parent-query (if id [(= parent $s1)] [(is parent nil)]))
+         (query (vconcat base-query parent-query (if filter [:and]) filter))
+         (children (apply #'flasher-db-query query id args)))
+    (mapcar #'car children)))
+
 (defun flasher-deck-create (name)
   "Create deck with NAME."
   (let* ((query [:insert-into decks [parent name] :values $v1])
          (parts (split-string name flasher-deck-delimiter))
          (name (car (last parts))))
-    (if-let* ((other (butlast parts))
-              (other-string (string-join other flasher-deck-delimiter))
-              (parent (flasher-deck-get-create other-string)))
-        (flasher-db-query query (vector parent name))
-      (flasher-db-query query (vector nil name)))))
+    (let* ((other (butlast parts))
+           (other-string (string-join other flasher-deck-delimiter))
+           (parent (if other (flasher-deck-get-create other-string))))
+      (flasher-db-query query (vector parent name))
+      (car (flasher-deck--get-children parent [(= name $s2)] name)))))
 
 (defun flasher-deck-get (name)
   "Get deck with NAME. If NAME is not a string, return nil."
   (when (stringp name)
     (let* ((parts (split-string name flasher-deck-delimiter))
            (name (car (last parts))))
-      (caar (if-let* ((other (butlast parts))
-                      (other-string (string-join other flasher-deck-delimiter))
-                      (parent (flasher-deck-get other-string)))
-                (flasher-db-query [:select id :from decks :where
-                                   (and (= name $s1) (= parent $s2))] name parent)
-              (flasher-db-query [:select id :from decks :where
-                                 (and (= name $s1) (is parent nil))] name))))))
+      (car (let* ((other (butlast parts))
+                  (other-string (string-join other flasher-deck-delimiter))
+                  (parent (if other (flasher-deck-get other-string))))
+             (flasher-deck--get-children parent [(= name $s2)] name))))))
 
 (defun flasher-deck-get-create (name)
   "Get or create deck with NAME."
   (if-let ((deck (flasher-deck-get name)))
       deck
-    (flasher-deck-create name)
-    (flasher-deck-get name)))
-
-(defun flasher-deck--get-children (id)
-  "Get deck children for deck with ID."
-  (flasher-db-query [:select * :from decks :where (= parent $s1)] id))
+    (flasher-deck-create name)))
 
 ;;;;;;;;;;;;;;
 ;; Card API ;;
