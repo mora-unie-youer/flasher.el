@@ -112,6 +112,18 @@
   :group 'flasher-card
   :type 'string)
 
+(defcustom flasher-card-intervals-before-old 10
+  "When item's interval is above this value, it's no longer considered 'young'."
+  :group 'flasher-card
+  :type 'flasher-card-interval)
+
+(defcustom flasher-card-interval-overdue-factor 0.2
+  "Multiply factor to check if item is overdue.
+Item is considered overdue, when its scheduled review date is more than
+FLASHER-CARD-INTERVAL-OVERDUE-FACTOR * LAST-INTERVAL days in the past."
+  :group 'flasher-card
+  :type 'float)
+
 (defconst flasher-card--explain-heading-regexp
   (rx-to-string `(: bol (+ "*") (+ space) (* any)
                   (group ":" ,flasher-card-explain-tag ":") (* any) eol) t)
