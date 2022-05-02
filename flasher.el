@@ -151,29 +151,30 @@ FLASHER-CARD-INTERVAL-OVERDUE-FACTOR * LAST-INTERVAL days in the past."
   "Database connection to Flasher database.")
 
 (defconst flasher-db--schemata
-  '((files ([(file :unique)]))
-    (decks ([(id integer :primary-key)
-             parent
-             (name       :not-null)]
+  '((files ([(file text :unique)]))
+    (decks ([(id     integer :primary-key)
+             (parent integer)
+             (name   object  :not-null)]
             (:foreign-key [parent] :references decks [id] :on-delete :cascade)))
-    (cards ([(uuid :primary-key)
-             deck]
+    (cards ([(uuid  object   :primary-key)
+             (deck  integer)
+             (title object   :not-null)]
             (:foreign-key [deck] :references decks [id] :on-delete :cascade)))
-    (tags ([(card :not-null)
-            tag]
+    (tags ([(card object :not-null)
+            (tag  text)]
            (:unique [card tag])
            (:foreign-key [card] :references cards [uuid] :on-delete :cascade)))
-    (variants ([(id integer :primary-key)
-                (card       :not-null)
-                (side       :not-null)
+    (variants ([(id   integer :primary-key)
+                (card object  :not-null)
+                (side object  :not-null)
                 data]
                (:unique [card side data])
                (:foreign-key [card] :references cards [uuid] :on-delete :cascade)))
-    (results ([(variant  :not-null)
-               (result   :not-null)
-               (ease     :not-null)
-               (interval :not-null)
-               (due      :not-null)]
+    (results ([(variant  integer :not-null)
+               (result   integer :not-null)
+               (ease     float   :not-null)
+               (interval integer :not-null)
+               (due              :not-null)]
               (:primary-key [variant due])
               (:foreign-key [variant] :references variants [id] :on-delete :cascade))))
   "Flasher database structure.")
