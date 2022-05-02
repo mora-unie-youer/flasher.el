@@ -178,6 +178,10 @@ FLASHER-CARD-INTERVAL-OVERDUE-FACTOR * LAST-INTERVAL days in the past."
               (:foreign-key [variant] :references variants [id] :on-delete :cascade))))
   "Flasher database structure.")
 
+(defconst flasher-db--additional
+  '("CREATE UNIQUE INDEX decks_parent_name ON decks (name, IFNULL(parent, 0));")
+  "Flasher additional database structure.")
+
 (defgroup flasher-deck nil
   "Flasher deck API."
   :group 'flasher)
@@ -218,7 +222,11 @@ Initializes and stores database and connection."
   "Initialize Flasher database."
   (flasher-db-transaction
     (dolist (table flasher-db--schemata)
-      (apply #'flasher-db-query [:create-table $i1 $S2] table))))
+      (apply #'flasher-db-query [:create-table $i1 $S2] table))
+    (dolist (query flasher-db--additional)
+      (if (stringp query)
+          (flasher-db-query-string query)
+        (apply #'flasher-db-query query)))))
 
 (defun flasher-db--close ()
   "Close Flasher database connection."
