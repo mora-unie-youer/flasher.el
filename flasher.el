@@ -102,6 +102,11 @@
   :group 'flasher-card
   :type 'string)
 
+(defcustom flasher-card-title-property "CARD_TITLE"
+  "Property used to store card title."
+  :group 'flasher-card
+  :type 'string)
+
 (defcustom flasher-card-type-property "CARD_TYPE"
   "Property used to store card type."
   :group 'flasher-card
