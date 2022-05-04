@@ -245,6 +245,14 @@ Initializes and stores database and connection."
   "Execute SQL query on Flasher database with ARGS."
   (apply #'emacsql (flasher-db) sql args))
 
+(defun flasher-db-query-string (sql)
+  "Execute SQL query in string on Flasher database."
+  (let ((connection (flasher-db)))
+    (emacsql-clear connection)
+    (emacsql-send-message connection sql)
+    (emacsql-wait connection)
+    (emacsql-parse connection)))
+
 ;;;;;;;;;;;;;;
 ;; Core API ;;
 ;;;;;;;;;;;;;;
