@@ -139,6 +139,15 @@ FLASHER-CARD-INTERVAL-OVERDUE-FACTOR * LAST-INTERVAL days in the past."
                   (group ":" ,flasher-card-task-tag ":") (* any) eol) t)
   "Regular expression to match headline tagged as card.")
 
+(defgroup flasher-card-type nil
+  "Flasher card types API."
+  :group 'flasher)
+
+(defvar flasher-card-types '()
+  "Alist for registered card types.
+Entries have shape (name sort-p init-fn setup-fn hint-fn flip-fn).
+See `flasher-card-types-register' for adding new card types.")
+
 (defgroup flasher-core nil
   "Flasher core API."
   :group 'flasher)
