@@ -152,6 +152,15 @@ See `flasher-card-types-register' for adding new card types.")
   "Flasher core API."
   :group 'flasher)
 
+(defgroup flasher-dashboard nil
+  "Flasher dashboard API."
+  :group 'flasher)
+
+(defcustom flasher-dashboard-buffer-name "*Flasher: Dashboard*"
+  "Name of the buffer to use for displaying the dashboard view."
+  :group 'flasher-dashboard
+  :type 'string)
+
 (defgroup flasher-db nil
   "Flasher database API."
   :group 'flasher)
