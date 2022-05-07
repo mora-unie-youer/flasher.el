@@ -148,6 +148,13 @@ FLASHER-CARD-INTERVAL-OVERDUE-FACTOR * LAST-INTERVAL days in the past."
 Entries have shape (name sort-p init-fn setup-fn hint-fn flip-fn).
 See `flasher-card-types-register' for adding new card types.")
 
+(defgroup flasher-card-type-normal nil
+  "Flasher 'normal card types API."
+  :group 'flasher-card-type)
+
+(defvar flasher-card-type-normal--side nil
+  "Current 'normal card side.")
+
 (defgroup flasher-core nil
   "Flasher core API."
   :group 'flasher)
