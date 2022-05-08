@@ -155,6 +155,37 @@ See `flasher-card-types-register' for adding new card types.")
 (defvar flasher-card-type-normal--side nil
   "Current 'normal card side.")
 
+(defgroup flasher-card-type-cloze nil
+  "Flasher 'cloze card types API."
+  :group 'flasher-card-type)
+
+(defcustom flasher-card-type-cloze-type-property "CLOZE_TYPE"
+  "Property used to store cloze type."
+  :group 'flasher-card-type-cloze
+  :type 'string)
+
+(defface flasher-card-type-cloze-hole-face
+  '((t (:bold t)))
+  "Face for Flasher cloze card holes."
+  :group 'flasher-card-type-cloze)
+
+(defconst flasher-card-type-cloze--regex
+  (rx "{"
+      (: "{" (group (+ (not (any "}")))) "}")
+      (? "{" (group (+ (not (any "}")))) "}")
+      (? "@" (group (+ digit)))
+      "}")
+  "Regular expression to match cloze holes.")
+
+(defvar flasher-card-type-cloze--variant nil
+  "Current 'cloze card variant.")
+
+(defvar flasher-card-type-cloze--text-overlay '()
+  "Text overlay for 'cloze card.")
+
+(defvar flasher-card-type-cloze--hint-overlay '()
+  "Hint overlay for 'cloze card.")
+
 (defgroup flasher-core nil
   "Flasher core API."
   :group 'flasher)
