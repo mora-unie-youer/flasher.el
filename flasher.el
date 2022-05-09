@@ -723,6 +723,12 @@ NOTE: argument numbers in FILTER must start from 2 (as first is used for ID)."
   "Get type of card at point or with ID."
   (flasher-card-goto-id id (org-entry-get nil flasher-card-type-property)))
 
+(defun flasher-card--get-variants (&optional id)
+  "Get card variants as (SIDE . (ID DATA)...)... for card at point or with ID."
+  (flasher-card-with-id id
+    (flasher-db-query [:select [id card side data] :from variants
+                       :where (= card $s1) :order-by (asc id)] id)))
+
 (defun flasher-card--create (&optional id)
   "Create card at point or with ID."
   (flasher-card-goto-with-id id
