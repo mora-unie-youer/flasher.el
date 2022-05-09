@@ -1023,6 +1023,14 @@ FLIP-FN is function for flipping card in review."
   (let ((decks (flasher-deck--get-children nil)))
     (mapcar #'flasher-dashboard--fetch-deck (cons nil decks))))
 
+(defmacro flasher-dashboard-with-buffer (&rest body)
+  "Eval BODY in Flasher dashboard buffer."
+  (declare (indent defun))
+  `(let ((inhibit-read-only t))
+     (with-current-buffer (get-buffer-create flasher-dashboard-buffer-name)
+       ,@body
+       (set-buffer-modified-p nil))))
+
 (provide 'flasher)
 
 
