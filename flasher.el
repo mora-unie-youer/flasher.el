@@ -730,6 +730,17 @@ NOTE: argument numbers in FILTER must start from 2 (as first is used for ID)."
       (flasher-db-query [:insert-or-ignore-into cards [uuid deck title] :values $v1]
                         (vector id nil title)))))
 
+(defun flasher-card--update-deck (&optional id)
+  "Update deck for card at point or with ID."
+  (flasher-card-goto-with-id id
+    (let* ((deck-name (flasher-card--get-deck))
+           (deck (flasher-deck-get-create deck-name))
+           (current-deck (caar (flasher-db-query [:select deck :from cards
+                                                  :where (= uuid $s1)] id))))
+      (when (not (eq deck current-deck))
+        (flasher-db-query [:update cards :set (= deck $s2) :where (= uuid $s1)]
+                          id deck)))))
+
 ;;;;;;;;;;;;;;;;;;;
 ;; Card type API ;;
 ;;;;;;;;;;;;;;;;;;;
