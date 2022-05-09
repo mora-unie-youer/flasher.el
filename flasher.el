@@ -510,6 +510,33 @@ COMPARE-FN is used to compare levels."
                  (cl-fifth subheading-components))))
            t 'tree))))
 
+(defun flasher-core--hide-region (from to &optional text face)
+  "Hide region FROM ... TO, replacing it with TEXT with FACE."
+  (let ((overlay (make-overlay from to nil t)))
+    (overlay-put overlay 'category 'flasher)
+    (overlay-put overlay 'evaporate t)
+    (when face (overlay-put overlay 'face face))
+    (if (stringp text)
+        (progn
+          (overlay-put overlay 'invisible nil)
+          (overlay-put overlay 'display text))
+      (overlay-put overlay 'invisible t))
+    overlay))
+
+(defun flasher-core--make-overlay (from to &rest props)
+  "Create an overlay in region FROM ... TO with PROPS."
+  (let ((overlay (make-overlay from to nil t)))
+    (overlay-put overlay 'category 'flasher)
+    (cl-loop for (prop value) on props by #'cddr do
+             (overlay-put overlay prop value))
+    overlay))
+
+(defun flasher-core--overlay-surround (overlay before after &optional face)
+  "Surround OVERLAY with strings BEFORE and AFTER with FACE."
+  (overlay-put overlay 'before-string (propertize before 'face face))
+  (overlay-put overlay 'after-string (propertize after 'face face))
+  overlay)
+
 ;;;;;;;;;;;;;;
 ;; Deck API ;;
 ;;;;;;;;;;;;;;
