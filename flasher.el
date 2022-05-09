@@ -258,6 +258,9 @@ See `flasher-card-types-register' for adding new card types.")
   :group 'flasher-dashboard
   :type 'string)
 
+(defvar flasher-dashboard--cards nil
+  "List of cards currently shown in dashboard.")
+
 (defgroup flasher-db nil
   "Flasher database API."
   :group 'flasher)
