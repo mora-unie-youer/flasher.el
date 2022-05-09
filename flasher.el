@@ -741,6 +741,21 @@ NOTE: argument numbers in FILTER must start from 2 (as first is used for ID)."
         (flasher-db-query [:update cards :set (= deck $s2) :where (= uuid $s1)]
                           id deck)))))
 
+(defun flasher-card--update-tags (&optional id)
+  "Update tags for card at point or with ID."
+  (flasher-card-goto-with-id id
+    (let ((tags (flasher-card--get-tags))
+          (current-tags (apply #'append (flasher-db-query [:select tag :from tags
+                                                           :where (= card $s1)] id))))
+      (let ((new-tags (cl-set-difference tags current-tags :test #'string=))
+            (old-tags (cl-set-difference current-tags tags :test #'string=)))
+        (when (not (and (null new-tags) (null old-tags)))
+          (dolist (tag old-tags)
+            (flasher-db-query [:delete-from tags
+                               :where (= card $s1) :and (= tag $s2)] id tag))
+          (dolist (tag new-tags)
+            (flasher-db-query [:insert-into tags :values $v1] (vector id tag))))))))
+
 ;;;;;;;;;;;;;;;;;;;
 ;; Card type API ;;
 ;;;;;;;;;;;;;;;;;;;
