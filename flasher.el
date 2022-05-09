@@ -258,6 +258,26 @@ See `flasher-card-types-register' for adding new card types.")
   :group 'flasher-dashboard
   :type 'string)
 
+(defface flasher-dashboard--new-count
+  '((t :inherit 'font-lock-function-name-face))
+  "Face used to highlight new count in dashboard."
+  :group 'flasher-dashboard)
+
+(defface flasher-dashboard--failed-count
+  '((t :inherit 'font-lock-keyword-face))
+  "Face used to highlight failed count in dashboard."
+  :group 'flasher-dashboard)
+
+(defface flasher-dashboard--review-count
+  '((t :inherit 'font-lock-variable-name-face))
+  "Face used to highlight review count in dashboard."
+  :group 'flasher-dashboard)
+
+(defface flasher-dashboard--overdue-count
+  '((t :inherit 'font-lock-constant-face))
+  "Face used to highlight overdue count in dashboard."
+  :group 'flasher-dashboard)
+
 (defvar flasher-dashboard--cards nil
   "List of cards currently shown in dashboard.")
 
