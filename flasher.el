@@ -1031,6 +1031,16 @@ FLIP-FN is function for flipping card in review."
        ,@body
        (set-buffer-modified-p nil))))
 
+(defvar flasher-dashboard-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "q") #'kill-current-buffer)
+    map)
+  "Keymap for `flasher-dashboard-mode'.")
+
+(define-derived-mode flasher-dashboard-mode special-mode "Flasher Dashboard"
+  "This mode is used to display Flasher dashboard."
+  :group 'flasher-dashboard)
+
 (provide 'flasher)
 
 
