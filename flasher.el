@@ -688,6 +688,13 @@ NOTE: argument numbers in FILTER must start from 2 (as first is used for ID)."
   "Get all cards."
   (mapcar #'car (flasher-db-query [:select uuid :from cards])))
 
+(defun flasher-card--get-by-deck (id)
+  "Get cards by deck ID."
+  (let* ((base-query [:select uuid :from cards :where])
+         (deck-query (if id [(= deck $s1)] [(is deck nil)]))
+         (query (vconcat base-query deck-query)))
+    (mapcar #'car (flasher-db-query query id))))
+
 (defun flasher-card--get-deck (&optional id)
   "Get deck name of card at point or with ID."
   (flasher-card-goto-id id
