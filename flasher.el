@@ -740,6 +740,21 @@ NOTE: argument numbers in FILTER must start from 2 (as first is used for ID)."
     (flasher-db-query [:select [id card side data] :from variants
                        :where (= card $s1) :order-by (asc id)] id)))
 
+(defun flasher-card--get-nfro (&optional id)
+  "Get card variants (NEW FAILED REVIEW OVERDUE) for card at point or with ID."
+  (flasher-card-with-id id
+    (let* ((variants (flasher-card--get-variants id))
+           (due-variants (flasher-card-variant--filter-due variants))
+           (new 0) (failed 0) (review 0) (overdue 0))
+      (dolist (variant due-variants)
+        (let ((status (cl-fifth variant)))
+          (cond
+           ((eq status :new) (cl-incf new))
+           ((eq status :failed) (cl-incf failed))
+           ((eq status :overdue) (cl-incf overdue))
+           (t (cl-incf review)))))
+      (list new failed review overdue))))
+
 (defun flasher-card--create (&optional id)
   "Create card at point or with ID."
   (flasher-card-goto-with-id id
