@@ -315,6 +315,41 @@ See `flasher-card-types-register' for adding new card types.")
   :group 'flasher-deck
   :type 'string)
 
+(defgroup flasher-review nil
+  "Flasher reviewing mode."
+  :group 'flasher)
+
+(defcustom flasher-review-buffer-name "*Flasher Review*"
+  "Name of the buffer to use for displaying the review view."
+  :group 'flasher-review
+  :type 'string)
+
+(defcustom flasher-review-learn-count 20
+  "Maximum count of cards to learn in a single session.
+NIL = unlimited."
+  :group 'flasher-review
+  :type '(choice integer (const nil)))
+
+(defcustom flasher-review-review-count 50
+  "Maximum count of cards to review in a single session.
+NIL = unlimited."
+  :group 'flasher-review
+  :type '(choice integer (const nil)))
+
+(defclass flasher-review-session ()
+  ((current-card :initform nil
+                 :documentation "Current card in review session.")
+   (cards :initarg :cards
+          :initform nil
+          :documentation "Cards in this review session.")
+   (results :initform '(:total 0 :0 0 :1 0 :2 0 :3 0 :4 0 :5 0)
+            :documentation "Result statistics for this review session."))
+  "Object used for Flasher review session."
+  :group 'flasher-review)
+
+(defvar flasher-review--session nil
+  "It is an `flasher-review-session' object which represents current session.")
+
 ;;;;;;;;;;;;;;;;;;
 ;; Database API ;;
 ;;;;;;;;;;;;;;;;;;
