@@ -723,6 +723,54 @@ NOTE: argument numbers in FILTER must start from 2 (as first is used for ID)."
       (flasher-db-query [:insert-or-ignore-into cards [uuid deck title] :values $v1]
                         (vector id nil title)))))
 
+;;;;;;;;;;;;;;;;;;;
+;; Card type API ;;
+;;;;;;;;;;;;;;;;;;;
+
+(defun flasher-card-type (type)
+  "Return card TYPE. If TYPE doesn't exist, errorring."
+  (if-let ((card-type (alist-get type flasher-card-types nil nil #'string=)))
+      card-type
+    (error "Card type '%s' doesn't exist" type)))
+
+(defun flasher-card-type-sort (type)
+  "Get sorting for card TYPE."
+  (cl-first (flasher-card-type type)))
+
+(defun flasher-card-type-sort-p (type)
+  "Do card variants of TYPE need to be sorted?"
+  (not (null (flasher-card-type-sort type))))
+
+(defun flasher-card-type-init-fn (type)
+  "Get INIT-FN for card TYPE."
+  (cl-second (flasher-card-type type)))
+
+(defun flasher-card-type-setup-fn (type)
+  "Get SETUP-FN for card TYPE."
+  (cl-third (flasher-card-type type)))
+
+(defun flasher-card-type-hint-fn (type)
+  "Get HINT-FN for card TYPE."
+  (cl-fourth (flasher-card-type type)))
+
+(defun flasher-card-type-flip-fn (type)
+  "Get FLIP-FN for card TYPE."
+  (cl-fifth (flasher-card-type type)))
+
+(defun flasher-card-type-register (name sort init-fn setup-fn hint-fn flip-fn)
+  "Register a new card type.
+NAME is name of the new type.
+SORT - do card variants need to be sorted? Options: nil, 'side, non-nil.
+INIT-FN is function for initializing card in database.
+SETUP-FN is function for preparing card for review.
+HINT-FN is function for showing hint for a card in review.
+FLIP-FN is function for flipping card in review."
+  (declare (indent defun))
+  (push (list name sort init-fn setup-fn hint-fn flip-fn) flasher-card-types))
+
+(defun flasher-card-type-noop (&rest _args)
+  "No operation function that is used in card types.")
+
 (provide 'flasher)
 
 
