@@ -766,6 +766,37 @@ NOTE: argument numbers in FILTER must start from 2 (as first is used for ID)."
         (flasher-db-query [:update cards :set (= title $s2) :where (= uuid $s1)]
                           id title)))))
 
+(defun flasher-card--extract-variants (variants)
+  "Extract VARIANTS from grouped VARIANTS list."
+  (let (result)
+    (dolist (variant variants)
+      (if-let* ((side (car variant))
+                (datas (cdr variant))
+                (list-p (listp datas)))
+          (dolist (data datas)
+            (push (cons side data) result))
+        (push (cons side nil) result)))
+    result))
+
+(defun flasher-card--update-variants (variants &optional id)
+  "Update VARIANTS for card at point or with ID."
+  (flasher-card-with-id id
+    (let* ((variants (flasher-card--extract-variants variants))
+           (current-variants (mapcar (lambda (variant) (cons (cadr variant) (caddr variant)))
+                                     (flasher-card--get-variants))))
+      (let ((new-variants (cl-set-difference variants current-variants :test #'equal))
+            (old-variants (cl-set-difference current-variants variants :test #'equal)))
+        (when (not (and (null new-variants) (null old-variants)))
+          (dolist (variant old-variants)
+            (let* ((base-query [:delete-from variants :where (= card $s1)
+                                :and (= side $s2) :and])
+                   (data-query (if (cdr variant) [(= data $s3)] [(is data nil)]))
+                   (query (vconcat base-query data-query)))
+              (flasher-db-query query id (car variant) (cdr variant))))
+          (dolist (variant new-variants)
+            (flasher-db-query [:insert-into variants [card side data] :values $v1]
+                              (vector id (car variant) (cdr variant)))))))))
+
 ;;;;;;;;;;;;;;;;;;;
 ;; Card type API ;;
 ;;;;;;;;;;;;;;;;;;;
