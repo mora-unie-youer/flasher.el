@@ -996,6 +996,33 @@ FLIP-FN is function for flipping card in review."
 (defun flasher-card-type-noop (&rest _args)
   "No operation function that is used in card types.")
 
+;;;;;;;;;;;;;;;;;;;
+;; Dashboard API ;;
+;;;;;;;;;;;;;;;;;;;
+
+(defun flasher-dashboard--fetch-deck (id)
+  "Fetch (ID NAME NFRO CARDS ALL-CARDS CHILDREN) for deck with ID."
+  (let* ((name (if id (caar (flasher-db-query [:select name :from decks
+                                               :where (= id $s1)] id))
+                 "*Default*"))
+         (cards (flasher-card--get-by-deck id))
+         (cards-nfro (mapcar #'flasher-card--get-nfro cards))
+         (nfro (apply #'cl-mapcar #'+ '(0 0 0 0) cards-nfro))
+         (children-id (when id (flasher-deck--get-children id)))
+         (children (mapcar #'flasher-dashboard--fetch-deck children-id))
+         (children-nfro (if children
+                            (apply #'cl-mapcar #'+ (mapcar #'cl-third children))
+                          '(0 0 0 0)))
+         (children-cards (apply #'append (mapcar #'cl-fifth children)))
+         (total-nfro (cl-mapcar #'+ nfro children-nfro))
+         (total-cards (append cards children-cards)))
+    (list id name total-nfro cards total-cards children)))
+
+(defun flasher-dashboard--fetch-decks ()
+  "Fetch info for all decks."
+  (let ((decks (flasher-deck--get-children nil)))
+    (mapcar #'flasher-dashboard--fetch-deck (cons nil decks))))
+
 (provide 'flasher)
 
 
