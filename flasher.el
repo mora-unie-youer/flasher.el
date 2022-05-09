@@ -486,7 +486,8 @@ Initializes and stores database and connection."
 
 (defun flasher-core--heading-text (heading)
   "Return text from HEADING point marker."
-  (org-agenda-get-some-entry-text heading most-positive-fixnum))
+  (substring-no-properties
+   (org-agenda-get-some-entry-text heading most-positive-fixnum)))
 
 (defun flasher-core--heading-match (level title &optional compare-fn)
   "Return non-nil if heading matched LEVEL and TITLE conditions.
