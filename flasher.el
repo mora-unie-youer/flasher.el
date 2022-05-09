@@ -756,6 +756,16 @@ NOTE: argument numbers in FILTER must start from 2 (as first is used for ID)."
           (dolist (tag new-tags)
             (flasher-db-query [:insert-into tags :values $v1] (vector id tag))))))))
 
+(defun flasher-card--update-title (&optional id)
+  "Update title for card at point or with ID."
+  (flasher-card-goto-with-id id
+    (let ((title (flasher-card--get-title))
+          (current-title (caar (flasher-db-query [:select title :from cards
+                                                  :where (= uuid $s1)] id))))
+      (when (not (string= title current-title))
+        (flasher-db-query [:update cards :set (= title $s2) :where (= uuid $s1)]
+                          id title)))))
+
 ;;;;;;;;;;;;;;;;;;;
 ;; Card type API ;;
 ;;;;;;;;;;;;;;;;;;;
