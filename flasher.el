@@ -654,7 +654,10 @@ NOTE: argument numbers in FILTER must start from 2 (as first is used for ID)."
   "Return card's SIDE."
   (if-let ((heading (flasher-card--subheading side)))
       (flasher-core--heading-text heading)
-    (error "Card doesn't have '%s' side" side)))
+    (pcase side
+      ("Front" (flasher-card--front))
+      ("Back"  (flasher-card--back))
+      (_ (error "Card doesn't have '%s' side" side)))))
 
 (defun flasher-card-p ()
   "Return non-nil if current heading is a card."
