@@ -684,6 +684,10 @@ NOTE: argument numbers in FILTER must start from 2 (as first is used for ID)."
      (flasher-card-with-id ,id
        ,@body)))
 
+(defun flasher-card--get-all ()
+  "Get all cards."
+  (mapcar #'car (flasher-db-query [:select uuid :from cards])))
+
 (defun flasher-card--get-deck (&optional id)
   "Get deck name of card at point or with ID."
   (flasher-card-goto-id id
@@ -711,6 +715,13 @@ NOTE: argument numbers in FILTER must start from 2 (as first is used for ID)."
 (defun flasher-card--get-type (&optional id)
   "Get type of card at point or with ID."
   (flasher-card-goto-id id (org-entry-get nil flasher-card-type-property)))
+
+(defun flasher-card--create (&optional id)
+  "Create card at point or with ID."
+  (flasher-card-goto-with-id id
+    (let ((title (flasher-card--get-title)))
+      (flasher-db-query [:insert-or-ignore-into cards [uuid deck title] :values $v1]
+                        (vector id nil title)))))
 
 (provide 'flasher)
 
