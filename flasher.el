@@ -813,6 +813,13 @@ NOTE: argument numbers in FILTER must start from 2 (as first is used for ID)."
     (let ((type (flasher-card--get-type)))
       (funcall (flasher-card-type-init-fn type)))))
 
+;;;###autoload
+(defun flasher-card-sync ()
+  "Synchronize card database."
+  (interactive)
+  (flasher-db-transaction
+    (flasher-core--map-cards #'flasher-card--update)))
+
 ;;;;;;;;;;;;;;;;;;;
 ;; Card type API ;;
 ;;;;;;;;;;;;;;;;;;;
