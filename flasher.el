@@ -797,6 +797,16 @@ NOTE: argument numbers in FILTER must start from 2 (as first is used for ID)."
             (flasher-db-query [:insert-into variants [card side data] :values $v1]
                               (vector id (car variant) (cdr variant)))))))))
 
+(defun flasher-card--update (&optional id)
+  "Update card information in database for card at point or with ID."
+  (flasher-card-with-id id
+    (flasher-card--create)
+    (flasher-card--update-deck)
+    (flasher-card--update-tags)
+    (flasher-card--update-title)
+    (let ((type (flasher-card--get-type)))
+      (funcall (flasher-card-type-init-fn type)))))
+
 ;;;;;;;;;;;;;;;;;;;
 ;; Card type API ;;
 ;;;;;;;;;;;;;;;;;;;
