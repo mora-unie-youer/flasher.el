@@ -350,6 +350,41 @@ NIL = unlimited."
 (defvar flasher-review--session nil
   "It is an `flasher-review-session' object which represents current session.")
 
+;;;;;;;;;;;;;;;;;;;
+;; Algorithm API ;;
+;;;;;;;;;;;;;;;;;;;
+
+(defun flasher-algo (variant-info quality)
+  "Determine the next iteration of VARIANT-INFO based on QUALITY.
+For CARD-STATS see `flasher-card-variant--get-info'. Result has the same shape.
+QUALITY is the quality of the answer:
+  5 - perfect answer
+  4 - correct answer took a while
+  3 - correct answer recalled with serious difficulty
+  2 - incorrect answer; where the correct one seemed easy to recall
+  1 - incorrect answer; remembered the correct one
+  0 - complete blackout"
+  (pcase-let ((`(,variant ,status ,due ,ease ,failed ,interval) variant-info))
+    (let (next-ease next-interval)
+      (setq next-ease (max flasher-algo-minimum-ease
+                           (+ ease (alist-get quality flasher-algo-ease-deltas))))
+      (when flasher-algo-maximum-ease
+        (setq next-ease (min flasher-algo-maximum-ease next-ease)))
+      (setq next-interval (cond ((or failed (< quality 3)) 0)
+                                ((= interval 0) 1)
+                                ((= interval 1) 4)
+                                (t (flasher-algo-fuzz (* next-ease interval)))))
+      (when flasher-algo-max-interval-count
+        (setq next-interval (min flasher-algo-max-interval-count next-interval)))
+      (cons variant (list status due next-ease (< quality 3) next-interval)))))
+
+(defun flasher-algo-fuzz (interval)
+  "Apply fuzz to INTERVAL.
+Multiply INTERVAL by a random factor between `flasher-algo-minimum-fuzz' and
+`flasher-algo-maximum-fuzz'"
+  (let ((minimum flasher-algo-minimum-fuzz) (maximum flasher-algo-maximum-fuzz))
+    (round (* interval (+ minimum (cl-random (- maximum minimum)))))))
+
 ;;;;;;;;;;;;;;;;;;
 ;; Database API ;;
 ;;;;;;;;;;;;;;;;;;
