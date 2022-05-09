@@ -684,6 +684,34 @@ NOTE: argument numbers in FILTER must start from 2 (as first is used for ID)."
      (flasher-card-with-id ,id
        ,@body)))
 
+(defun flasher-card--get-deck (&optional id)
+  "Get deck name of card at point or with ID."
+  (flasher-card-goto-id id
+    (or (org-entry-get nil flasher-card-deck-property)
+        (cadar (org-collect-keywords (list flasher-card-deck-property))))))
+
+(defun flasher-card--get-modifiers (&optional id)
+  "Get modifiers of card at point or with ID."
+  (flasher-card-goto-id id
+    (org-entry-get-multivalued-property nil flasher-card-modifiers-property)))
+
+(defun flasher-card--get-tags (&optional id)
+  "Get tags of card at point or with ID."
+  (flasher-card-goto-id id
+    (append
+     (split-string (cadar (org-collect-keywords (list flasher-card-tags-property))))
+     (org-entry-get-multivalued-property nil flasher-card-tags-property))))
+
+(defun flasher-card--get-title (&optional id)
+  "Get title of card at point or with ID."
+  (flasher-card-goto-id id
+    (or (org-entry-get nil flasher-card-title-property)
+        (cl-fifth (org-heading-components)))))
+
+(defun flasher-card--get-type (&optional id)
+  "Get type of card at point or with ID."
+  (flasher-card-goto-id id (org-entry-get nil flasher-card-type-property)))
+
 (provide 'flasher)
 
 
