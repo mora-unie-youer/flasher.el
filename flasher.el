@@ -663,6 +663,27 @@ NOTE: argument numbers in FILTER must start from 2 (as first is used for ID)."
   "Return non-nil if current heading is a card."
   (member flasher-card-tag (org-get-tags nil 'local)))
 
+(defmacro flasher-card-goto-id (id &rest body)
+  "Eval BODY with moving to card if ID is non-nil."
+  (declare (indent defun))
+  `(save-excursion
+     (when ,id (org-id-goto ,id))
+     ,@body))
+
+(defmacro flasher-card-with-id (id &rest body)
+  "Eval BODY with card if ID is non-nil. Set ID if it is nil."
+  (declare (indent defun))
+  `(progn
+     (unless ,id (setq ,id (org-id-get)))
+     ,@body))
+
+(defmacro flasher-card-goto-with-id (id &rest body)
+  "Eval BODY with moving to card if ID is non-nil. Set ID if it is nil."
+  (declare (indent defun))
+  `(flasher-card-goto-id ,id
+     (flasher-card-with-id ,id
+       ,@body)))
+
 (provide 'flasher)
 
 
