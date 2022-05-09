@@ -663,6 +663,17 @@ NOTE: argument numbers in FILTER must start from 2 (as first is used for ID)."
   "Return non-nil if current heading is a card."
   (member flasher-card-tag (org-get-tags nil 'local)))
 
+(defun flasher-card-init (type &optional force)
+  "Initialize card at point with TYPE. If FORCE is non-nil, ignore exist error."
+  (if (or (not (flasher-card-p)) force)
+      (when (flasher-card-type type)
+        (org-back-to-heading)
+        (org-set-property flasher-card-type-property type)
+        (flasher-core--add-tag flasher-card-tag)
+        (org-id-add-location (org-id-get-create) buffer-file-name)
+        (flasher-card--update))
+    (error "Heading is already a card")))
+
 (defmacro flasher-card-goto-id (id &rest body)
   "Eval BODY with moving to card if ID is non-nil."
   (declare (indent defun))
