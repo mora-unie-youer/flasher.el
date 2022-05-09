@@ -892,6 +892,16 @@ LAST-RESULT can be specified to reduce number of database calls."
                        (t :old))))
     (list status due ease (< result 3) interval)))
 
+(defun flasher-card-variant--filter (variants func)
+  "Filter card VARIANTS using FUNC. Variant status is passed to FUNC."
+  (declare (indent defun))
+  (mapcar #'flasher-card-variant--get-info (seq-filter func variants)))
+
+(defun flasher-card-variant--filter-due (variants)
+  "Filter card VARIANTS with saving only due."
+  (flasher-card-variant--filter variants
+    (lambda (variant) (>= (flasher-card-variant--overdue (cl-first variant)) 0))))
+
 ;;;;;;;;;;;;;;;;;;;
 ;; Card type API ;;
 ;;;;;;;;;;;;;;;;;;;
