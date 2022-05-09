@@ -63,6 +63,65 @@
 ;; Flasher API ;;
 ;;;;;;;;;;;;;;;;;
 
+(defgroup flasher-algo nil
+  "Flasher algorithm API."
+  :group 'flasher)
+
+(define-widget 'flasher-algo-ease 'lazy
+  "Ease factor in Flasher card entries."
+  :group 'flasher-algo
+  :type 'float)
+
+(define-widget 'flasher-algo-interval 'lazy
+  "Interval count in Flasher card entries."
+  :group 'flasher-algo
+  :type 'integer)
+
+(defcustom flasher-algo-minimum-ease 1.25
+  "Minimum ease factor card can have."
+  :group 'flasher-algo
+  :type 'flasher-algo-ease)
+
+(defcustom flasher-algo-initial-ease 2.0
+  "Initial ease factor that will be set to card."
+  :group 'flasher-algo
+  :type 'flasher-algo-ease)
+
+(defcustom flasher-algo-maximum-ease nil
+  "Maximum ease factor card can have.
+NIL = unlimited."
+  :group 'flasher-algo
+  :type '(choice flasher-algo-ease (const nil)))
+
+(defcustom flasher-algo-ease-deltas '((0 . -0.8)
+                                      (1 . -0.55)
+                                      (2 . -0.3)
+                                      (3 . -0.15)
+                                      (4 . 0)
+                                      (5 . 0.1))
+  "Deltas to a cards ease factor depending on its quality."
+  :group 'flasher-algo
+  :type 'list)
+
+(defcustom flasher-algo-max-interval-count nil
+  "Maximum interval count algorithm can return.
+NIL = unlimited.
+
+This is used to avoid huge numbers in interval time, so card can be met again
+even after perfectly remembering it."
+  :group 'flasher-algo
+  :type '(choice integer (const nil)))
+
+(defcustom flasher-algo-minimum-fuzz 0.9
+  "Lower bound for random interval fuzz factor."
+  :group 'flasher-algo
+  :type 'float)
+
+(defcustom flasher-algo-maximum-fuzz 1.1
+  "Upper bound for random interval fuzz factor."
+  :group 'flasher-algo
+  :type 'float)
+
 (defgroup flasher-card nil
   "Flasher card API."
   :group 'flasher)
