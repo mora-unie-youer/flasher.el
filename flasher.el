@@ -820,6 +820,78 @@ NOTE: argument numbers in FILTER must start from 2 (as first is used for ID)."
   (flasher-db-transaction
     (flasher-core--map-cards #'flasher-card--update)))
 
+;;;;;;;;;;;;;;;;;;;;;;;
+;; Card variants API ;;
+;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun flasher-card-variant--get-info (variant)
+  "Return (VARIANT . STATUS) for card VARIANT."
+  (cons variant (flasher-card-variant--status variant)))
+
+(defun flasher-card-variant--save-result (new-card-info result)
+  "Save card variant RESULT using NEW-CARD-INFO."
+  (pcase-let* ((`(,card status due ,ease failed ,interval) new-card-info)
+               (id (car card))
+               (due (time-add (current-time) (days-to-time interval))))
+    (flasher-db-query [:insert-into results :values $v1]
+                      (vector id result ease interval due))))
+
+(defun flasher-card-variant--last-result (id)
+  "Return last result of card variant with ID."
+  (car (flasher-db-query [:select * :from results :where (= variant $s1)
+                          :order-by (desc due) :limit 1] id)))
+
+(defun flasher-card-variant--due (id &optional last-result)
+  "Return TIME, card variant with ID is scheduled to.
+LAST-RESULT can be specified to reduce number of database calls."
+  (unless last-result (setq last-result (flasher-card-variant--last-result id)))
+  (if last-result (cl-fifth last-result) (current-time)))
+
+(defun flasher-card-variant--overdue (id &optional last-result)
+  "Return for card variant with ID:
+- 0 if card is new, or if it scheduled for review today.
+- A negative integer - card is scheduled that many days in the future.
+- A positive integer - card is scheduled that many days in the past.
+LAST-RESULT can be specified to reduce number of database calls."
+  (unless last-result (setq last-result (flasher-card-variant--last-result id)))
+  (- (time-to-days (current-time)) (time-to-days (flasher-card-variant--due id last-result))))
+
+(defun flasher-card-variant--overdue-p (id &optional days-overdue last-result)
+  "Return non-nil if card variant with ID should be considered 'overdue'.
+Card is scheduled DAYS-OVERDUE days in the past. If argument is not given it is
+extracted from the card.
+LAST-RESULT can be specified to reduce number of database calls."
+  (unless last-result (setq last-result (flasher-card-variant--last-result id)))
+  (unless days-overdue (setq days-overdue (flasher-card-variant--overdue id last-result)))
+  (let ((interval (cl-fourth last-result)))
+    (and (> days-overdue 0)
+         (> (/ days-overdue interval) flasher-card-interval-overdue-factor))))
+
+(defun flasher-card-variant--status (id &optional last-result)
+  "Fetch status list (STATUS DUE EASE FAILED INTERVAL) of card variant with ID.
+DUE is the number of days overdue, see `flasher-card-variant--overdue'.
+STATUS is one of the following values:
+- :new
+- :failed
+- :overdue
+- :young
+- :old
+EASE is current ease factor.
+FAILED is non-nil when card either new or failed.
+INTERVAL is current card interval count.
+LAST-RESULT can be specified to reduce number of database calls."
+  (unless last-result (setq last-result (flasher-card-variant--last-result id)))
+  (let* ((result (if last-result (cl-second last-result) 0))
+         (interval (if last-result (cl-fourth last-result) 0))
+         (ease (if last-result (cl-third last-result) flasher-algo-initial-ease))
+         (due (flasher-card-variant--overdue id last-result))
+         (status (cond ((null last-result) :new)
+                       ((= interval 0) :failed)
+                       ((flasher-card-variant--overdue-p id due last-result) :overdue)
+                       ((<= interval flasher-card-intervals-before-old) :young)
+                       (t :old))))
+    (list status due ease (< result 3) interval)))
+
 ;;;;;;;;;;;;;;;;;;;
 ;; Card type API ;;
 ;;;;;;;;;;;;;;;;;;;
