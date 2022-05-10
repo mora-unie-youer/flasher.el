@@ -1085,6 +1085,13 @@ If SUBMENU-P is non-nil, show button which returns to main menu."
       (save-excursion (mapc #'flasher-dashboard--decks-view-deck decks))
       (switch-to-buffer flasher-dashboard-buffer-name))))
 
+;;;###autoload
+(defun flasher-dashboard ()
+  "Open Flasher dashboard."
+  (interactive)
+  (flasher-dashboard-with-buffer (flasher-dashboard-mode))
+  (flasher-dashboard-decks))
+
 (defvar flasher-dashboard-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "q") #'kill-current-buffer)
