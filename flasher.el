@@ -872,7 +872,7 @@ NOTE: argument numbers in FILTER must start from 2 (as first is used for ID)."
 
 (defun flasher-card-variant--get-info (variant)
   "Return (VARIANT . STATUS) for card VARIANT."
-  (cons variant (flasher-card-variant--status variant)))
+  (cons variant (flasher-card-variant--status (car variant))))
 
 (defun flasher-card-variant--save-result (new-card-info result)
   "Save card variant RESULT using NEW-CARD-INFO."
