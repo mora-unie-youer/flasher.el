@@ -1322,6 +1322,18 @@ If RESUMING is non-nil, use current card."
     (error (flasher-review-quit)
            (signal (car err) (cdr err)))))
 
+(defun flasher-review-edit ()
+  "Edit current card in review session."
+  (interactive))
+
+(defun flasher-review-edit-save ()
+  "Save all changes to current card in review session."
+  (interactive))
+
+(defun flasher-review-edit-quit ()
+  "Abort all changes made to current card in review session."
+  (interactive))
+
 (defun flasher-review--random-variants (variants sort-p)
   "Assign numbers to VARIANTS and sort it if SORT-P is non-nil."
   (let ((numbers (cl-loop for i below (length variants) collect (cl-random 1.0))))
