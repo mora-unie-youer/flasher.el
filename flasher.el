@@ -767,7 +767,7 @@ NOTE: argument numbers in FILTER must start from 2 (as first is used for ID)."
            (due-variants (flasher-card-variant--filter-due variants))
            (new 0) (failed 0) (review 0) (overdue 0))
       (dolist (variant due-variants)
-        (let ((status (cl-fifth variant)))
+        (let ((status (cl-second variant)))
           (cond
            ((eq status :new) (cl-incf new))
            ((eq status :failed) (cl-incf failed))
