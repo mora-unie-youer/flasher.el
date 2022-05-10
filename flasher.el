@@ -1220,6 +1220,47 @@ If STRICT-P is non-nil, fetch cards non-recursively."
     (cl-incf (cl-getf results (intern-soft (concat ":" (number-to-string result)))))
     (cl-incf (cl-getf results :total))))
 
+;;;###autoload
+(defun flasher-review (cards learn-count review-count)
+  "Open new Flasher review session with CARDS.
+LEARN-COUNT is maximum count of new cards to learn.
+REVIEW-COUNT is maximum count of cards to review."
+  (interactive (list (or flasher-dashboard--cards (flasher-card--get-all))
+                     flasher-review-learn-count
+                     flasher-review-review-count))
+  (switch-to-buffer flasher-review-buffer-name)
+  (flasher-review-mode)
+  (if flasher-review--session
+      (if (yes-or-no-p "Cards are already being reviewed. Resume session?")
+          (flasher-review-resume)
+        (setq flasher-review--session nil)
+        (flasher-review cards learn-count review-count))
+    (let ((variants (flasher-review--shuffle-variants cards learn-count review-count)))
+      (if (null variants)
+          (progn (message "No cards due right now")
+                 (flasher-dashboard))
+        (setq flasher-review--session (flasher-review--make-session variants))
+        (flasher-review-next-card)))))
+
+(defun flasher-review-cards (cards)
+  "Open new Flasher review session with CARDS."
+  (flasher-review cards flasher-review-learn-count flasher-review-review-count))
+
+;;;###autoload
+(defun flasher-review-all (learn-count review-count)
+  "Open new Flasher review session with all due cards.
+LEARN-COUNT is maximum count of new cards to learn.
+REVIEW-COUNT is maximum count of cards to review."
+  (interactive (list flasher-review-learn-count flasher-review-review-count))
+  (flasher-review (flasher-card--get-all) learn-count review-count))
+
+(defun flasher-review-resume ()
+  "Resume previous Flasher review session."
+  (interactive)
+  (if (null flasher-review--session)
+      (message "No session to resume")
+    (flasher-review-next-card 'resuming)))
+
 (defmacro flasher-review-with-buffer (&rest body)
   "Eval BODY with Flasher review buffer."
   (declare (indent defun))
