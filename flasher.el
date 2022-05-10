@@ -1068,6 +1068,23 @@ If SUBMENU-P is non-nil, show button which returns to main menu."
     (dolist (child children)
       (flasher-dashboard--decks-view-deck child (1+ indent)))))
 
+(defun flasher-dashboard-decks ()
+  "Show dashboard main menu - decks list."
+  (interactive)
+  (let ((decks (flasher-dashboard--fetch-decks)))
+    (setq flasher-dashboard--cards (apply #'append (mapcar #'cl-fifth decks)))
+    (flasher-dashboard-with-buffer
+      (flasher-dashboard--reset)
+      (insert (format "%4s %4s %4s %4s\t%s\n"
+                      (propertize "NEW"  'face 'flasher-dashboard--new-count)
+                      (propertize "FAIL" 'face 'flasher-dashboard--failed-count)
+                      (propertize "DUE"  'face 'flasher-dashboard--review-count)
+                      (propertize "OVER" 'face 'flasher-dashboard--overdue-count)
+                      (propertize "Deck" 'face 'bold)))
+      (insert (make-string 40 ?-) "\n")
+      (save-excursion (mapc #'flasher-dashboard--decks-view-deck decks))
+      (switch-to-buffer flasher-dashboard-buffer-name))))
+
 (defvar flasher-dashboard-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "q") #'kill-current-buffer)
