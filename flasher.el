@@ -1251,6 +1251,38 @@ If STRICT-P is non-nil, fetch cards non-recursively."
   (flasher-review-with-buffer-end
     (insert "A:\n" answer "\n\n")))
 
+(defun flasher-review-next-card (&optional resuming)
+  "Show next card in Flasher review session.
+If RESUMING is non-nil, use current card."
+  (if (not (null (oref flasher-review--session cards)))
+      (condition-case err
+          (let* ((card-info (pop (oref flasher-review--session cards)))
+                 (card (car card-info))
+                 (card-id (cl-second card)))
+            (flasher-review-with-buffer (flasher-review-rate-mode -1))
+            (if (null resuming)
+                (setf (oref flasher-review--session current-card) card-info)
+              (push card-info (oref flasher-review--session cards))
+              (setq card-info (oref flasher-review--session current-card)))
+            (flasher-review--set-header-line)
+            (flasher-card-goto-id card-id
+              (let ((type (flasher-card--get-type))
+                    (side (cl-third card))
+                    (data (cl-fourth card))
+                    (inhibit-read-only t))
+                (flasher-review-with-buffer
+                  (remove-overlays (point-min) (point-max))
+                  (erase-buffer))
+                (funcall (flasher-card-type-setup-fn type) side data)))
+            (switch-to-buffer flasher-review-buffer-name)
+            (goto-char (point-max))
+            (flasher-review-flip-mode))
+        (error (flasher-review-quit)
+               (signal (car err) (cdr err))))
+    (message "Review done")
+    (setq flasher-review--session nil)
+    (flasher-review-quit)))
+
 (defun flasher-review--random-variants (variants sort-p)
   "Assign numbers to VARIANTS and sort it if SORT-P is non-nil."
   (let ((numbers (cl-loop for i below (length variants) collect (cl-random 1.0))))
