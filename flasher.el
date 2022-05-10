@@ -1098,8 +1098,19 @@ If SUBMENU-P is non-nil, show button which returns to main menu."
                       id (propertize side 'face 'bold)
                       data status due ease interval)))))
 
+(defun flasher-dashboard-toggle-variants ()
+  "Toggle visibility of card variants in dashboard submenu."
+  (interactive)
+  (if-let ((overlay (get-text-property (point) 'overlay)))
+      (let ((invisible-p (not (overlay-get overlay 'invisible))))
+        (overlay-put overlay 'invisible invisible-p)
+        (when (and invisible-p (>= (point) (overlay-start overlay)))
+          (goto-char (overlay-get overlay 'title)))))
+  (message "This is not a card entry"))
+
 (defvar flasher-dashboard--card-keymap
   (let ((map (make-sparse-keymap)))
+    (define-key map [tab]       #'flasher-dashboard-toggle-variants)
     map)
   "Keymap for card buttons in dashboard submenu.")
 
