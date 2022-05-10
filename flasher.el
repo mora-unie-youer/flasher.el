@@ -1031,6 +1031,14 @@ FLIP-FN is function for flipping card in review."
        ,@body
        (set-buffer-modified-p nil))))
 
+(defun flasher-dashboard--reset (&optional submenu-p)
+  "Reset dashboard buffer and prepare it for current menu.
+If SUBMENU-P is non-nil, show button which returns to main menu."
+  (flasher-dashboard-with-buffer
+    (remove-overlays (point-min) (point-max))
+    (erase-buffer)
+    (insert (propertize "Flasher Dashboard\n\n" 'face 'org-level-1))))
+
 (defvar flasher-dashboard--deck-keymap
   (let ((map (make-sparse-keymap)))
     map)
