@@ -1531,7 +1531,41 @@ If RESUMING is non-nil, use current card."
   :lighter "Edit"
   :keymap flasher-review-edit-mode-map)
 
-(provide 'flasher)
+;;;;;;;;;;;;;;;;;;
+;; Normal cards ;;
+;;;;;;;;;;;;;;;;;;
 
+(defun flasher-card-type-normal-init ()
+  "Initialize 'normal card variants."
+  (let* ((modifiers (flasher-card--get-modifiers))
+         (double-p (member "double" modifiers))
+         (multi-p (member "multi" modifiers))
+         (variants '(("Back"))))
+    (if multi-p
+        (setq variants (flasher-card--sides))
+      (when double-p (push '("Front") variants)))
+    (flasher-card--update-variants variants)))
+
+(defun flasher-card-type-normal-setup (side _data)
+  "Prepare a 'normal card with SIDE for review."
+  (setq flasher-card-type-normal--side side)
+  (flasher-review--write-task (flasher-card--task (pcase side
+                                                    ("Front" '(1 . "Back"))
+                                                    (_ '(0 . "Front")))))
+  (flasher-review--write-question (if (string= side "Front")
+                                      (flasher-card--back)
+                                    (flasher-card--front))))
+
+(defun flasher-card-type-normal-flip ()
+  "Flip 'normal card."
+  (flasher-review--write-answer (flasher-card--side flasher-card-type-normal--side)))
+
+(flasher-card-type-register "normal" nil
+  'flasher-card-type-normal-init
+  'flasher-card-type-normal-setup
+  'flasher-card-type-noop
+  'flasher-card-type-normal-flip)
+
+(provide 'flasher)
 
 ;;; flasher.el ends here
