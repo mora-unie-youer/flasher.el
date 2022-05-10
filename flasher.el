@@ -1098,6 +1098,29 @@ If SUBMENU-P is non-nil, show button which returns to main menu."
                       id (propertize side 'face 'bold)
                       data status due ease interval)))))
 
+(defvar flasher-dashboard--card-keymap
+  (let ((map (make-sparse-keymap)))
+    map)
+  "Keymap for card buttons in dashboard submenu.")
+
+(defun flasher-dashboard--show-card (card)
+  "View CARD in dashboard buffer."
+  (let ((name (save-excursion (org-id-goto card) (cl-fifth (org-heading-components))))
+        (variants (flasher-card--get-variants card)))
+    (flasher-dashboard-with-buffer
+      (let ((begin (point)) variants-begin end)
+        (insert (format "%s - %s\n" (propertize card 'face 'bold) name))
+        (setq variants-begin (1- (point)))
+        (mapc #'flasher-dashboard--show-variant variants)
+        (setq end (1- (point)))
+        (let ((overlay (make-overlay variants-begin end)))
+          (overlay-put overlay 'evaporate t)
+          (overlay-put overlay 'invisible t)
+          (overlay-put overlay 'title begin)
+          (put-text-property begin end 'flasher-card card)
+          (put-text-property begin end 'overlay overlay)
+          (put-text-property begin end 'keymap flasher-dashboard--card-keymap))))))
+
 ;;;###autoload
 (defun flasher-dashboard ()
   "Open Flasher dashboard."
