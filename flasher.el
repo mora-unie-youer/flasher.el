@@ -1031,6 +1031,35 @@ FLIP-FN is function for flipping card in review."
        ,@body
        (set-buffer-modified-p nil))))
 
+(defvar flasher-dashboard--deck-keymap
+  (let ((map (make-sparse-keymap)))
+    map)
+  "Keymap for deck buttons in dashboard main menu.")
+
+(defun flasher-dashboard--decks-view-deck (deck &optional indent)
+  "View DECK in dashboard buffer. INDENT is current level of deck."
+  (unless indent (setq indent 0))
+  (pcase-let* ((`(,id ,name ,nfro ,cards ,all-cards ,children) deck)
+               (`(,n ,f ,r ,o) (mapcar (apply-partially #'format "%4d") nfro)))
+    (flasher-dashboard-with-buffer
+      (insert (format "%s %s %s %s"
+                      (propertize n 'face 'flasher-dashboard--new-count)
+                      (propertize f 'face 'flasher-dashboard--failed-count)
+                      (propertize r 'face 'flasher-dashboard--review-count)
+                      (propertize o 'face 'flasher-dashboard--overdue-count)))
+      (insert (make-string (1+ indent) ?\t)
+              (format "%s" (propertize name 'face 'bold)))
+      (let ((begin (save-excursion (beginning-of-line) (point)))
+            (end (point)))
+        (put-text-property begin end 'flasher-deck id)
+        (put-text-property begin end 'flasher-cards cards)
+        (put-text-property begin end 'flasher-all-cards all-cards)
+        (put-text-property begin end 'keymap flasher-dashboard--deck-keymap)
+        (put-text-property begin end 'help-echo "mouse-1: show this deck"))
+      (insert "\n"))
+    (dolist (child children)
+      (flasher-dashboard--decks-view-deck child (1+ indent)))))
+
 (defvar flasher-dashboard-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "q") #'kill-current-buffer)
