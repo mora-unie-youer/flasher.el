@@ -1037,7 +1037,15 @@ If SUBMENU-P is non-nil, show button which returns to main menu."
   (flasher-dashboard-with-buffer
     (remove-overlays (point-min) (point-max))
     (erase-buffer)
-    (insert (propertize "Flasher Dashboard\n\n" 'face 'org-level-1))))
+    (flasher-dashboard-deck-mode -1)
+    (insert (propertize "Flasher Dashboard\n\n" 'face 'org-level-1))
+    (when submenu-p
+      (let ((map (make-sparse-keymap)))
+        (define-key map [mouse-1]   #'flasher-dashboard-decks)
+        (define-key map (kbd "RET") #'flasher-dashboard-decks)
+        (insert (propertize "Back to main menu"
+                            'face 'bold 'keymap map 'mouse-face 'highlight
+                            'help-echo "mouse-1: go to main menu"))))))
 
 (defvar flasher-dashboard--deck-keymap
   (let ((map (make-sparse-keymap)))
