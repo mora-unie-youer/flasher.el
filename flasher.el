@@ -1235,6 +1235,22 @@ If STRICT-P is non-nil, fetch cards non-recursively."
   (declare (indent defun))
   `(flasher-review-with-buffer (goto-char (point-max)) ,@body))
 
+(defun flasher-review--write-task (task)
+  "Write TASK to Flasher review buffer."
+  (when task
+    (flasher-review-with-buffer-end
+      (insert "T:\n" task "\n\n"))))
+
+(defun flasher-review--write-question (question)
+  "Write QUESTION to Flasher review buffer."
+  (flasher-review-with-buffer-end
+    (insert "Q:\n" question "\n\n")))
+
+(defun flasher-review--write-answer (answer)
+  "Write ANSWER to Flasher review buffer."
+  (flasher-review-with-buffer-end
+    (insert "A:\n" answer "\n\n")))
+
 (provide 'flasher)
 
 
