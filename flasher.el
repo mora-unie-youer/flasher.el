@@ -1149,6 +1149,15 @@ If SUBMENU-P is non-nil, show button which returns to main menu."
   (mapc #'flasher-dashboard--show-card flasher-dashboard--cards)
   (switch-to-buffer flasher-dashboard-buffer-name))
 
+(defun flasher-dashboard--deck-cards (strict-p)
+  "Fetch cards for deck at point. Fetch non-recursively if STRICT-P is non-nil."
+  (if-let* ((deck (get-text-property (point) 'flasher-deck))
+            (cards (get-text-property (point) (if strict-p
+                                                  'flasher-cards
+                                                'flasher-all-cards))))
+      cards
+    (error "Deck doesn't have cards")))
+
 ;;;###autoload
 (defun flasher-dashboard ()
   "Open Flasher dashboard."
