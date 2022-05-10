@@ -1085,6 +1085,19 @@ If SUBMENU-P is non-nil, show button which returns to main menu."
       (save-excursion (mapc #'flasher-dashboard--decks-view-deck decks))
       (switch-to-buffer flasher-dashboard-buffer-name))))
 
+(defun flasher-dashboard--show-variant (variant)
+  "Show card VARIANT in dashboard submenu.."
+  (pcase-let* ((`(,id card ,side ,data) variant)
+               (`(,status ,due ,ease _ ,interval) (flasher-card-variant--status id)))
+    (flasher-dashboard-with-buffer
+      (insert (format (concat "\t%s: %s (%s)\n"
+                              "\t\tStatus:   %s\n"
+                              "\t\tDue:      %d days\n"
+                              "\t\tEase:     %.2f\n"
+                              "\t\tInterval: %d days\n")
+                      id (propertize side 'face 'bold)
+                      data status due ease interval)))))
+
 ;;;###autoload
 (defun flasher-dashboard ()
   "Open Flasher dashboard."
