@@ -1254,6 +1254,7 @@ If STRICT-P is non-nil, fetch cards non-recursively."
 (defun flasher-review-next-card (&optional resuming)
   "Show next card in Flasher review session.
 If RESUMING is non-nil, use current card."
+  (interactive)
   (if (not (null (oref flasher-review--session cards)))
       (condition-case err
           (let* ((card-info (pop (oref flasher-review--session cards)))
