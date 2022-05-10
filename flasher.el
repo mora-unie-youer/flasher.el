@@ -1206,6 +1206,20 @@ If STRICT-P is non-nil, fetch cards non-recursively."
   :lighter "Deck"
   :keymap flasher-dashboard-deck-mode-map)
 
+;;;;;;;;;;;;;;;;
+;; Review API ;;
+;;;;;;;;;;;;;;;;
+
+(defun flasher-review--make-session (cards)
+  "Create new review session with CARDS."
+  (make-instance 'flasher-review-session :cards cards))
+
+(defun flasher-review--add-result (result)
+  "Store RESULT in the review history of session."
+  (with-slots (results) flasher-review--session
+    (cl-incf (cl-getf results (intern-soft (concat ":" (number-to-string result)))))
+    (cl-incf (cl-getf results :total))))
+
 (provide 'flasher)
 
 
