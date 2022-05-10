@@ -1140,6 +1140,15 @@ If SUBMENU-P is non-nil, show button which returns to main menu."
           (put-text-property begin end 'overlay overlay)
           (put-text-property begin end 'keymap flasher-dashboard--card-keymap))))))
 
+(defun flasher-dashboard--show-cards ()
+  "Show dashboard submenu - list of cards."
+  (flasher-dashboard-with-buffer
+    (flasher-dashboard--reset 'submenu)
+    (flasher-dashboard-deck-mode)
+    (insert "\n\n"))
+  (mapc #'flasher-dashboard--show-card flasher-dashboard--cards)
+  (switch-to-buffer flasher-dashboard-buffer-name))
+
 ;;;###autoload
 (defun flasher-dashboard ()
   "Open Flasher dashboard."
