@@ -1251,6 +1251,47 @@ If STRICT-P is non-nil, fetch cards non-recursively."
   (flasher-review-with-buffer-end
     (insert "A:\n" answer "\n\n")))
 
+(defun flasher-review--random-variants (variants sort-p)
+  "Assign numbers to VARIANTS and sort it if SORT-P is non-nil."
+  (let ((numbers (cl-loop for i below (length variants) collect (cl-random 1.0))))
+    (when sort-p (setq numbers (sort numbers #'<)))
+    (cl-loop for n in numbers for var in variants collect (cons n var))))
+
+(defun flasher-review--assign-variants (card)
+  "Return list of CARD variants with assigned random numbers."
+  (let* ((type (flasher-card--get-type card))
+         (sort (flasher-card-type-sort type))
+         (variants (flasher-card--get-variants card))
+         (due-variants (flasher-card-variant--filter-due variants)))
+    (pcase sort
+      ('side
+       (let ((ht (make-hash-table :test 'equal)) result)
+         (dolist (variant due-variants)
+           (push variant (gethash (cl-third (car variant)) ht ())))
+         (maphash (lambda (_ variants)
+                    (setq result (append result (flasher-review--random-variants
+                                                 (nreverse variants) t))))
+                  ht)
+         result))
+      (_ (flasher-review--random-variants due-variants (not (null sort)))))))
+
+(defmacro flasher-review--pick-card (card learn-count review-count)
+  "Return CARD if it satisfies LEARN-COUNT or REVIEW-COUNT."
+  `(if (eq (cl-second ,card) :new)
+       (when (or (not ,learn-count) (> ,learn-count 0))
+         (when ,learn-count (cl-decf ,learn-count))
+         ,card)
+     (when (or (not ,review-count) (> ,review-count 0))
+       (when ,review-count (cl-decf ,review-count))
+       ,card)))
+
+(defun flasher-review--shuffle-variants (cards learn-count review-count)
+  "Return list of maximum size LEARN-COUNT + REVIEW-COUNT of shuffled CARDS."
+  (let ((variants (mapcan #'flasher-review--assign-variants cards)))
+    (delq nil (mapcar
+               (lambda (card) (flasher-review--pick-card card learn-count review-count))
+               (mapcar #'cdr (sort variants (lambda (a b) (< (car a) (car b)))))))))
+
 (defvar flasher-review-mode-map
   (let ((map (make-sparse-keymap)))
     map)
