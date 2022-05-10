@@ -1108,9 +1108,17 @@ If SUBMENU-P is non-nil, show button which returns to main menu."
           (goto-char (overlay-get overlay 'title)))))
   (message "This is not a card entry"))
 
+(defun flasher-dashboard-goto-card ()
+  "Go to Flasher card at point."
+  (interactive)
+  (if-let ((card (get-text-property (point) 'flasher-card)))
+      (org-id-goto card)
+    (error "This is not a card entry")))
+
 (defvar flasher-dashboard--card-keymap
   (let ((map (make-sparse-keymap)))
     (define-key map [tab]       #'flasher-dashboard-toggle-variants)
+    (define-key map (kbd "RET") #'flasher-dashboard-goto-card)
     map)
   "Keymap for card buttons in dashboard submenu.")
 
