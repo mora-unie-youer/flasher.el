@@ -1220,6 +1220,21 @@ If STRICT-P is non-nil, fetch cards non-recursively."
     (cl-incf (cl-getf results (intern-soft (concat ":" (number-to-string result)))))
     (cl-incf (cl-getf results :total))))
 
+(defmacro flasher-review-with-buffer (&rest body)
+  "Eval BODY with Flasher review buffer."
+  (declare (indent defun))
+  `(with-current-buffer (get-buffer-create flasher-review-buffer-name) ,@body))
+
+(defmacro flasher-review-with-buffer-start (&rest body)
+  "Eval BODY at the start of Flasher review buffer."
+  (declare (indent defun))
+  `(flasher-review-with-buffer (goto-char (point-min)) ,@body))
+
+(defmacro flasher-review-with-buffer-end (&rest body)
+  "Eval BODY at the end of Flasher review buffer."
+  (declare (indent defun))
+  `(flasher-review-with-buffer (goto-char (point-max)) ,@body))
+
 (provide 'flasher)
 
 
