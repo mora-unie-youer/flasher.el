@@ -1352,6 +1352,22 @@ If RESUMING is non-nil, use current card."
     (error (flasher-review-quit)
            (signal (car err) (cdr err)))))
 
+(defmacro flasher-review--declare-rate (quality)
+  "Macro for creating rate function with QUALITY in review session."
+  (let ((func (intern (concat "flasher-review-rate-" (number-to-string quality))))
+        (doc (format "Rate current card with %d quality." quality)))
+    `(defun ,func ()
+       ,doc
+       (interactive)
+       (flasher-review-rate ,quality))))
+
+(flasher-review--declare-rate 0)
+(flasher-review--declare-rate 1)
+(flasher-review--declare-rate 2)
+(flasher-review--declare-rate 3)
+(flasher-review--declare-rate 4)
+(flasher-review--declare-rate 5)
+
 (defun flasher-review--random-variants (variants sort-p)
   "Assign numbers to VARIANTS and sort it if SORT-P is non-nil."
   (let ((numbers (cl-loop for i below (length variants) collect (cl-random 1.0))))
