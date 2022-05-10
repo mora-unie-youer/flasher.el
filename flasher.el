@@ -1049,6 +1049,8 @@ If SUBMENU-P is non-nil, show button which returns to main menu."
 
 (defvar flasher-dashboard--deck-keymap
   (let ((map (make-sparse-keymap)))
+    (define-key map [mouse-1]   #'flasher-dashboard-deck)
+    (define-key map (kbd "RET") #'flasher-dashboard-deck)
     map)
   "Keymap for deck buttons in dashboard main menu.")
 
