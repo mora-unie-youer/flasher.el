@@ -1292,6 +1292,19 @@ If STRICT-P is non-nil, fetch cards non-recursively."
                (lambda (card) (flasher-review--pick-card card learn-count review-count))
                (mapcar #'cdr (sort variants (lambda (a b) (< (car a) (car b)))))))))
 
+(defun flasher-review--set-header-line ()
+  "Set header line for Flasher review buffer."
+  (let* ((remaining (1+ (length (oref flasher-review--session cards))))
+         (results (oref flasher-review--session results)))
+    (setq-local header-line-format `("Review: "
+                                     (flasher-review-flip-mode "Flip")
+                                     (flasher-review-rate-mode "Rate")
+                                     (flasher-review-edit-mode "Edit")
+                                     " card "
+                                     ,(format "(%d cards remaining)" remaining)
+                                     ". Statistics: "
+                                     ,(format "%s" results)))))
+
 (defvar flasher-review-mode-map
   (let ((map (make-sparse-keymap)))
     map)
