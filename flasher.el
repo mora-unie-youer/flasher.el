@@ -1193,6 +1193,19 @@ If STRICT-P is non-nil, fetch cards non-recursively."
   "This mode is used to display Flasher dashboard."
   :group 'flasher-dashboard)
 
+(defvar flasher-dashboard-deck-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "q") #'flasher-dashboard-decks)
+    map)
+  "Keymap for `flasher-dashboard-deck-mode'.")
+
+(define-minor-mode flasher-dashboard-deck-mode
+  "Minor mode for deck showing."
+  :group 'flasher-dashboard
+  :init-value nil
+  :lighter "Deck"
+  :keymap flasher-dashboard-deck-mode-map)
+
 (provide 'flasher)
 
 
