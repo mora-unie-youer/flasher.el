@@ -1251,6 +1251,51 @@ If STRICT-P is non-nil, fetch cards non-recursively."
   (flasher-review-with-buffer-end
     (insert "A:\n" answer "\n\n")))
 
+(defvar flasher-review-mode-map
+  (let ((map (make-sparse-keymap)))
+    map)
+  "Keymap for `flasher-review-mode'.")
+
+(define-derived-mode flasher-review-mode special-mode "Flasher Review"
+  "This mode is used to review learned flashcards."
+  :group 'flasher-review)
+
+(defvar flasher-review-flip-mode-map
+  (let ((map (make-sparse-keymap)))
+    map)
+  "Keymap for `flasher-review-flip-mode'.")
+
+(define-minor-mode flasher-review-flip-mode
+  "Minor mode for card flipping."
+  :group 'flasher-review
+  :init-value nil
+  :lighter "Flip"
+  :keymap flasher-review-flip-mode-map)
+
+(defvar flasher-review-rate-mode-map
+  (let ((map (make-sparse-keymap)))
+    map)
+  "Keymap for `flasher-review-rate-mode'.")
+
+(define-minor-mode flasher-review-rate-mode
+  "Minor mode for card rating."
+  :group 'flasher-review
+  :init-value nil
+  :lighter "Rate"
+  :keymap flasher-review-rate-mode-map)
+
+(defvar flasher-review-edit-mode-map
+  (let ((map (make-sparse-keymap)))
+    map)
+  "Keymap for `flasher-review-edit-mode'.")
+
+(define-minor-mode flasher-review-edit-mode
+  "Minor mode for card editing."
+  :group 'flasher-review
+  :init-value nil
+  :lighter "Edit"
+  :keymap flasher-review-edit-mode-map)
+
 (provide 'flasher)
 
 
