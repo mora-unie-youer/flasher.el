@@ -1624,6 +1624,78 @@ ALL-VISIBLE can be used to mark all holes visible."
             (flasher-core--hide-region text-end hole-end))
            (t (flasher-core--hide-region hole-beg hole-end "..."))))))))
 
+(defun flasher-card-type-cloze--get-variants (side)
+  "Generate 'cloze card variants from holes for SIDE."
+  (let (variants)
+    (if-let ((holes (flasher-card-type-cloze--parse-holes)))
+        (dolist (holes-id holes)
+          (push (number-to-string (car holes-id)) variants)))
+    (cons side (nreverse variants))))
+
+(defun flasher-card-type-cloze-init ()
+  "Initialize 'cloze card variants."
+  (let* ((modifiers (flasher-card--get-modifiers))
+         (front (flasher-card--front))
+         (back (flasher-card--back))
+         (sides (flasher-card--sides))
+         (double-p (member "double" modifiers))
+         (multi-p (member "multi" modifiers))
+         variants)
+    (if multi-p
+        (dolist (side sides)
+          (let ((side-text (flasher-card--side side)))
+            (with-temp-buffer
+              (save-excursion (insert side-text))
+              (push (flasher-card-type-cloze--get-variants side) variants))))
+      (with-temp-buffer
+        (save-excursion (insert back))
+        (push (flasher-card-type-cloze--get-variants "Back") variants))
+      (when double-p
+        (with-temp-buffer
+          (save-excursion (insert front))
+          (push (flasher-card-type-cloze--get-variants "Front") variants))))
+    (flasher-card--update-variants variants)))
+
+(defun flasher-card-type-cloze-setup (side data)
+  "Prepare a 'cloze card with SIDE and DATA for review.."
+  (setq flasher-card-type-cloze--text-overlay '())
+  (setq flasher-card-type-cloze--hint-overlay '())
+  (setq flasher-card-type-cloze--variant (cons side data))
+  (let* ((type (org-entry-get (point) flasher-card-type-cloze-type-property)))
+    (flasher-review--write-task (flasher-card--task (pcase side
+                                                      ("Front" '(1 . "Back"))
+                                                      (_ '(0 . "Front")))))
+    (flasher-review--write-question (pcase side
+                                      ("Front" (flasher-card--back))
+                                      (_ (flasher-card--front))))
+    (flasher-card-type-cloze--hide-holes nil nil t)
+    (when data
+      (flasher-review--write-answer (flasher-card--side side))
+      (flasher-card-type-cloze--hide-holes type (string-to-number data)))))
+
+(defun flasher-card-type-cloze-hint ()
+  "Show hint for 'cloze card."
+  (dolist (overlay flasher-card-type-cloze--hint-overlay)
+    (overlay-put overlay 'display nil)))
+
+(defun flasher-card-type-cloze-flip ()
+  "Flip 'cloze card."
+  (dolist (overlay flasher-card-type-cloze--text-overlay)
+    (overlay-put overlay 'invisible nil))
+  (dolist (overlay flasher-card-type-cloze--hint-overlay)
+    (let ((start (overlay-start overlay)) (end (overlay-end overlay)))
+      (flasher-review-with-buffer
+        (remove-overlays start end)
+        (flasher-core--hide-region start end))))
+  (pcase-let ((`(,side . ,data) flasher-card-type-cloze--variant))
+    (unless data (flasher-review--write-answer (flasher-card--side side)))))
+
+(flasher-card-type-register "cloze" 'side
+  'flasher-card-type-cloze-init
+  'flasher-card-type-cloze-setup
+  'flasher-card-type-cloze-hint
+  'flasher-card-type-cloze-flip)
+
 (provide 'flasher)
 
 ;;; flasher.el ends here
