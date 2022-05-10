@@ -1304,6 +1304,24 @@ If RESUMING is non-nil, use current card."
     (error (flasher-review-quit)
            (signal (car err) (cdr err)))))
 
+(defun flasher-review-flip ()
+  "Flip current card in review session."
+  (interactive)
+  (condition-case err
+      (let* ((card-info (oref flasher-review--session current-card))
+             (card (car card-info))
+             (card-id (cl-second card)))
+        (flasher-card-goto-id card-id
+          (let ((type (flasher-card--get-type))
+                (inhibit-read-only t))
+            (funcall (flasher-card-type-flip-fn type))))
+        (switch-to-buffer flasher-review-buffer-name)
+        (goto-char (point-max))
+        (flasher-review-flip-mode -1)
+        (flasher-review-rate-mode))
+    (error (flasher-review-quit)
+           (signal (car err) (cdr err)))))
+
 (defun flasher-review--random-variants (variants sort-p)
   "Assign numbers to VARIANTS and sort it if SORT-P is non-nil."
   (let ((numbers (cl-loop for i below (length variants) collect (cl-random 1.0))))
