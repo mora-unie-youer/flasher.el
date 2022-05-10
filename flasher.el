@@ -1283,6 +1283,12 @@ If RESUMING is non-nil, use current card."
     (setq flasher-review--session nil)
     (flasher-review-quit)))
 
+(defun flasher-review-quit ()
+  "Quit Flasher review session."
+  (interactive)
+  (kill-current-buffer)
+  (flasher-dashboard))
+
 (defun flasher-review--random-variants (variants sort-p)
   "Assign numbers to VARIANTS and sort it if SORT-P is non-nil."
   (let ((numbers (cl-loop for i below (length variants) collect (cl-random 1.0))))
