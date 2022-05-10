@@ -1166,6 +1166,14 @@ If SUBMENU-P is non-nil, show button which returns to main menu."
       cards
     (error "Deck doesn't have cards")))
 
+(defun flasher-dashboard-deck (&optional strict-p)
+  "View deck cards in dashboard buffer.
+If STRICT-P is non-nil, fetch cards non-recursively."
+  (interactive "P")
+  (let ((cards (flasher-dashboard--deck-cards strict-p)))
+    (setq flasher-dashboard--cards cards)
+    (flasher-dashboard--show-cards)))
+
 ;;;###autoload
 (defun flasher-dashboard ()
   "Open Flasher dashboard."
