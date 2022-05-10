@@ -1051,6 +1051,7 @@ If SUBMENU-P is non-nil, show button which returns to main menu."
   (let ((map (make-sparse-keymap)))
     (define-key map [mouse-1]   #'flasher-dashboard-deck)
     (define-key map (kbd "RET") #'flasher-dashboard-deck)
+    (define-key map (kbd "r") #'flasher-dashboard-review-deck)
     map)
   "Keymap for deck buttons in dashboard main menu.")
 
@@ -1176,6 +1177,11 @@ If STRICT-P is non-nil, fetch cards non-recursively."
     (setq flasher-dashboard--cards cards)
     (flasher-dashboard--show-cards)))
 
+(defun flasher-dashboard-review-deck (&optional strict-p)
+  "Review deck cards. If STRICT-P is non-nil, fetch cards non-recursively."
+  (interactive "P")
+  (flasher-review-cards (flasher-dashboard--deck-cards strict-p)))
+
 ;;;###autoload
 (defun flasher-dashboard ()
   "Open Flasher dashboard."
@@ -1185,6 +1191,7 @@ If STRICT-P is non-nil, fetch cards non-recursively."
 
 (defvar flasher-dashboard-mode-map
   (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "r") #'flasher-review)
     (define-key map (kbd "q") #'kill-current-buffer)
     map)
   "Keymap for `flasher-dashboard-mode'.")
