@@ -1566,6 +1566,64 @@ If RESUMING is non-nil, use current card."
   'flasher-card-type-noop
   'flasher-card-type-normal-flip)
 
+;;;;;;;;;;;;;;;;;
+;; Cloze cards ;;
+;;;;;;;;;;;;;;;;;
+
+(defun flasher-card-type-cloze--parse-holes ()
+  "Parse list of (ID . HOLES) parsed from cloze holes."
+  (save-excursion
+    (let (holes (next-id 0))
+      (while (re-search-forward flasher-card-type-cloze--regex nil t)
+        (let* ((data (match-data))
+               (id-string (match-string 3))
+               (id (if id-string (string-to-number id-string)))
+               (holes-id (alist-get id holes)))
+          (cond
+           ((or (null id) (= id next-id))
+            (setq id next-id)
+            (cl-incf next-id)
+            (push data holes-id))
+           ((null holes-id) (error "IDs must be in order"))
+           (t (push data holes-id)))
+          (setf (alist-get id holes) holes-id)))
+      holes)))
+
+(defun flasher-card-type-cloze--hole-visible-p (type id current-id)
+  "Check if hole with ID is visible.
+TYPE is type of cloze card.
+CURRENT-ID is ID of current cloze card variant."
+  (pcase type
+    ("delete" t)
+    ("enum" (< id current-id))
+    (_ (error "Unknown cloze card type %s" type))))
+
+(defun flasher-card-type-cloze--hide-holes (type current-id &optional all-visible)
+  "Hide holes of a cloze card with TYPE and CURRENT-ID variant.
+ALL-VISIBLE can be used to mark all holes visible."
+  (flasher-review-with-buffer-start
+    (let* ((holes (flasher-card-type-cloze--parse-holes)))
+      (pcase-dolist (`(,id . ,holes-id) holes)
+        (pcase-dolist (`(,hole-beg ,hole-end ,text-beg ,text-end ,hint-beg ,hint-end) holes-id)
+          (unless hint-beg (setq hint-beg text-end hint-end text-end))
+          (cond
+           ((and (not (null current-id)) (= id current-id))
+            (flasher-core--hide-region hole-beg text-beg "")
+            (push (flasher-core--make-overlay text-beg text-end 'invisible t)
+                  flasher-card-type-cloze--text-overlay)
+            (flasher-core--hide-region text-end hint-beg "")
+            (push (flasher-core--overlay-surround
+                   (flasher-core--make-overlay hint-beg hint-end 'display "...")
+                   (if (= hint-beg hint-end) "[..." "[") "]"
+                   'flasher-card-type-cloze-hole-face)
+                  flasher-card-type-cloze--hint-overlay)
+            (flasher-core--hide-region hint-end hole-end "")
+            (flasher-core--make-overlay hole-beg hole-end 'face 'flasher-card-type-cloze-hole-face))
+           ((or all-visible (flasher-card-type-cloze--hole-visible-p type id current-id))
+            (flasher-core--hide-region hole-beg text-beg)
+            (flasher-core--hide-region text-end hole-end))
+           (t (flasher-core--hide-region hole-beg hole-end "..."))))))))
+
 (provide 'flasher)
 
 ;;; flasher.el ends here
