@@ -1335,6 +1335,23 @@ If RESUMING is non-nil, use current card."
   "Abort all changes made to current card in review session."
   (interactive))
 
+(defun flasher-review-rate (quality)
+  "Rate current card with QUALITY in review session."
+  (interactive "P")
+  (cl-assert (and (>= quality 0) (<= quality 5)))
+  (condition-case err
+      (let* ((card-info (oref flasher-review--session current-card))
+             (new-card-info (flasher-algo card-info quality)))
+        (flasher-review--add-result quality)
+        (flasher-card-variant--save-result new-card-info quality)
+        (when (= (cl-sixth new-card-info) 0)
+          (setf (oref flasher-review--session cards)
+                (append (oref flasher-review--session cards)
+                        (list new-card-info))))
+        (flasher-review-next-card))
+    (error (flasher-review-quit)
+           (signal (car err) (cdr err)))))
+
 (defun flasher-review--random-variants (variants sort-p)
   "Assign numbers to VARIANTS and sort it if SORT-P is non-nil."
   (let ((numbers (cl-loop for i below (length variants) collect (cl-random 1.0))))
